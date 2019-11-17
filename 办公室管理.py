@@ -8,7 +8,7 @@ import bs4
 from selenium import webdriver
 
 studyName='办公室管理'
-
+#从题库自动取答案去匹配之前写好了办公室管理,开放大学指南,和公共行政学
 
 def getAnswerElement(elements,neirong):
     for ele in elements:
