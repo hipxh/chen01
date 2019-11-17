@@ -10,7 +10,7 @@ import os
 
 studyName = os.path.basename(__file__).split('.')[0]
 
-
+#其中一张试卷全部为富文本提交
 def getAnswerElement(elements, neirong, i):
     for ele in elements:
         if neirong in ele.text:
