@@ -111,6 +111,17 @@ def regexDanxuan(answer,map):
 
 # print(danxuanAutoAnswer(dxAnswer,{}))
 
-
-s="1,21,3"
-print(s.split(",")[-1])
+dxAnswer = '''31.对
+     32.错 
+     33.对
+      34.错 
+      35.错
+       36.对
+        37.错
+         38.对 
+         39.错
+          40.对'''
+print(dxAnswer)
+split = dxAnswer.split("\n")
+for i in split:
+    print(i.strip().split(".")[1])
