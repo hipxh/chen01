@@ -10,19 +10,28 @@ import os
 
 studyName = os.path.basename(__file__).split('.')[0]
 
-#其中一张试卷全部为富文本提交
+
+# 其中一张试卷全部为富文本提交
 def getAnswerElement(elements, neirong, i):
     for ele in elements:
         if neirong in ele.text:
             return ele
 
-def getAnswerElementEquals(elements, neirong,i,meidaotiyouduoshaogexuanxiang):
-    elements = elements[i*meidaotiyouduoshaogexuanxiang:(i+1)*meidaotiyouduoshaogexuanxiang]
+
+def getAnswerElementEquals(elements, neirong, i, meidaotiyouduoshaogexuanxiang):
+    elements = elements[i * meidaotiyouduoshaogexuanxiang:(i + 1) * meidaotiyouduoshaogexuanxiang]
     for ele in elements:
-        if neirong == ele.text or "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "D. " + neirong == ele.text or "E. " + neirong == ele.text or "a. " + neirong == ele.text or "b. " + neirong == ele.text or "c. " + neirong == ele.text or "d. " + neirong == ele.text or "e. " + neirong == ele.text :
+        if neirong == ele.text or "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "D. " + neirong == ele.text or "E. " + neirong == ele.text or "a. " + neirong == ele.text or "b. " + neirong == ele.text or "c. " + neirong == ele.text or "d. " + neirong == ele.text or "e. " + neirong == ele.text:
             return ele
 
-def getAnswerElementEquals433(elements, neirong,i):
+#单选和多选在一页
+def getAnswerElementEqualsdanxuanduoxuaninOnePage(elements, neirong, i, meidaotiyouduoshaogexuanxiang,danxuanLabelLength):
+    elements = elements[danxuanLabelLength+i * meidaotiyouduoshaogexuanxiang:(i + 1) * meidaotiyouduoshaogexuanxiang+danxuanLabelLength]
+    for ele in elements:
+        if neirong == ele.text or "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "D. " + neirong == ele.text or "E. " + neirong == ele.text or "a. " + neirong == ele.text or "b. " + neirong == ele.text or "c. " + neirong == ele.text or "d. " + neirong == ele.text or "e. " + neirong == ele.text:
+            return ele
+
+def getAnswerElementEquals433(elements, neirong, i):
     if i == 1:
         elements = elements[0:16]
     if i == 2:
@@ -30,6 +39,7 @@ def getAnswerElementEquals433(elements, neirong,i):
     for ele in elements:
         if "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "D. " + neirong == ele.text or "E. " + neirong == ele.text:
             return ele
+
 
 def getAnswerElementEqualsFinal(elements, neirong, i, danxuanRatios, duoxuanCheckboxs):
     if i == 1:
@@ -60,12 +70,14 @@ def getAnswerElementEquals222(elements, neirong, i):
         if "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "D. " + neirong == ele.text or "E. " + neirong == ele.text:
             return ele
 
-rightTiGan=[]
+
+rightTiGan = []
+
 
 def judgeQueTitle(elements1p, title):
     if isinstance(elements1p, list):
         for ele in elements1p:
-            if title+"（" in ele.text:
+            if title + "（" in ele.text:
                 rightTiGan.append(ele)
                 return True
     else:
@@ -83,25 +95,35 @@ def danxuanAutoAnswer(answer, map):
         map[i_split[0].strip()] = i_split[1].split("）")[0].strip()
     return map
 
-def danxuanAutoAnswerFix(answer,reg):
-    result=[]
+
+def danxuanAutoAnswerFix(answer, reg):
+    result = []
     split = answer.split("\n")
     for i in split:
         result.append(i.strip().split(reg)[1])
     return result
+
+
 def duoxuanAutoAnswerFix(answer, reg, reg2):
-    map={}
+    # map={}
+    # split = answer.split("\n")
+    # for i in split:
+    #     map[i.split(reg)[0].strip()] = i.split(reg)[-1].split(reg2)
+    # return map
+    # 2019年11月18日11:44:49惊人发现,Python的map在mac下有序,在win下无序
+    listList = []
     split = answer.split("\n")
     for i in split:
-        map[i.split(reg)[0].strip()] = i.split(reg)[-1].split(reg2)
-    return map
+        listList.append(i.split(reg)[-1].split(reg2))
+    return listList
+
 
 def duoxuanAutoAnswer(answer, map):
     split = answer.split("")
     for i in split:
         if len(i) < 2:
             continue
-        i_split = i.split("（")#2019年11月17日14:25:30bug,如果选项里有括号,则报错,此处应取第一个左括号的前面和最后一个右括号的右边,怕耽误速度,暂不处理
+        i_split = i.split("（")  # 2019年11月17日14:25:30bug,如果选项里有括号,则报错,此处应取第一个左括号的前面和最后一个右括号的右边,怕耽误速度,暂不处理
         map[i_split[0].strip()] = i_split[-1].split("）")[0].strip().split("; ")
     return map
 
@@ -119,7 +141,7 @@ def pdAutoAnswer(answer, list):
 def pdUtil5(list, elements1p, ratios, titleIndex, danxuantiLength, panduanIndex):
     a = 1
     for timu in list:
-        if (judgeQueTitle(elements1p[titleIndex], timu)):#如果题干在错的list里,就点击错误
+        if (judgeQueTitle(elements1p[titleIndex], timu)):  # 如果题干在错的list里,就点击错误
             a = 0
             ratios[danxuantiLength * 4 + panduanIndex * 2 + 1].click()
             break
@@ -130,320 +152,390 @@ def pdUtil5(list, elements1p, ratios, titleIndex, danxuantiLength, panduanIndex)
 
 # start to answer.
 def writeAnswer1(browser):
-    canTakeWrongNum=0
+    canTakeWrongNum = 0
+    #单多选在同一页混的时候,标记下单选题的数量
+    danxuanLength=9
 
     # 试卷题目固定布局
     ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
     elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
-
-    # 单选多选混合,根据题库判断单选还是多选,进行相应的点击,,,规律-前4单,中3多,后3判
-    elements1 = browser.find_elements_by_xpath('//label')
-    dxAnswer = '''错错错对错
-错错对对错
-错错对对错
-错对对错错'''
-    listdxanswer = danxuanAutoAnswerFix(dxAnswer, ".")
-    # 保证进来的是第一页
     browser.find_element_by_id("quiznavbutton1").click()
     browser.find_element_by_id("quiznavbutton1")
-    dxindex=0
-    for an in listdxanswer:
-        anEle = getAnswerElementEquals(elements1, an,dxindex,4)#找到指定的那个label选项
+    dxindex = 0
+    # 单选多选混合,根据题库判断单选还是多选,进行相应的点击,,,规律-前10pd,翻页,10pd,翻页,11单选,翻页,9单选,1多选
+    # 再翻页,9多选
+    elements1 = browser.find_elements_by_xpath('//label')
+    pdAnswer = '''错错错对错错错对对错'''
+    dxindex = 0
+    for pd in pdAnswer:
+        anEle = getAnswerElementEquals(elements1, pd, dxindex, 2)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.1)
-        dxindex+=1
+        dxindex += 1
 
     browser.find_element_by_xpath('//input[@name="next"]').click()
-    browser.find_element_by_xpath('//input[@name="previous"]')
-    elements1 = browser.find_elements_by_xpath('//label')#下一页后label重新拿
+    time.sleep(4)
+    elements1 = browser.find_elements_by_xpath('//label')  # 下一页后label重新拿
 
-
-    mulAnswer = '''16.生产力  社会化大生产
-17.人际关系角色  信息传递角色  决策制定角色
-18.技术技能 人际技能  概念技能
-19.宏观环境  产业环境
-20.人是“社会人”而不是“经济人”  企业中存在着非正式组织  生产效率主要取决于工人的士气
-21.传统的权力  超凡的权力  理性----合法的权力
-22.系统思考  改变心智模式  超越自我  建立共同愿景
-23.产品设计 产品质量  厂容厂貌  员工服饰
-24.制定计划  执行计划  检查计划执行情况
-25.战略计划  作业计划
-26.高利润  提高市场占有率  提高员工福利待遇
-27.收益  成本  期限  风险
-28.定性预测  定量预测
-29.多重性  层次性  单一性  变动性
-30.尽可能量化企业目标  把目标控制在五个以内  目标期限应以长期目标为主  期限适中'''
+    pdAnswer = '''错错对对错错对对错错'''
     dxindex = 0
-    mapmulAnswer = duoxuanAutoAnswerFix(mulAnswer, ".","  ")
-    for key, value in mapmulAnswer.items():
+    for pd in pdAnswer:
+        anEle = getAnswerElementEquals(elements1, pd, dxindex, 2)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
+            time.sleep(0.1)
+        dxindex += 1
+
+    # 第二页的单选也做完了,翻页
+    browser.find_element_by_xpath('//input[@name="next"]').click()
+    time.sleep(4)
+    elements1 = browser.find_elements_by_xpath('//label')  # 下一页后label重新拿
+
+    # 10单
+    dxAnswer = '''21.生产观念
+    22.发现需求并设法满足它们
+    23.顾客作为核心功能和营销作为整体功能
+    24.推销与广告的方法
+25.对企业可控的各种营销因素的组合
+26.市场机会
+27.企业的任务
+28.发展策略
+29.同心多角化
+30.对抗
+31.不可控制'''
+    listdxanswer = danxuanAutoAnswerFix(dxAnswer, ".")
+    dxindex = 0
+    for an in listdxanswer:
+        anEle = getAnswerElementEquals(elements1, an, dxindex, 4)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
+            time.sleep(0.1)
+        dxindex += 1
+
+    browser.find_element_by_xpath('//input[@name="next"]').click()
+    time.sleep(4)
+    elements1 = browser.find_elements_by_xpath('//label')  # 下一页后label重新拿
+
+    # 9单1多,这一页的多选需要额外逻辑,暂不处理
+
+    dxAnswer = '''32.个人可支配收入
+33.扭转性营销
+34.竞争者
+35.采取适当的营销策略技巧，以诱导消费者作出对企业有利的购买决策
+36.确认需求
+37.适时传递有关产品的信息
+38.探究性购买
+39.文化
+40.产品质量和性能发挥状况'''
+    listdxanswer = danxuanAutoAnswerFix(dxAnswer, ".")
+    dxindex = 0
+    for an in listdxanswer:
+        anEle = getAnswerElementEquals(elements1, an, dxindex, 4)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
+            time.sleep(0.1)
+        dxindex += 1
+    mulAnswer = '''41.市场需求; 社会整体利益; 企业利润'''
+    dxindex = 0
+    mapmulAnswer = duoxuanAutoAnswerFix(mulAnswer, ".", "; ")
+    for value in mapmulAnswer:
         for v in value:
-            anEle = getAnswerElementEquals(elements1, v.strip(), dxindex,4)  # 找到指定的那个label选项
+            anEle = getAnswerElementEqualsdanxuanduoxuaninOnePage(elements1, v.strip(), dxindex, 5,36)  # 找到指定的那个label选项
             if anEle is not None:
                 anEle.find_element_by_xpath("./../input[last()]").click()
                 time.sleep(0.1)
         dxindex += 1
 
-    pdAnswer = '''31.对
-     32.错 
-     33.对
-      34.错 
-      35.错
-       36.对
-        37.错
-         38.对 
-         39.错
-          40.对'''
 
     browser.find_element_by_xpath('//input[@name="next"]').click()
     time.sleep(4)
-    browser.find_element_by_xpath('//input[@name="previous"]')
     elements1 = browser.find_elements_by_xpath('//label')  # 下一页后label重新拿
 
-    listpdanswer = danxuanAutoAnswerFix(pdAnswer, ".")
-
+    mulAnswer = '''42.使消费者具有自由选择产品的权利; 使消费者具有申诉的权利; 使消费者获得有关产品的充分信息的权利; 使消费者获得安全的产品与服务的权利
+43.贯彻市场营销观念; 鼓舞人心; 切实可行
+44.产品开发; 市场开发; 市场渗透
+45.地点; 价格; 产品
+46.经销商; 竞争者
+47.远程旅游; 打保龄球; 美容
+48.消费者对所需要的商品很不了解; 消费者一般对该类商品没有购买经历; 商品一般价格高，购买频率低
+49.分析购买决策各阶段的特征; 有针对性地制定营销方案; 研究影响购买决策的因素; 了解谁参加购买决策; 了解购买行为的类型
+50.努力维持现有的需求水平; 保持产品质量的稳定; 严格控制成本'''
     dxindex = 0
-    for an in listpdanswer:
-        anEle = getAnswerElementEquals(elements1, an, dxindex,2)  # 找到指定的那个label选项
-        if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
-            time.sleep(0.1)
+    mapmulAnswer = duoxuanAutoAnswerFix(mulAnswer, ".", "; ")
+    for value in mapmulAnswer:
+        for v in value:
+            anEle = getAnswerElementEquals(elements1, v.strip(), dxindex, 5)  # 找到指定的那个label选项
+            if anEle is not None:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+                time.sleep(0.1)
         dxindex += 1
 
-    #富文本
-    line = browser.page_source
-    frameId = line.split(":45_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId+":45_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "1.银华公司是怎样认识到企业文化的作用的? 随着经济体制改革的深化，银华公司的管理和发展出现了困难。通过调查分析，认为必须引入先进的管理理念，即企业文化。 2.银华公司在企业文化建设上做了哪些工作? （ 从机制方面，银华公司建立和完善了考核机制、监督机制、分配制度、人才选拔机制等。 从教育方面，银华公司注重引导和规范职工的日常行为；定期组织员工学习。等等。 加强投入，包括人、财、物的投入。 3.怎样认识企业文化的本质和作用? 企业文化是指一定历史条件下，企业在生产经营和管理活动中所创造的具有本企业特色的精神财富及其物质形态。它包括三个部分：精神文化、制度文化和物质文化。 优秀的企业文化对外可以促进形成独特的企业形象定位，产生品牌效应，拓展市场和增加产品附加值；对内则形成强大的凝聚力，起到学习、维系和激励的功能，引导、协调并约束员工行为，在较高程度上实现员工个人目标与企业目标的一致，促进企业和个人的共同成长。")
-    browser.switch_to.default_content()
-
-    # end answer
-    if canTakeWrongNum>3:
+    # end answer-翻页的情况下用的结束答题
+    if canTakeWrongNum > 3:
         return
     browser.find_elements_by_xpath('//input[@type="submit"]')[1].click()
     time.sleep(0.1)
     # save and submit
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
+
+
 def writeAnswer2(browser):
-    canTakeWrongNum=0
+    canTakeWrongNum = 0
 
     # 试卷题目固定布局
     ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
     elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
-
-    # 单选多选混合,根据题库判断单选还是多选,进行相应的点击,,,规律-前4单,中3多,后3判
-    elements1 = browser.find_elements_by_xpath('//label')
-    dxAnswer = '''1.全局性
-2.编制具体的行动计划
-3.密集型发展战略
-4.关联多元化
-5.程序化决策
-6.头脑风暴法
-7.1100
-8.丙
-9.组织结构
-10.责权利对等
-11.矩阵制结构
-12.矩阵制组织结构
-13.量才使用
-14.自我考评
-15.职务轮换'''
-    listdxanswer = danxuanAutoAnswerFix(dxAnswer, ".")
-    # 保证进来的是第一页
     browser.find_element_by_id("quiznavbutton1").click()
     browser.find_element_by_id("quiznavbutton1")
-    dxindex=0
-    for an in listdxanswer:
-        anEle = getAnswerElementEquals(elements1, an,dxindex,4)#找到指定的那个label选项
+    dxindex = 0
+    # 单选多选混合,根据题库判断单选还是多选,进行相应的点击,,,规律-前10pd,翻页,10pd,翻页,11单选,翻页,9单选,1多选
+    # 再翻页,9多选
+    elements1 = browser.find_elements_by_xpath('//label')
+    pdAnswer = '''错对对错对对错对错错'''
+    dxindex = 0
+    for pd in pdAnswer:
+        anEle = getAnswerElementEquals(elements1, pd, dxindex, 2)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.1)
-        dxindex+=1
+        dxindex += 1
 
     browser.find_element_by_xpath('//input[@name="next"]').click()
-    browser.find_element_by_xpath('//input[@name="previous"]')
-    elements1 = browser.find_elements_by_xpath('//label')#下一页后label重新拿
+    time.sleep(4)
+    elements1 = browser.find_elements_by_xpath('//label')  # 下一页后label重新拿
 
-
-    mulAnswer = '''16.科学  艺术
-17.狭窄  空泛
-18.该产业是否具有吸引力  公司是否拥有优势资源  该产业的盈利能力
-19.稳定型战略  收缩型战略  发展型战略
-20.无关联多元化  复合多元化
-21.生产系统  产品的核心技术  顾客基础  销售渠道
-22.业务性决策  日常管理决策
-23.德尔菲法  头脑风暴法  哥顿法
-24.函询  反馈
-25.组织的部门机构  职责的规定  职位的安排
-26.M型结构  多部门结构  产品部式结构
-27.保持了集中统一指挥的特点  分工非常细密  注重专业化管理
-28.有知识的人  有能力的人  对组织忠诚的人
-29.组织现有的规模和岗位  管理人员的流动率  组织发展的需要
-30.调动内部成员的工作积极性  吸收外部人才  保证选聘工作的准确性  被聘者可以迅速展开工作'''
+    pdAnswer = '''错对错错错对对错对错'''
     dxindex = 0
-    mapmulAnswer = duoxuanAutoAnswerFix(mulAnswer, ".","  ")
-    for key, value in mapmulAnswer.items():
+    for pd in pdAnswer:
+        anEle = getAnswerElementEquals(elements1, pd, dxindex, 2)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
+            time.sleep(0.1)
+        dxindex += 1
+
+    # 第二页的单选也做完了,翻页
+    browser.find_element_by_xpath('//input[@name="next"]').click()
+    time.sleep(4)
+    elements1 = browser.find_elements_by_xpath('//label')  # 下一页后label重新拿
+
+    # 10单
+    dxAnswer = '''21.市场营销信息系统
+22.政府发布的经济公报
+23.用词不确切
+24.描述性调研
+25.收集信息
+26.产业和市场
+27.高质量竞争战略
+28.专业化生产和经营
+29.开辟产品的新用途
+30.自己的市场信息系统
+31.较多的共同性'''
+    listdxanswer = danxuanAutoAnswerFix(dxAnswer, ".")
+    dxindex = 0
+    for an in listdxanswer:
+        anEle = getAnswerElementEquals(elements1, an, dxindex, 4)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
+            time.sleep(0.1)
+        dxindex += 1
+
+    browser.find_element_by_xpath('//input[@name="next"]').click()
+    time.sleep(4)
+    elements1 = browser.find_elements_by_xpath('//label')  # 下一页后label重新拿
+
+    # 9单1多,这一页的多选需要额外逻辑,暂不处理
+
+    dxAnswer = '''32.心理因素
+33.使企业较快速地在市杨上站稳脚跟，市场风险较小
+34.成本的经济性
+35.有利于企业发现和比较市场机会
+36.向下延伸
+37.家族商标策略
+38.包装越精美越好
+39.新产品的体积大小
+40.搜集构想'''
+    listdxanswer = danxuanAutoAnswerFix(dxAnswer, ".")
+    dxindex = 0
+    for an in listdxanswer:
+        anEle = getAnswerElementEquals(elements1, an, dxindex, 4)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
+            time.sleep(0.1)
+        dxindex += 1
+    mulAnswer = '''41.报刊、书籍; 内部来源; 政府刊物; 商业资料
+    42.调研项目预算; 需要回答什么问题; 何时收集信息; 如何收集信息'''
+    dxindex = 0
+    mapmulAnswer = duoxuanAutoAnswerFix(mulAnswer, ".", "; ")
+    for value in mapmulAnswer:
         for v in value:
-            anEle = getAnswerElementEquals(elements1, v.strip(), dxindex,4)  # 找到指定的那个label选项
+            anEle = getAnswerElementEqualsdanxuanduoxuaninOnePage(elements1, v.strip(), dxindex, 5,36)  # 找到指定的那个label选项
+            if anEle is not None:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+                time.sleep(0.1)
+        dxindex += 1
+    browser.find_element_by_xpath('//input[@name="next"]').click()
+    time.sleep(4)
+    elements1 = browser.find_elements_by_xpath('//label')  # 下一页后label重新拿
+
+    mulAnswer = '''43.阵地防御; 开辟产品的新用途; 提高市场占有率
+44.企业具有占据该补缺基点所必需的资源和能力; 有足够的市场潜量和购买力; 对主要竞争者不具有吸引力
+45.个性; 购买行为; 文化背景; 地理位置; 年龄
+46.气候; 地形; 人口密度; 城乡
+47.保护产品; 传递产品信息; 便于识别商品; 方便使用
+48.要选择本企业产品的特色和独特形象; 要研究目标顾客对该产品各种属性的重视程度; 要了解竞争产品的市场定位
+49.巩固老用户; 开发新市场; 重点宣传企业信誉; 开发新产品
+50.未来的市场潜量; 新产品的获利情况; 新产品的原料来源保证情况; 新产品的成本与设备能力情况'''
+    dxindex = 0
+    mapmulAnswer = duoxuanAutoAnswerFix(mulAnswer, ".", "; ")
+    for value in mapmulAnswer:
+        for v in value:
+            anEle = getAnswerElementEquals(elements1, v.strip(), dxindex, 5)  # 找到指定的那个label选项
             if anEle is not None:
                 anEle.find_element_by_xpath("./../input[last()]").click()
                 time.sleep(0.1)
         dxindex += 1
 
-    pdAnswer = '''31.错 
-32.对
- 33.错
-  34.错
-   35.对
-    36.对
-     37.错
-      38.对
-       39.对
-        40.对'''
-
-    browser.find_element_by_xpath('//input[@name="next"]').click()
-    time.sleep(4)
-    browser.find_element_by_xpath('//input[@name="previous"]')
-    elements1 = browser.find_elements_by_xpath('//label')  # 下一页后label重新拿
-
-    listpdanswer = danxuanAutoAnswerFix(pdAnswer, ".")
-
-    dxindex = 0
-    for an in listpdanswer:
-        anEle = getAnswerElementEquals(elements1, an, dxindex,2)  # 找到指定的那个label选项
-        if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
-            time.sleep(0.1)
-        dxindex += 1
-
-    #富文本
-    line = browser.page_source
-    frameId = line.split(":45_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId+":45_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "1．决策包括哪些基本活动过程?其中的关键步骤是什么?决策过程：识别问题--确定决策目标--拟订可行方案—分析评价方案--选择方案--实施方案关键步骤是选择方案。2．案例中两家企业形成鲜明对比的原因是什么?决策的正确与否是两家企业的发展形成反差的原因。3．科学决策需要注意哪些问题?科学性的决策，要求决策者准确认识事物的发展变化规律，并采取科学的程序和方法，做出符合事物发展规律的决策。")
-    browser.switch_to.default_content()
-
-    # end answer
-    if canTakeWrongNum>3:
+    # end answer-翻页的情况下用的结束答题
+    if canTakeWrongNum > 3:
         return
     browser.find_elements_by_xpath('//input[@type="submit"]')[1].click()
     time.sleep(0.1)
     # save and submit
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
+
+
 def writeAnswer3(browser):
-    canTakeWrongNum=0
+    canTakeWrongNum = 0
 
     # 试卷题目固定布局
     ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
     elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
-
-    # 单选多选混合,根据题库判断单选还是多选,进行相应的点击,,,规律-前4单,中3多,后3判
-    elements1 = browser.find_elements_by_xpath('//label')
-    dxAnswer = '''1.自身影响力              
-    2.1-9型
-3.转移法                  
-4.需要层次理论
-5.消极强化                
-6.激励或影响人的行为
-7.书面沟通
-8.地位差异
-9.选择性知觉
-10.反馈
-11.前馈控制
-12.实物标准
-13.可行性
-14.直接监督或巡查
-15.运营能力'''
-    listdxanswer = danxuanAutoAnswerFix(dxAnswer, ".")
-    # 保证进来的是第一页
     browser.find_element_by_id("quiznavbutton1").click()
     browser.find_element_by_id("quiznavbutton1")
-    dxindex=0
-    for an in listdxanswer:
-        anEle = getAnswerElementEquals(elements1, an,dxindex,4)#找到指定的那个label选项
+    dxindex = 0
+    # 单选多选混合,根据题库判断单选还是多选,进行相应的点击,,,规律-前10pd,翻页,10pd,翻页,11单选,翻页,9单选,1多选
+    # 再翻页,9多选
+    elements1 = browser.find_elements_by_xpath('//label')
+    pdAnswer = '''对对错对错对对错对错'''
+    dxindex = 0
+    for pd in pdAnswer:
+        anEle = getAnswerElementEquals(elements1, pd, dxindex, 2)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.1)
-        dxindex+=1
+        dxindex += 1
 
     browser.find_element_by_xpath('//input[@name="next"]').click()
-    browser.find_element_by_xpath('//input[@name="previous"]')
-    elements1 = browser.find_elements_by_xpath('//label')#下一页后label重新拿
+    time.sleep(4)
+    elements1 = browser.find_elements_by_xpath('//label')  # 下一页后label重新拿
 
-
-    mulAnswer = '''16.法定权力  奖励权力  处罚权力
-17.职位权力  任务结构  上下级关系
-18.情感能力  行为能力  意志能力  认知能力
-19.积极进取的措施  消极防范的措施
-20.生活要得到基本保障  避免人身伤害，失业保障  年老时有所依靠
-21.要给职工提供适当的工资和安全保障  要改善他们的工作环境和条件  对职工的监督要能为他们所接受
-22.积极强化  消极强化  惩罚  自然消退
-23.信息的传递  对信息的理解
-24.口头沟通和书面沟通  非语言方式沟通和电子媒介沟通
-25.正式沟通  非正式沟通
-26.企业高层管理人员  企业中层管理人员  企业基层管理人员
-27.较高素质的管理者  下属人员的积极参与和配合  适当的授权
-28.销售额  成本总额  工资总额
-29.目标明确原则  控制关键点原则  及时性、经济性原则
-30.质量 成本 采购'''
+    pdAnswer = '''错对错错对错错错对对'''
     dxindex = 0
-    mapmulAnswer = duoxuanAutoAnswerFix(mulAnswer, ".","  ")
-    for key, value in mapmulAnswer.items():
+    for pd in pdAnswer:
+        anEle = getAnswerElementEquals(elements1, pd, dxindex, 2)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
+            time.sleep(0.1)
+        dxindex += 1
+
+    # 第二页的单选也做完了,翻页
+    browser.find_element_by_xpath('//input[@name="next"]').click()
+    time.sleep(4)
+    elements1 = browser.find_elements_by_xpath('//label')  # 下一页后label重新拿
+
+    # 10单
+    dxAnswer = '''21.理解价值定价法
+22.随行就市定价法
+23.产品的成本费用
+24.产品富于需求弹性即E＞l时
+25.渗透定价
+26.直接渠道
+27.技术性强、价格昂贵的产品
+28.延长产品的生命周期
+29.店铺营销
+30.个别式分销渠道结构
+31.建立起品牌与消费者之间的长期关系'''
+    listdxanswer = danxuanAutoAnswerFix(dxAnswer, ".")
+    dxindex = 0
+    for an in listdxanswer:
+        anEle = getAnswerElementEquals(elements1, an, dxindex, 4)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
+            time.sleep(0.1)
+        dxindex += 1
+
+    browser.find_element_by_xpath('//input[@name="next"]').click()
+    time.sleep(4)
+    elements1 = browser.find_elements_by_xpath('//label')  # 下一页后label重新拿
+
+    # 9单1多,这一页的多选需要额外逻辑,暂不处理
+
+    dxAnswer = '''32.人员推销
+33.广告
+34.针对性强，有的放矢
+35.上门推销
+36.商品展销会
+37.更快地达成交易
+38.个性化的产品和服务的大规模生产
+39.直接营销
+40.产品质优价廉，有良好的售后服务'''
+    listdxanswer = danxuanAutoAnswerFix(dxAnswer, ".")
+    dxindex = 0
+    for an in listdxanswer:
+        anEle = getAnswerElementEquals(elements1, an, dxindex, 4)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
+            time.sleep(0.1)
+        dxindex += 1
+    mulAnswer = '''41.对不同花色、不同款式的同种商品所定的不同价格; 剧院里不同位置的座位的票价不同'''
+    dxindex = 0
+    mapmulAnswer = duoxuanAutoAnswerFix(mulAnswer, ".", "; ")
+    for value in mapmulAnswer:
         for v in value:
-            anEle = getAnswerElementEquals(elements1, v.strip(), dxindex,4)  # 找到指定的那个label选项
+            anEle = getAnswerElementEqualsdanxuanduoxuaninOnePage(elements1, v.strip(), dxindex, 5,
+                                                                  36)  # 找到指定的那个label选项
+            if anEle is not None:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+                time.sleep(0.1)
+        dxindex += 1
+    browser.find_element_by_xpath('//input[@name="next"]').click()
+    time.sleep(4)
+    elements1 = browser.find_elements_by_xpath('//label')  # 下一页后label重新拿
+
+    mulAnswer = '''42.与生活关系密切的必需品; 知名度高的名牌产品
+43.新产品无明显特色，且市场已被他人领先; 生产和分销成本有可能随产量和销量的扩大而降低; 新产品竞争激烈
+44.业务折扣; 季节折扣; 数量折扣; 现金折扣
+45.产品上市速度快; 市场信息反馈快; 节省流通费用
+46.产品潜在的消费者或用户分布面广; 企业生产量大、营销能力强
+47.产品易腐易损，需求时效性; 产品技术性强; 消费者或用户一次需求批量大
+48.企业特性; 产品特性; 竞争特性; 环境特性; 顾客特性
+49.产品生命周期的阶段; 现实和潜在顾客的状况; 产品类型与特点; 推或拉的策略
+50.价格昂贵的产品; 企业推销能力强; 企业产品只在某几个市场销售; 技术性强，消费者和用户集中'''
+    dxindex = 0
+    mapmulAnswer = duoxuanAutoAnswerFix(mulAnswer, ".", "; ")
+    for value in mapmulAnswer:
+        for v in value:
+            anEle = getAnswerElementEquals(elements1, v.strip(), dxindex, 5)  # 找到指定的那个label选项
             if anEle is not None:
                 anEle.find_element_by_xpath("./../input[last()]").click()
                 time.sleep(0.1)
         dxindex += 1
 
-    pdAnswer = '''31.错 
-    32.错 
-    33.对
-     34.对 
-     35.对
-      36.错 
-      37.错
-       38.错
-        39.对
-        40.错'''
-
-    browser.find_element_by_xpath('//input[@name="next"]').click()
-    time.sleep(4)
-    browser.find_element_by_xpath('//input[@name="previous"]')
-    elements1 = browser.find_elements_by_xpath('//label')  # 下一页后label重新拿
-
-    listpdanswer = danxuanAutoAnswerFix(pdAnswer, ".")
-
-    dxindex = 0
-    for an in listpdanswer:
-        anEle = getAnswerElementEquals(elements1, an, dxindex,2)  # 找到指定的那个label选项
-        if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
-            time.sleep(0.1)
-        dxindex += 1
-
-    #富文本
-    line = browser.page_source
-    frameId = line.split(":45_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId+":45_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "1．孟教授讲的领导应发扬民主，给员工决策权的说法对吗?为什么? 从以下两个角度中的任何一个来回答均可： （1）个人决策与群体决策的关系。 （2）领导风格与民主管理。 2．真正的民主管理应具备哪些条件? 该工段具备这些条件吗? 根据领导权变理论，领导方式必须随着被领导者的特点和环境的变化而变化。实行民主管理要求员工既有工作热情，又有必需的知识与能力。 该工段不具备这些条件。")
-    browser.switch_to.default_content()
-
-    # end answer
-    if canTakeWrongNum>3:
+    # end answer-翻页的情况下用的结束答题
+    if canTakeWrongNum > 3:
         return
     browser.find_elements_by_xpath('//input[@type="submit"]')[1].click()
     time.sleep(0.1)
     # save and submit
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
+
+
 def writeAnswer4(browser):
-    canTakeWrongNum=0
+    canTakeWrongNum = 0
 
     # 试卷题目固定布局
 
@@ -452,39 +544,29 @@ def writeAnswer4(browser):
     time.sleep(4)
     browser.find_element_by_xpath('//input[@type="submit"]')
 
-
-
-
-    #富文本
+    # 富文本
     line = browser.page_source
     frameId = line.split(":2_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId+":2_answer_id_ifr")
+    browser.switch_to.frame(frameId + ":2_answer_id_ifr")
     browser.find_element_by_id("tinymce").send_keys(
-        "（1）管理是管理者为有效地达到组织目标，对组织资源和组织活动有意识、有组织、不断地进行的协调活动。（2）技术技能，是指管理者从事自己管理范围内的工作所需要的技术和能力。（3）人际技能，又称人际关系技能，是指成功地与人打交道并与别人沟通的能力。（4）概念技能，是指管理者对事物的洞察、分析、判断、抽象和概括的能力。（5）经济环境：是指一个组织所在的国家或地区的总体经济状况，包括生产力发展水平、产业结构状况、通货膨胀状况、收入和消费水平，市场的供求状况以及经济体制等。（6）技术环境：它对组织的发展有至关重要的影响。伴随着社会信息化和知识经济时代的到来，科学技术对组织的影响更为显著，技术的变革正在从根本上影响着组织模式的变革和管理者的管理方式。（7）决策，是指为了达到一定的目标，采用一定的科学方法和手段，从两个以上的可行方案中选择一个满意方案的分析判断过程。（8）所谓激励，是指人类活动的一种内心状态。它具有加强和激发动机，推动并引导行为朝向预定目标的作用。（9）控制：为保证组织目标以及为实现目标所制定的计划得以实现，要求管理者必须对计划的执行过程进行监督、检查，如果发现偏差，还要及时采取纠偏措施。（10）企业战略就是指组织为了实现长期生存和发展，在综合分析组织内部条件和外部环境的基础上做出的一系列带有全局性和长远性的谋划。")
+        "在80年代和90年代初，罐头在中国市场上有很大的销量，尤其是水果罐头，更是受到广大消费者的喜爱。在汕头有一罐头厂，以生产橘子罐头出名，但是剩下的橘子皮一直没有很好的方法处理，于是便将橘子皮以九分钱一斤的价格送往药品收购站销售，但依然十分困难。他们思考难道橘子皮只能入中药做成陈皮才有用?经过一段时间的研究，他们终于开发出“珍珠陈皮“这一新用途，可将其用做小食品．而且这种小食品具有养颜、保持身材苗条等功能。牋牋?以何种价格销售这一产品？经市场调查发现，妇女和儿童尤其喜欢吃零食，且在此方面不吝花钱，但惧怕吃零食会导致肥胖，而珍珠陈皮正好解其后顾之忧，且市场上尚无同类产品。于是，他们决定每15克袋装售价1元，合33元一斤，投放市场后，该产品销售火爆。牋（1）该企业采取了何种定价策略？?答：这一案例运用了新产品定价策略中的撇脂定价策略，撇脂定价是指产品在生命周期的最初阶段，把产品价格定得很高以攫取最大利润。本案例中，罐头厂将“珍珠陈皮”一新产品定价为33元／斤的高价，能最大限度地为企业赚取利润。?（2）为什么要采用这种策略？?答：采取撇脂定价是因为：?1)“珍珠陈皮”这种小食品生命周期短，生产技术一般比较简单，易被模仿，即使是专利产品，也容易被竞争者略加改进而成为新产品，故应在该产品生命周期的初期，趁竞争者尚未进入市场之前获取利润，来尽快弥补研制费用和收回投资。?2)“珍珠陈皮”之所以敢采取撇脂定价策略，还因为有如下保证：①市场需求较大；②产品质量较高，配科和包装均较考究；②产品迎合了消费者追求健美的心理，既能防止肥胖，又可养颜；④产品是新产品。?（3）若低价销售是否能获得与高价同样多甚至更多的利润？?答：在此案例中，企业不能制订低价，否则将导致利润大量流失，因为若实行低价，一方面无法与其他廉价小食品区分开来，需求量不一定能比高价时大，另一方面该食品生产工艺并不复杂，很快就会有竞争者进入，采取低价格根本就无法收回投资。")
     browser.switch_to.default_content()
 
     line = browser.page_source
     frameId = line.split(":4_answer_id_ifr")[0][-15:].split("id=\"")[1]
     browser.switch_to.frame(frameId + ":4_answer_id_ifr")
     browser.find_element_by_id("tinymce").send_keys(
-        "答：管理学分为总论、决策与计划、组织、领导、控制、创新六篇，每一篇都有特定的目标主旨。而计划作为管理学理论的基础，让我有了许多很深的体会。在为群体中一起工作的人们设计环境，使每个人有效地完成任务时，管理人员最主要的任务，就是努力使每个人理解群体的使命和目标以及实现目标的方法。如果要使群体的努力有成效，其成员一定要明白期望他们完成的是什么，这就是计划工作的职能，而这项职能在所有管理职能中是最基本的。计划包括确定使命和目标以及完成使命和目标的行动；这需要指定决策，即从各种可供选择的方案中确定行动步骤。计划制订分为如下步骤：寻找机会→确定目标→拟订前提条件→确定备选方案→评估备选方案→选择方案→制定衍生计划→用预算量化计划。计划制订的步骤可以用于大多数需要的场合，例如许多大学生准备出国留学，那就可以根据这些计划步骤来为自己做准备。首先，我们需要认识到出国读书的机会以及因此所带来的机遇等，然后，我们就需要设定各方面的目标，如选择国家以及就读的专业领域等。???我们还需要假设是否能在留学过程中获得奖学金以及是否能够在外兼职打工，无论哪种情况，都有几个需要仔细平衡的选择方案。因此，学生们可以就申请不同的学校利弊进行评价，选择适合自己的留学国家和学校。在成功收到入取通知书后和申请到签证后，我们就需要开始指定衍生计划，包括选择住处、搬到一个新的地址，或在学校附近找一份工作。然后，我们需要将一切计划转换成预算，包括学费、生活费等等。这些步骤都是一个计划的体现。???无论是企业还是个人，一个好的完善的计划必定能够帮助我们更快更有效的确定行动方向，从而能达到事半功倍的效果。例如许多著名品牌都制定了其长远的营销战略：可口可乐公司的长远目标宗旨就是?:“我们致力于长期为公司的股东创造价值，不断改变世界。通过生产高质量的饮料为公司、产品包装伙伴以及客户创造价值，进而实现我们的目标。”?ＡＴＴ则是：“我们立志成为全球最受推崇和最具价值的公司。我们的目标是丰富顾客的生活，通过提供新鲜有效的通信服务帮助顾客在商业上取得更大成功，并同时提升股东价值综上所述，一个学期的管理学带给我很多心得体会，我也将会应用于今后的实践中，取得了跟多的收获。")
+        "答：造成这种现象主要是因为消费者在购买商品时追求的利益是不同的，也就是购买着眼点不同。这是由影响购买行为的这种因素决定的。?企业必须要研究消费者购买行为的这一特性，可以根据这种分析进行市场细分，从中选择自己的目标市场，也可以为不同追求的消费者分别设计、提供不同的产品，达到扩大市场的目的。")
     browser.switch_to.default_content()
 
     # end answer
-    if canTakeWrongNum>3:
+    if canTakeWrongNum > 3:
         return
     browser.find_element_by_xpath('//input[@type="submit"]').click()
     time.sleep(0.1)
     # save and submit
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
-
-
-
-
-
-
-
 
 
 def writeAnswer5(browser):
@@ -528,7 +610,7 @@ def writeAnswer5(browser):
     属于相关成本的是（付现成本; 重置成本; 专属成本; 机会成本）。
     影响短期经营决策的因素主要包括（相关收入; 相关成本; 相关业务量 ）。'''
     mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for key, value in mapmulAnswer.items():
+    for value in mapmulAnswer:
         print(key, value)
         if (judgeQueTitle(elements1p, key)):
             for v in value:
@@ -569,6 +651,8 @@ def writeAnswer5(browser):
     # save and submit
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
+
+
 def writeAnswer6(browser):
     # 试卷444布局
     # div class="qtext",2019年11月16日14:32:26发现bug,如果有一模一样的选项,系统默认勾选第一个,逻辑略复杂,暂不处理.并非一定要满分.
@@ -612,7 +696,7 @@ def writeAnswer6(browser):
 长期投资决策的过程比较复杂，需要考虑的因素很多。其中主要的因素包括（投资项目计算期; 货币时间价值; 资本成本; 现金流量 ）。
 长期投资决策中关于现金流量的假设有（建设期投入全部资金假设; 全投资假设; 现金流量符号假设; 项目计算期时点假设 ）。'''
     mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for key, value in mapmulAnswer.items():
+    for value in mapmulAnswer:
         print(key, value)
         if (judgeQueTitle(elements1p, key)):
             for v in value:
@@ -649,6 +733,8 @@ def writeAnswer6(browser):
     # save and submit
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
+
+
 def writeAnswer7(browser):
     # 试卷444布局
     # div class="qtext",2019年11月16日14:32:26发现bug,如果有一模一样的选项,系统默认勾选第一个,逻辑略复杂,暂不处理.并非一定要满分.
@@ -688,7 +774,7 @@ def writeAnswer7(browser):
 算的基本功能主要包括（评价业绩  ; 控制业务 ; 整合资源 ; 确立目标）。 
 预算控制的原则主要包括（全员控制 ; 全程控制 ; 全面控制）。 '''
     mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for key, value in mapmulAnswer.items():
+    for value in mapmulAnswer:
         print(key, value)
         if (judgeQueTitle(elements1p, key)):
             for v in value:
@@ -721,6 +807,8 @@ def writeAnswer7(browser):
     # save and submit
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
+
+
 def writeAnswer8(browser):
     # 试卷444布局
     # div class="qtext",2019年11月16日14:32:26发现bug,如果有一模一样的选项,系统默认勾选第一个,逻辑略复杂,暂不处理.并非一定要满分.
@@ -750,7 +838,7 @@ def writeAnswer8(browser):
     取得成本是下列哪些选择之和（购置成本; 订货变动成本; 订货固定成本 ）。
     下列可以影响直接材料用量差异的原因有（材料的质量; 工人的技术熟练程度; 工人的责任感; 材料加工方式的改变）。'''
     mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for key, value in mapmulAnswer.items():
+    for value in mapmulAnswer:
         print(key, value)
         if (judgeQueTitle(elements1p, key)):
             for v in value:
@@ -810,7 +898,7 @@ def writeAnswer9(browser):
 责任中心的设置应具备的条件（责任者; 经营绩效; 资金运动; 职责和权限 ）。
 酌量性成本中心发生的费用包括以下哪些（管理费用; 销售费用 ）。'''
     mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for key, value in mapmulAnswer.items():
+    for value in mapmulAnswer:
         print(key, value)
         if (judgeQueTitle(elements1p, key)):
             for v in value:
@@ -840,6 +928,8 @@ def writeAnswer9(browser):
     # save and submit
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
+
+
 def writeAnswer10(browser):
     # 试卷444布局
     # div class="qtext",2019年11月16日14:32:26发现bug,如果有一模一样的选项,系统默认勾选第一个,逻辑略复杂,暂不处理.并非一定要满分.
@@ -866,7 +956,7 @@ def writeAnswer10(browser):
 平衡计分卡的四个视角是（财务视角 ; 内部业务流程视角; 学习与成长视角; 客户视角 ）。
 在ABC中，依据作业是否会增加顾客价值，分为（ 不增值作业 ; 增值作业 ）。'''
     mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for key, value in mapmulAnswer.items():
+    for value in mapmulAnswer:
         print(key, value)
         if (judgeQueTitle(elements1p, key)):
             for v in value:
@@ -910,10 +1000,12 @@ def enterTest(browser, xkurl):
     enterStudy(browser)  # 进入学习的按钮会新开一个tab
     time.sleep(1)
     windowstabs = browser.window_handles
-    if len(windowstabs)>1:#如果没找到课程,至少别报错
+    if len(windowstabs) > 1:  # 如果没找到课程,至少别报错
         browser.switch_to.window(windowstabs[1])
         browser.find_elements_by_css_selector('img[class="pull-right"]')  # find一下,保证新页面加载完成
         browser.get(xkurl)  # 先考形1
+    else:
+        return 0
 
 
 # 2.立即考试.判断一下,防止多次考试
@@ -924,7 +1016,6 @@ def readyToTest(browser):
             readyTest.click()
             return 1
     return 0
-
 
 
 # 论坛形式试卷进入方法
@@ -942,11 +1033,11 @@ def wait3AndCloseTab(browser):
     time.sleep(1.5)
 
 
-xingkao1 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=506598'
-xingkao2 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=506599'
-xingkao3 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=506600'
-xingkao4 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=506601'
-
+xingkao1 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=471161'
+xingkao2 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=471162'
+xingkao3 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=471163'
+xingkao4 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=471164'
+xingkao5 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=471165'
 
 option = webdriver.ChromeOptions()
 option.add_argument('disable-infobars')
@@ -971,26 +1062,25 @@ for key in keys:
     browser.find_element_by_css_selector('button[value="login"]').click()
     # enter study...此处要注意,不同账号进来看到的开放大学指南的位置不同,要动态抓元素...2019年11月13日09:10:54发现不用抓元素,直接根据URL进入国开开放指南页面,并且形考1-5的URL也是指定的,所以不用抓元素
 
-    enterTest(browser, xingkao1)
-    if readyToTestForum(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer1(browser)
-    wait3AndCloseTab(browser)
+    if enterTest(browser, xingkao1) != 0:
+        if readyToTestForum(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer1(browser)
+        wait3AndCloseTab(browser)
 
-    enterTest(browser, xingkao2)
-    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer2(browser)
-    wait3AndCloseTab(browser)
+        enterTest(browser, xingkao2)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer2(browser)
+        wait3AndCloseTab(browser)
 
-    enterTest(browser, xingkao3)
-    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer3(browser)
-    wait3AndCloseTab(browser)
+        enterTest(browser, xingkao3)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer3(browser)
+        wait3AndCloseTab(browser)
 
-    enterTest(browser, xingkao4)
-    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer4(browser)
-    wait3AndCloseTab(browser)
-
+        enterTest(browser, xingkao4)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer4(browser)
+        wait3AndCloseTab(browser)
 
     # 5个形考走完提交之后直接换账号
     browser.get("http://passport.ouchn.cn/Account/Logout?logoutId=student.ouchn.cn")
