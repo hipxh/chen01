@@ -122,6 +122,24 @@ dxAnswer = '''31.对
          39.错
           40.对'''
 print(dxAnswer)
-split = dxAnswer.split("\n")
-for i in split:
-    print(i.strip().split(".")[1])
+def testFind(str,s):
+    return str.find(s)
+
+def find_last(string,str):
+    last_position=-1
+    while True:
+        position=string.find(str,last_position+1)
+        if position==-1:
+            return last_position
+        last_position=position
+print(testFind("aaa","a"))
+i="下列各式中，计算(结果(等于固定)成本)的有（销售额×（1-变动成本率）-利润; 销售额×贡献毛益率-利润; 单位贡献毛益×销售量-利润; 贡献毛益-利润）。"
+leftIndex = i.find("（")
+rightIndex = find_last(i, "）")
+ans = i[leftIndex+1:rightIndex]
+print(ans)
+
+i='''"按照“以销定产”模式，预算的编制起点是（销售预算）。'''
+replace = i.replace("“", "")
+replace = replace.replace("”", "")
+print(replace)

@@ -10,18 +10,36 @@ import os
 
 studyName = os.path.basename(__file__).split('.')[0]
 
+def find_last(string,str):
+    last_position=-1
+    while True:
+        position=string.find(str,last_position+1)
+        if position==-1:
+            return last_position
+        last_position=position
 
 def getAnswerElement(elements, neirong, i):
     for ele in elements:
         if neirong in ele.text:
             return ele
 
+
 def getAnswerElementEquals(elements, neirong):
     for ele in elements:
         if "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "D. " + neirong == ele.text or "E. " + neirong == ele.text:
             return ele
 
-def getAnswerElementEquals433(elements, neirong,i):
+
+def getAnswerElementEqualsdanxuanduoxuaninOnePage(elements, neirong, i, meidaotiyouduoshaogexuanxiang,
+                                                  danxuanLabelLength):
+    elements = elements[danxuanLabelLength + i * meidaotiyouduoshaogexuanxiang:(
+                                                                                           i + 1) * meidaotiyouduoshaogexuanxiang + danxuanLabelLength]
+    for ele in elements:
+        if neirong == ele.text or "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "D. " + neirong == ele.text or "E. " + neirong == ele.text or "a. " + neirong == ele.text or "b. " + neirong == ele.text or "c. " + neirong == ele.text or "d. " + neirong == ele.text or "e. " + neirong == ele.text:
+            return ele
+
+
+def getAnswerElementEquals433(elements, neirong, i):
     if i == 1:
         elements = elements[0:16]
     if i == 2:
@@ -30,14 +48,21 @@ def getAnswerElementEquals433(elements, neirong,i):
         if "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "D. " + neirong == ele.text or "E. " + neirong == ele.text:
             return ele
 
+
 def getAnswerElementEqualsFinal(elements, neirong, i, danxuanRatios, duoxuanCheckboxs):
     if i == 1:
         elements = elements[0:danxuanRatios]
     if i == 2:
         elements = elements[danxuanRatios: danxuanRatios + duoxuanCheckboxs]
     for ele in elements:
+        # print(ele.text)
         if "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "D. " + neirong == ele.text or "E. " + neirong == ele.text:
             return ele
+        else:
+            replace = ele.text.replace("“", "")
+            replace = replace.replace("”", "")
+            if "A. " + neirong == replace or "B. " + neirong == replace or "C. " + neirong == replace or "D. " + neirong == replace or "E. " + neirong == replace:
+                return ele
 
 
 def getAnswerElementEquals4(elements, neirong, i):
@@ -59,16 +84,41 @@ def getAnswerElementEquals222(elements, neirong, i):
         if "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "D. " + neirong == ele.text or "E. " + neirong == ele.text:
             return ele
 
-rightTiGan=[]
+
+rightTiGan = []
 
 def judgeQueTitle(elements1p, title):
     if isinstance(elements1p, list):
         for ele in elements1p:
-            if title+"（" in ele.text:
+            if title + "（" in ele.text or title + "(" in ele.text:
+                rightTiGan.append(ele)
+                return True
+            else:
+                replace = ele.text.replace("“", "")
+                replace = replace.replace("”", "")
+                if title + "（" in replace or title + "(" in replace:
+                    rightTiGan.append(ele)
+                    return True
+    else:
+        if title in elements1p.text:
+            rightTiGan.append(elements1p)
+            return True
+        else:
+            replace = elements1p.text.replace("“", "")
+            replace = replace.replace("”", "")
+            if title in replace:
+                rightTiGan.append(elements1p)
+                return True
+
+def judgeQueTitleSpecial(elements1p, title):
+    if isinstance(elements1p, list):
+        for ele in elements1p:
+            if title in ele.text:
                 rightTiGan.append(ele)
                 return True
     else:
         if title in elements1p.text:
+            rightTiGan.append(elements1p)
             return True
 
 
@@ -79,17 +129,26 @@ def danxuanAutoAnswer(answer, map):
         if len(i) < 2:
             continue
         i_split = i.split("（")
-        map[i_split[0].strip()] = i_split[1].split("）")[0].strip()
+        # 如果选项里有括号
+        leftIndex = i.find("（")
+        rightIndex = find_last(i, "）")
+        ans = i[leftIndex + 1:rightIndex]
+        map[i_split[0]] = ans.strip()
     return map
 
 
-def duoxuanAutoAnswer(answer, map):
+
+def duoxuanAutoAnswer(answer, map, reg):
     split = answer.split("")
     for i in split:
         if len(i) < 2:
             continue
-        i_split = i.split("（")#2019年11月17日14:25:30bug,如果选项里有括号,则报错,此处应取第一个左括号的前面和最后一个右括号的右边,怕耽误速度,暂不处理
-        map[i_split[0].strip()] = i_split[-1].split("）")[0].strip().split("; ")
+        i_split = i.split("（")
+        #如果选项里有括号
+        leftIndex=i.find("（")
+        rightIndex=find_last(i,"）")
+        ans = i[leftIndex+1:rightIndex]
+        map[i_split[0].strip()] = ans.strip().split(reg)
     return map
 
 
@@ -106,10 +165,9 @@ def pdAutoAnswer(answer, list):
 def pdUtil5(list, elements1p, ratios, titleIndex, danxuantiLength, panduanIndex):
     a = 1
     for timu in list:
-        if (judgeQueTitle(elements1p[titleIndex], timu)):#如果题干在错的list里,就点击错误
+        if (judgeQueTitle(elements1p[titleIndex], timu)):
             a = 0
             ratios[danxuantiLength * 4 + panduanIndex * 2 + 1].click()
-            break
     if a == 1:  # 如果把错题都走了一遍仍然为1,则该判断题是对的
         ratios[danxuantiLength * 4 + panduanIndex * 2].click()
     time.sleep(0.1)
@@ -160,12 +218,13 @@ def writeAnswer1(browser):
     mapdxanswer = danxuanAutoAnswer(dxAnswer, {})
     for key, value in mapdxanswer.items():
         if (judgeQueTitle(elements1p, key)):
-            #找到题干后,此时取得是所有单选的选项,来点击正确答案,这里不妥.造成无法满分.2019年11月17日13:04:19在此处找具体的几个选项
+            # 找到题干后,此时取得是所有单选的选项,来点击正确答案,这里不妥.造成无法满分.2019年11月17日13:04:19在此处找具体的几个选项
             currentelements1 = rightTiGan[-1].find_element_by_xpath("./../../div[last()]")
             currentelements1 = currentelements1.find_elements_by_xpath(".//label")
-            rightAnswer = getAnswerElementEqualsFinal(currentelements1, value, 3, danxuanti_length*4, duoxuanti_length*5)
+            rightAnswer = getAnswerElementEqualsFinal(currentelements1, value, 3, danxuanti_length * 4,
+                                                      duoxuanti_length * 5)
             if rightAnswer is None:
-                canTakeWrongNum=canTakeWrongNum+1
+                canTakeWrongNum = canTakeWrongNum + 1
             else:
                 rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
             time.sleep(0.1)
@@ -180,20 +239,21 @@ def writeAnswer1(browser):
 所有者权益的特征有（企业清算时，只有在清偿所有的负债后，才能将所有者权益返还给所有者; 如果出现依法减资、清算等特殊情况，企业需要偿还所有者权益; 一般情况下，企业不需要偿还所有者权益; 所有者凭借所有者权益的证明文件能够参与企业的利润分配）。
 下列各项中属于流动资产的有（应收账款; 银行存款; 完工产品）。
 下列关于费用特征的表述中正确的是（费用会导致企业所有者权益的减少; 费用可表现为资产的减少，或者负债的增加，或者二者兼而有之; 费用是在企业日常活动中发生的经济利益的流出）。
-下列会计等式中，在不同情况下成立的有（资产＝负债+所有者权益+（收入-费用）。; 资产＝负债+所有者权益; 收入-费用=利润; 资产+费用=负债+所有者权益+收入）。
+下列会计等式中，在不同情况下成立的有（资产＝负债+所有者权益+（收入-费用）; 资产＝负债+所有者权益; 收入-费用=利润; 资产+费用=负债+所有者权益+收入）。
 下列说法中，符合我国《企业会计准则——基本准则》关于会计目标表述的是（反映企业管理层受托责任的履行情况; 向财务报告使用者提供与企业财务状况、经营成果和现金流量等有关的会计信息; 有助于财务报告使用者做出经营决策）。
 下列项目中属于流动负债的有（预收账款; 应付账款; 短期借款）。
 现代会计的两大分支是（管理会计; 财务会计  ）。
 资产的基本特征包括（资产由企业拥有或者控制; 资产是由过去的交易或者事项形成的; 资产预期会给企业带来经济利益）。
 资产的确认条件有（该资源的成本或者价值能够可靠地计量; 与该资源有关的经济利益很可能流入企业）。'''
-    mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
+    mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {}, "; ")
     for key, value in mapmulAnswer.items():
         print(key, value)
         if (judgeQueTitle(elements1p, key)):
             for v in value:
                 currentelements1 = rightTiGan[-1].find_element_by_xpath("./../..//div[last()]")
                 currentelements1 = currentelements1.find_elements_by_xpath(".//label")
-                rightAnswer = getAnswerElementEqualsFinal(currentelements1, v.strip(), 3, danxuanti_length*4, duoxuanti_length*5)
+                rightAnswer = getAnswerElementEqualsFinal(currentelements1, v.strip(), 3, danxuanti_length * 4,
+                                                          duoxuanti_length * 5)
                 if rightAnswer is None:
                     canTakeWrongNum = canTakeWrongNum + 1
                 else:
@@ -257,8 +317,64 @@ def writeAnswer2(browser):
 
     # 单选多选混合,根据题库判断单选还是多选,进行相应的点击,,,规律-前4单,中3多,后3判
     elements1 = browser.find_elements_by_xpath('//label')
-    dxAnswer = '''“累计折旧”账户是“固定资产”账户的（抵减账户 ）。 
-30.利润分配账户在年终结算后出现借方余额，表示（未弥补的亏损额）。
+#     dxAnswer = '''“累计折旧”账户是“固定资产”账户的（抵减账户 ）。 
+# 30.利润分配账户在年终结算后出现借方余额，表示（未弥补的亏损额）。
+# 6月30日，本年利润账户有借方余额200 000元，表示（1月1日至6月30日累计发生亏损200 000元）。
+# 持续经营假设假定了对会计主体反映和监督的（时间范围）。
+# 对会计要素的具体内容进行分类核算的项目就称为（会计科目）。
+# 对于那些对企业的经济活动或会计信息使用者相对来说重要的事项，应单独报告，分项反映；而对于那些次要的会计事项，在不影响会计信息真实可靠的情况下，适当简化会计核算和报告手续，这体现了会计信息质量的（重要性要求）。
+# 根据会计科目在账簿中开设的记账单元就叫做（账户）。
+# 会计分期假设是（持续经营假设）的补充。
+# 会计分期假设是指将企业持续不断的经营过程人为地划分为一定的时间段，以便于（核算和报告会计主体的财务状况和经营成果）。
+# 会计主体假设的意义在于明确了会计主体反映和控制的（空间范围）。 
+# 会计主体假设的意义在于明确了会计主体反映和控制的（时间范围）。
+# 某企业购进材料一批，买价15 000元，增值税2 550元，运输费600元，入库前整理挑选费400元。该批材料的采购成本是（16 000元）。
+# 目前世界各国普遍采用的记账方法是（借贷记账法）。
+# 企业从供货单位取得的合同违约金应记入（营业外收入）。 
+# 企业对交易或事项进行会计确认、计量和报告不应高估资产或者收益、低估负债或者费用，这体现了会计信息质量的（谨慎性要求）。
+# 企业购进材料一批，买价50 000元，增值税8 500元，供货商代垫运杂费1 500元材料已运到并验收入库，货款尚未支付，则应记入“应付账款”账户的金额是（60 000元）。
+# 企业购进材料一批，买价50 000元，增值税8 500元，供货商代垫运杂费1 500元材料已运到并验收入库，通过银行支付了货款50 000元，则应记入“原材料”账户的金额是（51 500元）。
+# 企业会计期末结转利润时，应将损益类账户中各种收入类账户的贷方余额转入（“本年利润”账户的贷方）。
+# 企业计提的固定资产折旧，不可能记入（ 财务费用）账户。
+# 企业结转已销售产品的成本时，应（贷记“库存商品”账户）。
+# 企业收到客户偿还的货款并存入银行，这项经济业务对会计等式产生的影响是（仅使等式左边资产要素内部某些项目产生增加变动）。
+# 企业收到投资者投入的货币资金，其账务处理是记入“银行存款”账户借方和（“实收资本”账户的贷方）。
+# 企业收到投资者投入的货币资金，这项经济业务对会计等式产生的影响是（使等式左右两边的某些项目同时增加相等的金额）。
+# 企业销售不适用材料一批，取得的价款应记入（其他业务收入）。
+# 企业销售一批产品，货款50 000元，增值税8 500元，代垫运费1 500元，则记入主营业务收入账户的金额是（50 000元）。
+# 企业销售一批产品，货款50 000元，增值税8 500元，代垫运费1 500元。货已发出，货款暂未收到，则记入“应收账款”账户的金额是（60 000元）。
+# 企业用银行借款直接偿还原欠供应商的货款，这项经济业务对会计等式产生的影响是（仅使等式右边负债和所有者权益的某些项目产生增减变动）。
+# 企业在会计期末计算出本期应负担的借款利息，其账务处理是记入（“财务费用”账户的借方）。
+# 企业支付给生产车间管理人员的工资应记入（制造费用）。
+# 企业支付给专设门市部人员的工资应记入（销售费用）。
+# 同其他复式记账法一样，借贷记账法的理论依据是也是（资产=负债+所有者权益）。
+# 下列各项中，不应当直接计入当期损益的是（制造费用）。
+# 下列各项中不属于会计核算基本前提的是（会计要素）。
+# 下列各项中不属于会计信息质量要求的是（灵活性）。
+# 下列各项中不属于物资采购成本的是（增值税）。
+# 下列各项中不影响企业利润总额的是（所得税费用）。
+# 下列关于编制会计分录步骤的表述中错误的是（计算出这些账户的本期发生额和期末余额）。
+# 下列关于账户中各金额要素相互关系的各种表述中正确的是（期末余额=期初余额+本期增加发生额-本期减少发生额）。
+# 下列经济业务中，会引起会计等式左右两边同时发生增减变化的是（投资者投入货币资本）。
+# 下列经济业务中，只会引起会计等式右边负债和所有者权益某些项目发生增加变动的是（用银行借款直接偿还应付账款）。
+# 下列经济业务中，只会引起会计等式左边资产内部某些项目发生增加变动的是（用银行存款购买原材料）。
+# 应计入产品生产成本的费用是（制造费用）。
+# 在会计核算中，根据会计等式和记账规则检查账户记录正确与否的一种验证方法称之为（试算平衡）。
+# 在借贷记账法下，负债和所有者权益类账户的结构是用贷方记录增加数，借方记录减少数，期末余额（一般在贷方）。
+# 在借贷记账法下，简单会计分录的特征是（一个借方账户对应一个贷方账户 ）。
+# 在借贷记账法下，损益类账户中的收入账户年末应（没有余额）。 
+# 在借贷记账法下，所有者权益类账户的期末余额是根据（贷方期末余额=贷方期初余额+贷方本期发生额-借方本期发生额）计算。
+# 在借贷记账法下，下列错误中能够通过试算平衡查找的是（借贷方金额不等）。
+# 在借贷记账法下，下列各项中说法正确的是（资产类账户借方登记增加额）。
+# 在借贷记账法下，账户发生额试算平衡的依据是（借贷记账法的记账规则）。 
+# 在借贷记账法下，资产类账户的结构是用借方记录增加数，贷方记录减少数，期末余额（一般在借方）。
+# 在借贷记账法中，账户的哪一方记录增加数、哪一方记录减少数是由（账户性质）决定的。
+# 在下列账户中，其期末余额可直接转入本年利润账户的是（管理费用）。
+# 作为设置账户和登记账簿依据的是（会计科目）。'''
+
+
+    dxAnswer='''累计折旧账户是固定资产账户的（抵减账户 ）。 
+利润分配账户在年终结算后出现借方余额，表示（未弥补的亏损额）。
 6月30日，本年利润账户有借方余额200 000元，表示（1月1日至6月30日累计发生亏损200 000元）。
 持续经营假设假定了对会计主体反映和监督的（时间范围）。
 对会计要素的具体内容进行分类核算的项目就称为（会计科目）。
@@ -268,23 +384,23 @@ def writeAnswer2(browser):
 会计分期假设是指将企业持续不断的经营过程人为地划分为一定的时间段，以便于（核算和报告会计主体的财务状况和经营成果）。
 会计主体假设的意义在于明确了会计主体反映和控制的（空间范围）。 
 会计主体假设的意义在于明确了会计主体反映和控制的（时间范围）。
-某企业购进材料一批，买价15 000元，增值税2 550元，运输费600元，入库前整理挑选费400元。该批材料的采购成本是（16 000元）。
+某企业购进材料一批，买价15 000元，增值税2 550元，运输费600元，入库前整理挑选费400元该批材料的采购成本是（16 000元）。
 目前世界各国普遍采用的记账方法是（借贷记账法）。
 企业从供货单位取得的合同违约金应记入（营业外收入）。 
 企业对交易或事项进行会计确认、计量和报告不应高估资产或者收益、低估负债或者费用，这体现了会计信息质量的（谨慎性要求）。
-企业购进材料一批，买价50 000元，增值税8 500元，供货商代垫运杂费1 500元材料已运到并验收入库，货款尚未支付，则应记入“应付账款”账户的金额是（60 000元）。
-企业购进材料一批，买价50 000元，增值税8 500元，供货商代垫运杂费1 500元材料已运到并验收入库，通过银行支付了货款50 000元，则应记入“原材料”账户的金额是（51 500元）。
-企业会计期末结转利润时，应将损益类账户中各种收入类账户的贷方余额转入（“本年利润”账户的贷方）。
-企业计提的固定资产折旧，不可能记入（ 财务费用）账户。
-企业结转已销售产品的成本时，应（贷记“库存商品”账户）。
+企业购进材料一批，买价50 000元，增值税8 500元，供货商代垫运杂费1 500元。材料已运到并验收入库，货款尚未支付，则应记入“应付账款”账户的金额是（60 000元）。
+企业购进材料一批，买价50 000元，增值税8 500元，供货商代垫运杂费1 500元材料已运到并验收入库，通过银行支付了货款50 000元，则应记入原材料账户的金额是（51 500元）。
+企业会计期末结转利润时，应将损益类账户中各种收入类账户的贷方余额转入（本年利润账户的贷方）。
+企业计提的固定资产折旧，不可能记入账户（ 财务费用）。
+企业结转已销售产品的成本时，应（贷记库存商品账户）。
 企业收到客户偿还的货款并存入银行，这项经济业务对会计等式产生的影响是（仅使等式左边资产要素内部某些项目产生增加变动）。
-企业收到投资者投入的货币资金，其账务处理是记入“银行存款”账户借方和（“实收资本”账户的贷方）。
+企业收到投资者投入的货币资金，其账务处理是记入银行存款账户借方和（实收资本账户的贷方）。
 企业收到投资者投入的货币资金，这项经济业务对会计等式产生的影响是（使等式左右两边的某些项目同时增加相等的金额）。
 企业销售不适用材料一批，取得的价款应记入（其他业务收入）。
 企业销售一批产品，货款50 000元，增值税8 500元，代垫运费1 500元，则记入主营业务收入账户的金额是（50 000元）。
-企业销售一批产品，货款50 000元，增值税8 500元，代垫运费1 500元。货已发出，货款暂未收到，则记入“应收账款”账户的金额是（60 000元）。
+企业销售一批产品，货款50 000元，增值税8 500元，代垫运费1 500元货已发出，货款暂未收到，则记入应收账款账户的金额是（60 000元）。
 企业用银行借款直接偿还原欠供应商的货款，这项经济业务对会计等式产生的影响是（仅使等式右边负债和所有者权益的某些项目产生增减变动）。
-企业在会计期末计算出本期应负担的借款利息，其账务处理是记入（“财务费用”账户的借方）。
+企业在会计期末计算出本期应负担的借款利息，其账务处理是记入（财务费用账户的借方）。
 企业支付给生产车间管理人员的工资应记入（制造费用）。
 企业支付给专设门市部人员的工资应记入（销售费用）。
 同其他复式记账法一样，借贷记账法的理论依据是也是（资产=负债+所有者权益）。
@@ -308,7 +424,7 @@ def writeAnswer2(browser):
 在借贷记账法下，下列各项中说法正确的是（资产类账户借方登记增加额）。
 在借贷记账法下，账户发生额试算平衡的依据是（借贷记账法的记账规则）。 
 在借贷记账法下，资产类账户的结构是用借方记录增加数，贷方记录减少数，期末余额（一般在借方）。
-在借贷记账法中，账户的哪一方记录增加数、哪一方记录减少数是由（账户性质）决定的。
+在借贷记账法中，账户的哪一方记录增加数、哪一方记录减少数是由决定的（账户性质）。
 在下列账户中，其期末余额可直接转入本年利润账户的是（管理费用）。
 作为设置账户和登记账簿依据的是（会计科目）。'''
     mapdxanswer = danxuanAutoAnswer(dxAnswer, {})
@@ -324,7 +440,6 @@ def writeAnswer2(browser):
                 rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
             time.sleep(0.1)
 
-
     mulAnswer = '''借贷记账法下的试算平衡公式有（全部账户借方余额合计=全部账户贷方余额合计 ; 全部账户借方本期发生额合计=全部账户贷方本期发生额合计）。
 利润是企业在一定会计期间的生产经营成果，包括（营业利润 ; 净利润; 利润总额）。
 每一笔会计分录都包括（记账方向; 账户名称; 金额）。
@@ -333,7 +448,7 @@ def writeAnswer2(browser):
 企业会计期末计提办公用房折旧，编制会计分录时应分别记入（“管理费用”账户借方; “累计折旧”账户贷方）。
 企业计算本月应发放的职工工资，包括生产车间的工人和车间管理人员、厂部管理人员以及专设销售门市部的工作人员，编制该业务的会计分录时应借记的会计科目有（管理费用; 销售费用; 生产成本; 制造费用）。
 企业实现的净利润应进行下列分配（向投资者分配利润; 提取法定盈余公积 ; 提取任意盈余公积）。
-企业销售一批商品，价款30 000元，增值税5 100元，代垫运费600元，该项经济业务的账务处理是（贷记“银行存款（或库存现金”账户600元; 借记应收账款账户35 700元; 贷记“主营业务收入”账户30 000元; 贷记“应交税费——应交增值税（销项税额）”。账户5 100元）。
+企业销售一批商品，价款30 000元，增值税5 100元，代垫运费600元，该项经济业务的账务处理是（贷记“银行存款（或库存现金”账户600元; 借记应收账款账户35 700元; 贷记“主营业务收入”账户30 000元; 贷记“应交税费——应交增值税（销项税额）”账户5 100元）。
 下列费用中，属于期间费用的是（销售费用; 管理费用; 财务费用）。
 下列各项中，可记入物资采购成本的有（进口关税; 买价; 损耗; 挑选整理费; 运杂费）。
 下列各项中属于会计核算基本前提的有（货币计量 ; 会计主体; 持续经营; 会计分期）。
@@ -346,14 +461,15 @@ def writeAnswer2(browser):
 在借贷记账法下，下列各项中说法正确的有（负债类账户借方登记减少额; 资产类账户贷方登记减少额; 资产类账户借方登记增加额; 收入类账户贷方登记增加额）。
 在借贷记账法下，资产类账户的结构是（贷方记录减少额; 借方记录增加额）。
 账户按其性质可分为（成本类账户; 损益类账户; 资产类账户; 所有者权益类账户; 负债类账户）。'''
-    mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
+    mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {}, "; ")
     for key, value in mapmulAnswer.items():
         print(key, value)
         if (judgeQueTitle(elements1p, key)):
             for v in value:
                 currentelements1 = rightTiGan[-1].find_element_by_xpath("./../..//div[last()]")
                 currentelements1 = currentelements1.find_elements_by_xpath(".//label")
-                rightAnswer = getAnswerElementEqualsFinal(currentelements1, v.strip(), 3, danxuanti_length*4, duoxuanti_length*5)
+                rightAnswer = getAnswerElementEqualsFinal(currentelements1, v.strip(), 3, danxuanti_length * 4,
+                                                          duoxuanti_length * 5)
                 if rightAnswer is None:
                     canTakeWrongNum = canTakeWrongNum + 1
                 else:
@@ -375,7 +491,7 @@ def writeAnswer2(browser):
 会计要素是设置账户和登记账簿的依据（错）。
 会计主体也称为会计个体或会计实体，是指会计工作为之服务的一个特定单位，通常是一个法人单位（错）。
 目前世界各国普遍采用的复式记账方法是借贷记账法，我国会计准则规定企业会计核算可以采用借贷记账法，也可以采用增减记账法或收付记账法（错）。
-年末，企业用银行存款支付下一年的财产保险费2 400元，应记入管“管理费用”账户的借方（错）。
+年末，企业用银行存款支付下一年的财产保险费2 400元，应记入“管理费用”账户的借方（错）。
 企业财务人员的工资应记入财务费用账户（错）。
 企业购入一批材料，买价20 000元，增值税3 400元，运杂费500元，则该批材料的采购成本为23 900元（错）。
 企业会计期末计提的固定资产折旧费，应根据固定资产的使用部门不同分别记入制造费用、管理费用和销售费用（对）。
@@ -432,7 +548,8 @@ def writeAnswer3(browser):
 会计凭证是记录经济业务、明确经济责任的书面证明，也是（登记账簿的依据）。
 将现金存入银行这笔经济业务，按规定应编制（现金付款凭证）。
 某企业9月以银行存款支付第四季度的办公用房租金，10月末借记管理费用、贷记其他应收款，该项账务处理属于（预付费用的调整）。
-某企业本月收到客户偿还上月所欠货款50 000元存入银行，下列账务处理中的哪一种符合权责发生制要求（借：银行存款 50 000  贷：应收账款 50 000）。
+某企业本月收到客户偿还上月所欠货款50 000元存入银行，下列账务处理中的哪一种符合权责发生制要求（借：银行存款 50 000
+贷：应收账款 50 000）。
 目前，我国会计核算中权责发生制的应用范围是（企业会计和事业单位中的经营业务）。
 能够提供企业某一类经济业务增减变化较为详细会计信息的账簿是（明细分类账）。
 能够提供企业某一类经济业务增减变化总括会计信息的账簿是（ 总分类账）。
@@ -460,7 +577,7 @@ def writeAnswer3(browser):
 总分类账与明细分类账平行登记的要点不包括（登记的时间相同）。'''
     mapdxanswer = danxuanAutoAnswer(dxAnswer, {})
     for key, value in mapdxanswer.items():
-        if (judgeQueTitle(elements1p, key)):
+        if (judgeQueTitle(elements1p[0:danxuanti_length+1], key)):
             #找到题干后,此时取得是所有单选的选项,来点击正确答案,这里不妥.造成无法满分.2019年11月17日13:04:19在此处找具体的几个选项
             currentelements1 = rightTiGan[-1].find_element_by_xpath("./../../div[last()]")
             currentelements1 = currentelements1.find_elements_by_xpath(".//label")
@@ -494,10 +611,9 @@ def writeAnswer3(browser):
 凭证的真实性、合法性和合理性; 凭证的完整性、及时性; 凭证的准确性
 专用记账凭证一般分为（收款凭证; 转账凭证; 付款凭证）。
 总分类账和明细分类账平行登记的要点包括（登记的方向一致; 登记的依据相同; 登记的金额相等）。'''
-    mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
+    mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {},"; ")
     for key, value in mapmulAnswer.items():
-        print(key, value)
-        if (judgeQueTitle(elements1p, key)):
+        if (judgeQueTitle(elements1p[danxuanti_length:danxuanti_length+duoxuanti_length+2], key)):
             for v in value:
                 currentelements1 = rightTiGan[-1].find_element_by_xpath("./../..//div[last()]")
                 currentelements1 = currentelements1.find_elements_by_xpath(".//label")
@@ -541,7 +657,7 @@ def writeAnswer3(browser):
 原始凭证的基本内容中不包括会计科目的名称和金额（对）。	
 原始凭证是在经济业务发生时取得的、用以证明经济业务发生情况，并作为记账直接依据的会计凭证（错）。	
 在企业的财产清查中，不论财产物资盘盈还是盘亏或者毁损，也不论其原因是什么，首先都要调整各种财产物资的账面记录，以使其与实际结存数额相一致（对）。
-在权责发生制下，每个会计期末都要对已经入账和没有入账的相关收入、费用进行必要的调整，以便正确计算本期损益，这就是会计期末账项调整（对）。'''
+在权责发生制下，每个会计期末都要对已经入账和没有入账的相关收入、费用进行必要的调整，以便正确计算本期损益，这就是会计期末账项调整（对）。'''
     pdWrongAnswer = pdAutoAnswer(pdAnswer, [])
     for pdindex in range(panduan_length):
         #这里要注意取题干的xpath可能会有误区,此处要严重注意
@@ -580,7 +696,7 @@ def writeAnswer4(browser):
 某企业“应付账款”明细账中A企业为贷方余额200 000元，B企业为借方余额180 000元，C企业为贷方余额300 000元。假如该企业“预付账款”明细账均为借方余额，则应填入资产负债表“应付账款”项目的金额为是（500 000）。
 某企业“应收账款”明细账户中F企业为借方余额300 000元，H企业为贷方余额50 000元；“预收账款”明细账户中甲企业为借方余额30 000元，乙企业为贷方余额100 000元。则填入资产负债表“应收账款”项目的金额是（330 000元）。
 某企业“预付账款”明细账户中甲企业为借方余额100 000元，乙企业为贷方余额30 000元；“应付账款”明细账中W企业为贷方余额50 000元，K企业为借方余额80 000元。则填入资产负债表“预付款项”项目的金额是（180 000元）。
-某企业“预收账款”明细账中丙企业为借方余额100 000元，丁企业为贷方余额80 000元；应收账款明细账中D企业为借方余额200 000元，E企业为贷方余额300 000元。则填入资产负债表预收款项项目的金额是（380 000元）。
+某企业“预收账款”明细账中丙企业为借方余额100 000元，丁企业为贷方余额80 000元；“应收账款”明细账中D企业为借方余额200 000元，E企业为贷方余额300 000元。则填入资产负债表“预收款项”项目的金额是（380 000元）。
 某企业“原材料”账户期末余额为100 000元，“库存商品”账户期末余额为120 000元，“生产成本”账户期末余额为30 000元，“固定资产”账户期末余额为200 000元。资产负债表中的存货项目应填入（250 000元）。
 企业编制利润表的金额依据是（损益类账户的本期发生额）。
 我国《会计法》开始施行的时间是（1985年5月1日）。 
@@ -603,7 +719,7 @@ def writeAnswer4(browser):
 资产负债表中的“预收款项”项目应根据“预收账款”和另一个总分类账户所属明细分类账户的期末贷方余额合计数填列，这个账户是（“应收账款”账户）。'''
     mapdxanswer = danxuanAutoAnswer(dxAnswer, {})
     for key, value in mapdxanswer.items():
-        if (judgeQueTitle(elements1p, key)):
+        if (judgeQueTitle(elements1p[0:danxuanti_length+1], key)):
             #找到题干后,此时取得是所有单选的选项,来点击正确答案,这里不妥.造成无法满分.2019年11月17日13:04:19在此处找具体的几个选项
             currentelements1 = rightTiGan[-1].find_element_by_xpath("./../../div[last()]")
             currentelements1 = currentelements1.find_elements_by_xpath(".//label")
@@ -636,10 +752,10 @@ def writeAnswer4(browser):
 资产负债表中的“应付账款”项目，应根据下列总分类账所属明细分类账户的期末贷方余额合计数填列（预付账款; 应付账款）。
 资产负债表中的“应收账款”项目，应根据下列总分类账户或其所属明细分类账户的期末余额分析计算填列（预收账款 ; 坏账准备; 应收账款）。  
 资产负债表中的“预付款项”项目，应根据下列总分类账所属明细分类账户的期末借方余额合计数填列（应付账款; 预付账款）。'''
-    mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
+    mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {},"; ")
     for key, value in mapmulAnswer.items():
         print(key, value)
-        if (judgeQueTitle(elements1p, key)):
+        if (judgeQueTitle(elements1p[danxuanti_length:danxuanti_length+duoxuanti_length+2], key)):
             for v in value:
                 currentelements1 = rightTiGan[-1].find_element_by_xpath("./../..//div[last()]")
                 currentelements1 = currentelements1.find_elements_by_xpath(".//label")
@@ -1128,6 +1244,8 @@ def enterTest(browser, xkurl):
         browser.switch_to.window(windowstabs[1])
         browser.find_elements_by_css_selector('img[class="pull-right"]')  # find一下,保证新页面加载完成
         browser.get(xkurl)  # 先考形1
+    else:
+        return 0
 
 
 # 2.立即考试.判断一下,防止多次考试
@@ -1185,10 +1303,10 @@ for key in keys:
     browser.find_element_by_css_selector('button[value="login"]').click()
     # enter study...此处要注意,不同账号进来看到的开放大学指南的位置不同,要动态抓元素...2019年11月13日09:10:54发现不用抓元素,直接根据URL进入国开开放指南页面,并且形考1-5的URL也是指定的,所以不用抓元素
 
-    enterTest(browser, xingkao1)
-    if readyToTestForum(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer1(browser)
-    wait3AndCloseTab(browser)
+    if enterTest(browser, xingkao1)!=0:
+        if readyToTestForum(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer1(browser)
+        wait3AndCloseTab(browser)
 
     enterTest(browser, xingkao2)
     if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
