@@ -11,17 +11,36 @@ import os
 studyName = os.path.basename(__file__).split('.')[0]
 
 
+# 其中一张试卷全部为富文本提交
 def getAnswerElement(elements, neirong, i):
     for ele in elements:
         if neirong in ele.text:
             return ele
 
-def getAnswerElementEquals(elements, neirong):
+
+def getAnswerElementEquals(elements, neirong, i, meidaotiyouduoshaogexuanxiang):
+    elements = elements[i * meidaotiyouduoshaogexuanxiang:(i + 1) * meidaotiyouduoshaogexuanxiang]
+    for ele in elements:#or "a. " + neirong == ele.text or "b. " + neirong == ele.text or "c. " + neirong == ele.text or "d. " + neirong == ele.text or "e. " + neirong == ele.text
+        if neirong == ele.text or "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "D. " + neirong == ele.text or "E. " + neirong == ele.text:
+            return ele
+def getAnswerElementEqualsBefore(elements, neirong, i, meidaotiyouduoshaogexuanxiang,y):
+    elements = elements[i * meidaotiyouduoshaogexuanxiang+y:(i + 1) * meidaotiyouduoshaogexuanxiang+y]
+    for ele in elements:#or "a. " + neirong == ele.text or "b. " + neirong == ele.text or "c. " + neirong == ele.text or "d. " + neirong == ele.text or "e. " + neirong == ele.text
+        if neirong == ele.text or "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "D. " + neirong == ele.text or "E. " + neirong == ele.text or "a. " + neirong == ele.text or "b. " + neirong == ele.text or "c. " + neirong == ele.text or "d. " + neirong == ele.text or "e. " + neirong == ele.text:
+            return ele
+def getAnswerElementEqualsPanDuan(elements, neirong, i, meidaotiyouduoshaogexuanxiang):
+    elements = elements[80+i * meidaotiyouduoshaogexuanxiang:80+(i + 1) * meidaotiyouduoshaogexuanxiang]
+    for ele in elements:#or "a. " + neirong == ele.text or "b. " + neirong == ele.text or "c. " + neirong == ele.text or "d. " + neirong == ele.text or "e. " + neirong == ele.text
+        if neirong == ele.text or "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "D. " + neirong == ele.text or "E. " + neirong == ele.text:
+            return ele
+#单选和多选在一页
+def getAnswerElementEqualsdanxuanduoxuaninOnePage(elements, neirong, i, meidaotiyouduoshaogexuanxiang,danxuanLabelLength):
+    elements = elements[danxuanLabelLength+i * meidaotiyouduoshaogexuanxiang:(i + 1) * meidaotiyouduoshaogexuanxiang+danxuanLabelLength]
     for ele in elements:
-        if "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "D. " + neirong == ele.text or "E. " + neirong == ele.text:
+        if neirong == ele.text or "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "D. " + neirong == ele.text or "E. " + neirong == ele.text or "a. " + neirong == ele.text or "b. " + neirong == ele.text or "c. " + neirong == ele.text or "d. " + neirong == ele.text or "e. " + neirong == ele.text:
             return ele
 
-def getAnswerElementEquals433(elements, neirong,i):
+def getAnswerElementEquals433(elements, neirong, i):
     if i == 1:
         elements = elements[0:16]
     if i == 2:
@@ -29,6 +48,7 @@ def getAnswerElementEquals433(elements, neirong,i):
     for ele in elements:
         if "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "D. " + neirong == ele.text or "E. " + neirong == ele.text:
             return ele
+
 
 def getAnswerElementEqualsFinal(elements, neirong, i, danxuanRatios, duoxuanCheckboxs):
     if i == 1:
@@ -59,16 +79,19 @@ def getAnswerElementEquals222(elements, neirong, i):
         if "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "D. " + neirong == ele.text or "E. " + neirong == ele.text:
             return ele
 
-rightTiGan=[]
+
+rightTiGan = []
+
 
 def judgeQueTitle(elements1p, title):
     if isinstance(elements1p, list):
         for ele in elements1p:
-            if title+"（" in ele.text:
+            if title + "（" in ele.text or title + "(" in ele.text:
                 rightTiGan.append(ele)
                 return True
     else:
         if title in elements1p.text:
+            rightTiGan.append(elements1p)
             return True
 
 
@@ -83,12 +106,44 @@ def danxuanAutoAnswer(answer, map):
     return map
 
 
+def danxuanAutoAnswerFix(answer, reg):
+    result = []
+    split = answer.split("\n")
+    for i in split:
+        if len(i)<3:
+            continue
+        result.append(i.strip().split(reg)[1])
+    return result
+def panduanAutoAnswerFix(answer, reg):
+    result = []
+    split = answer.split("\n")
+    for i in split:
+        i = i.split(reg)[0]
+        result.append(i.strip()[-1])
+    return result
+
+def duoxuanAutoAnswerFix(answer, reg, reg2):
+    # map={}
+    # split = answer.split("\n")
+    # for i in split:
+    #     map[i.split(reg)[0].strip()] = i.split(reg)[-1].split(reg2)
+    # return map
+    # 2019年11月18日11:44:49惊人发现,Python的map在mac下有序,在win下无序
+    listList = []
+    split = answer.split("\n")
+    for i in split:
+        if len(i)<6 or "窗体" in i:
+            continue
+        listList.append(i.split(reg)[-1].split(reg2)[0].split("、"))
+    return listList
+
+
 def duoxuanAutoAnswer(answer, map):
     split = answer.split("")
     for i in split:
         if len(i) < 2:
             continue
-        i_split = i.split("（")#2019年11月17日14:25:30bug,如果选项里有括号,则报错,此处应取第一个左括号的前面和最后一个右括号的右边,怕耽误速度,暂不处理
+        i_split = i.split("（")  # 2019年11月17日14:25:30bug,如果选项里有括号,则报错,此处应取第一个左括号的前面和最后一个右括号的右边,怕耽误速度,暂不处理
         map[i_split[0].strip()] = i_split[-1].split("）")[0].strip().split("; ")
     return map
 
@@ -106,7 +161,7 @@ def pdAutoAnswer(answer, list):
 def pdUtil5(list, elements1p, ratios, titleIndex, danxuantiLength, panduanIndex):
     a = 1
     for timu in list:
-        if (judgeQueTitle(elements1p[titleIndex], timu)):#如果题干在错的list里,就点击错误
+        if (judgeQueTitle(elements1p[titleIndex], timu)):  # 如果题干在错的list里,就点击错误
             a = 0
             ratios[danxuantiLength * 4 + panduanIndex * 2 + 1].click()
             break
@@ -117,91 +172,19 @@ def pdUtil5(list, elements1p, ratios, titleIndex, danxuantiLength, panduanIndex)
 
 # start to answer.
 def writeAnswer1(browser):
-    danxuanti_length = 0
-    duoxuanti_length = 20
-    panduan_length = 20
+    canTakeWrongNum = 0
+    #单多选在同一页混的时候,标记下单选题的数量
+    danxuanLength=9
 
-    canTakeWrongNum=0
-
-    # 试卷444布局
-    # div class="qtext",2019年11月16日14:32:26发现bug,如果有一模一样的选项,系统默认勾选第一个,逻辑略复杂,暂不处理.并非一定要满分.
+    # 试卷题目固定布局
     ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
     elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
-
-    # 单选多选混合,根据题库判断单选还是多选,进行相应的点击,,,规律-前4单,中3多,后3判
     elements1 = browser.find_elements_by_xpath('//label')
-#     dxAnswer = '''《中华人民共和国会计法》的颁布时间是（1985年）。
-# 财产所有权与管理权相分离情况下，会计的根本目标是（完成受托责任）。
-# 从会计的发展过程来看，会计的两项传统职能或者说是基本职能是（反映和控制 ）。
-# 反映企业财务状况的会计要素不包括（收入）。
-# 负债是指过去的交易或者事项形成的、预期会导致经济利益流出企业的（现时义务）。
-# 根据现有的发现，我国会计一职最早出现在（西周时期）。
-# 会计的基本职能是（反映和控制）。
-# 会计对经济活动进行综合反映，主要是利用（货币量度）。
-# 会计对象的具体化，可称为（会计要素）。
-# 会计反映职能的特点不包括（主观性）。
-# 利润是企业在一定会计期间的（经营成果）。
-# 世界会计学会年会正式通过管理会计这一名词从而使传统会计分化为财务会计和管理会计两个分支的时间是（1952年）。
-# 所有者权益是指企业的资产扣除负债以后由所有者享有的（剩余权益）。
-# 我国第一次全面实施包括一项基本准则和38项具体准则的《企业会计准则》体系的时间是（2007年）。
-# 下列各项中不属于反映经营成果会计要素的是（成本）。
-# 下列各项中不属于会计核算方法的是（财务分析）。
-# 下列各项中不属于会计核算环节的是（会计预算）。
-# 下列各项中不属于会计计量属性的是（生产成本）。
-# 下列各项中不属于流动资产的是（无形资产）。
-# 下列各项中不属于资产特征的是（资产一般都有某种实物形态）。
-# 下列各项中属于流动资产的是（应收账款）。 
-# 下列各项中属于所有者权益的是（未分配利润）。
-# 下列关于费用特征的表述中错误的是（费用的发生必然同时产生货币资金支出）。
-# 下列关于收入特征的表述中错误的是（收入主要是在企业日常活动中形成的，但也有的是在偶然发生的交易或者事项中形成的）。
-# 下列关于资产确认条件的表述中正确的是（与该资源有关的经济利益很可能流入企业）。
-# 下列会计等式中正确的是（资产=负债+所有者权益）。
-# 在财产的所有权与管理权相统一的情况下，会计的目标直接表现为（实现对财产的有效管理）。'''
-#     mapdxanswer = danxuanAutoAnswer(dxAnswer, {})
-#     for key, value in mapdxanswer.items():
-#         if (judgeQueTitle(elements1p, key)):
-#             #找到题干后,此时取得是所有单选的选项,来点击正确答案,这里不妥.造成无法满分.2019年11月17日13:04:19在此处找具体的几个选项
-#             currentelements1 = rightTiGan[-1].find_element_by_xpath("./../../div[last()]")
-#             currentelements1 = currentelements1.find_elements_by_xpath(".//label")
-#             rightAnswer = getAnswerElementEqualsFinal(currentelements1, value, 3, danxuanti_length*4, duoxuanti_length*5)
-#             if rightAnswer is None:
-#                 canTakeWrongNum=canTakeWrongNum+1
-#             else:
-#                 rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-#             time.sleep(0.1)
+    dxindex = 0
+    time.sleep(4)  # 保证富文本框加载完毕
 
-
-    mulAnswer = '''负债的基本特征有（负债是由过去的交易或者事项形成的; 负债的清偿预期会导致经济利益流出企业; 负债是企业承担的现时义务）。
-根据我国《企业会计准则——基本准则》的规定，会计计量属性主要有（重置成本; 现值; 历史成本; 可变现净值; 公允价值）。
-会计的基本职能有（反映职能 ; 控制职能）。
-会计核算是指会计工作中收集、加工、储存和揭示会计信息的过程，其由以下几个环节组成（确认; 计量; 报告; 记录）。
-经济业务对会计等式的影响有（引起会计等式两边会计要素同时减少; 只引起会计等式右边会计要素内部项目发生增减变动; 引起会计等式两边会计要素同时增加; 只引起会计等式左边会计要素内部项目发生增减变动）。
-收入的特征包括（收入是在企业日常活动中形成的; 收入只包括本企业经济利益的总流入; 收入可能表现为资产的增加，或者负债的减少，或者二者兼而有之; 收入会导致企业所有者权益增加）。
-所有者权益的特征有（企业清算时，只有在清偿所有的负债后，才能将所有者权益返还给所有者; 如果出现依法减资、清算等特殊情况，企业需要偿还所有者权益; 一般情况下，企业不需要偿还所有者权益; 所有者凭借所有者权益的证明文件能够参与企业的利润分配）。
-下列各项中属于流动资产的有（应收账款; 银行存款; 完工产品）。
-下列关于费用特征的表述中正确的是（费用会导致企业所有者权益的减少; 费用可表现为资产的减少，或者负债的增加，或者二者兼而有之; 费用是在企业日常活动中发生的经济利益的流出）。
-下列会计等式中，在不同情况下成立的有（资产＝负债+所有者权益+（收入-费用）。; 资产＝负债+所有者权益; 收入-费用=利润; 资产+费用=负债+所有者权益+收入）。
-下列说法中，符合我国《企业会计准则——基本准则》关于会计目标表述的是（反映企业管理层受托责任的履行情况; 向财务报告使用者提供与企业财务状况、经营成果和现金流量等有关的会计信息; 有助于财务报告使用者做出经营决策）。
-下列项目中属于流动负债的有（预收账款; 应付账款; 短期借款）。
-现代会计的两大分支是（管理会计; 财务会计  ）。
-资产的基本特征包括（资产由企业拥有或者控制; 资产是由过去的交易或者事项形成的; 资产预期会给企业带来经济利益）。
-资产的确认条件有（该资源的成本或者价值能够可靠地计量; 与该资源有关的经济利益很可能流入企业）。'''
-    mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for key, value in mapmulAnswer.items():
-        print(key, value)
-        if (judgeQueTitle(elements1p, key)):
-            for v in value:
-                currentelements1 = rightTiGan[-1].find_element_by_xpath("./../..//div[last()]")
-                currentelements1 = currentelements1.find_elements_by_xpath(".//label")
-                rightAnswer = getAnswerElementEqualsFinal(currentelements1, v.strip(), 3, danxuanti_length*4, duoxuanti_length*5)
-                if rightAnswer is None:
-                    canTakeWrongNum = canTakeWrongNum + 1
-                else:
-                    rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-                time.sleep(0.1)
-
-
-    pdAnswer = '''在霍桑试验的基础上,梅奥于1933年出版了《工业文明中的人的问题》一书,系统地阐述了与古典管理理论截然不同的一些观点（对）。
+    # 20判断
+    dxAnswer = '''在霍桑试验的基础上,梅奥于1933年出版了《工业文明中的人的问题》一书,系统地阐述了与古典管理理论截然不同的一些观点（对）。
 阿吉里斯在《个性与组织》一书中提出了“不成熟—成熟理论”（对）。
 斯蒂格利茨由于在决策理论研究方面的贡献而荣获1978年诺贝尔经济学奖（错）。
 马斯洛在其代表性著作《人类动机的理论》和《激励与个人》中,提出了著名的公平理论（错）。
@@ -221,15 +204,68 @@ def writeAnswer1(browser):
 韦伯是科学管理运动的先驱者,被誉为“科学管理之父”（错）。
 1911年,泰勒发表了《科学管理原理》一书,掀起了一场科学管理的革命（对）。
 行政管理学派的代表人物法约尔,被誉为“管理理论之父”（对）。
-德国著名的社会学家韦伯在《高级管理人员的职能》一书中,提出了理想型官僚组织理论（错）。'''
-    pdWrongAnswer = pdAutoAnswer(pdAnswer, [])
-    for pdindex in range(panduan_length):
-        #这里要注意取题干的xpath可能会有误区,此处要严重注意
-        pdUtil5(pdWrongAnswer, elements1p, ratios, danxuanti_length+pdindex+3, danxuanti_length, pdindex)
-        time.sleep(0.1)
+德国著名的社会学家韦伯在《高级管理人员的职能》一书中,提出了理想型官僚组织理论（错）。'''
+    pdAnswer = panduanAutoAnswerFix(dxAnswer, "）。")
+    dxindex = 0
+    for pd in pdAnswer:
+        anEle = getAnswerElementEquals(elements1, pd, dxindex, 2)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
+            time.sleep(0.1)
+        dxindex += 1
+
+    mulAnswer = '''美国行为科学家赫茨伯格在其《工作的推力》和《工作与人性》等著作中,提出影响人的积极性的因素主要有（保健因素、激励因素）。
+西蒙指出,决策有两种极端的类型_（程序化决策、非程序化决策）。
+里格斯指出,“棱柱型社会”具有以下三个基本特征_（重叠性、形式主义、异质性）。
+里格斯在他创立的“棱柱模式理论”中,将社会形态划分_（棱柱社会、信息社会、工业社会）。
+巴纳德认为,组织不论其级别高低和规模大小,都包含三个基本要素（共同的目标、协作的意愿、信息的联系）。
+邓肯将组织环境分为（外部环境、内部环境）。
+邓肯从组织环境的___两个维度对影响组织的环境因素进行了深入的分析（静态与动态、简单与复杂）。
+依据学者们的研究,组织的环境分析过程主要包括____等基本阶段（全选）。
+伯恩斯和斯塔克将组织结构划分为（有机式组织结构、机械式组织结构）。
+行政组织环境的基本特点为__（全选）。
+窗体顶端
+学者们从不同的角度和方法去透视组织，给予不同的定义，目前学界对组织界定的取向，主要有以下几种（全选）。
+窗体底端
+依据邓肯的环境模式理论，从简单与复杂、静态与动态两个维度，组织存在的环境状态分别是（全选）。
+按组织内部是否有正式的分工关系，人们把组织分为（正式组织、非正式组织）。
+窗体底端
+窗体顶端
+美国学者艾桑尼以组织中人员对上级服从程度、上级对下级权力运用的关系，将组织划分为（规范性组织、强制性组织、功利性组织）。
+窗体底端
+窗体顶端
+美国著名社会学家、交换学派的代表布劳及史考特，根据组织目标和受益者的关系，把组织划分为（全选）。
+窗体底端
+ 窗体顶端
+从系统论的角度来看，任何一种社会组织大体都发挥三种功能（“转换”功能、“调节”功能 、 “聚合”功能）。
+窗体底端
+窗体顶端
+窗体顶端
+组织是一个纵横交错的权责体系，构成组织权责体系的三大要素为（职权、职责、职位）。
+世界银行在其1997年的《世界发展报告》中指出，以下几项基础性的任务处于每个政府使命的核心地位，这些使命包括（保持非扭曲的政策环境、保护环境、投资于基本的社会服务与基础设施）。
+古典组织理论的主要代表人物有（韦伯、法约尔、泰勒）。
+韦伯对行政组织理论的建构是从权力分析开始的，认为存在着下列纯粹形态的合法权力，它们是（超凡的权力、传统的权力、理性--法律的权力）。'''
+    dxindex = 0
+    howManyLabelBefore=40#前面有二十道判断,所以前面共40个label
+    listmulAnswer = duoxuanAutoAnswerFix(mulAnswer, "（", "）")
+    for value in listmulAnswer:
+        for v in value:
+            if "全选"==v.strip():
+                #把当前题的所有label都选上
+                for i in range(4):
+                    elements1[dxindex*4+howManyLabelBefore+i].find_element_by_xpath("./../input[last()]").click()
+                    time.sleep(0.1)
+            else:
+                anEle = getAnswerElementEqualsBefore(elements1, v.strip(), dxindex, 4,howManyLabelBefore)  # 找到指定的那个label选项
+                if anEle is not None:
+                    anEle.find_element_by_xpath("./../input[last()]").click()
+                    time.sleep(0.1)
+        dxindex += 1
+
+
 
     # end answer
-    if canTakeWrongNum>3:
+    if canTakeWrongNum > 3:
         return
     browser.find_element_by_xpath('//input[@type="submit"]').click()
     time.sleep(0.1)
@@ -237,162 +273,117 @@ def writeAnswer1(browser):
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
 def writeAnswer2(browser):
-    danxuanti_length = 25
-    duoxuanti_length = 15
-    panduan_length = 20
+    canTakeWrongNum = 0
+    #单多选在同一页混的时候,标记下单选题的数量
+    danxuanLength=9
 
-    canTakeWrongNum=0
-
-    # 试卷444布局
-    # div class="qtext",2019年11月16日14:32:26发现bug,如果有一模一样的选项,系统默认勾选第一个,逻辑略复杂,暂不处理.并非一定要满分.
+    # 试卷题目固定布局
     ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
     elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
-
-    # 单选多选混合,根据题库判断单选还是多选,进行相应的点击,,,规律-前4单,中3多,后3判
     elements1 = browser.find_elements_by_xpath('//label')
-    dxAnswer = '''“累计折旧”账户是“固定资产”账户的（抵减账户 ）。 
-30.利润分配账户在年终结算后出现借方余额，表示（未弥补的亏损额）。
-6月30日，本年利润账户有借方余额200 000元，表示（1月1日至6月30日累计发生亏损200 000元）。
-持续经营假设假定了对会计主体反映和监督的（时间范围）。
-对会计要素的具体内容进行分类核算的项目就称为（会计科目）。
-对于那些对企业的经济活动或会计信息使用者相对来说重要的事项，应单独报告，分项反映；而对于那些次要的会计事项，在不影响会计信息真实可靠的情况下，适当简化会计核算和报告手续，这体现了会计信息质量的（重要性要求）。
-根据会计科目在账簿中开设的记账单元就叫做（账户）。
-会计分期假设是（持续经营假设）的补充。
-会计分期假设是指将企业持续不断的经营过程人为地划分为一定的时间段，以便于（核算和报告会计主体的财务状况和经营成果）。
-会计主体假设的意义在于明确了会计主体反映和控制的（空间范围）。 
-会计主体假设的意义在于明确了会计主体反映和控制的（时间范围）。
-某企业购进材料一批，买价15 000元，增值税2 550元，运输费600元，入库前整理挑选费400元。该批材料的采购成本是（16 000元）。
-目前世界各国普遍采用的记账方法是（借贷记账法）。
-企业从供货单位取得的合同违约金应记入（营业外收入）。 
-企业对交易或事项进行会计确认、计量和报告不应高估资产或者收益、低估负债或者费用，这体现了会计信息质量的（谨慎性要求）。
-企业购进材料一批，买价50 000元，增值税8 500元，供货商代垫运杂费1 500元材料已运到并验收入库，货款尚未支付，则应记入“应付账款”账户的金额是（60 000元）。
-企业购进材料一批，买价50 000元，增值税8 500元，供货商代垫运杂费1 500元材料已运到并验收入库，通过银行支付了货款50 000元，则应记入“原材料”账户的金额是（51 500元）。
-企业会计期末结转利润时，应将损益类账户中各种收入类账户的贷方余额转入（“本年利润”账户的贷方）。
-企业计提的固定资产折旧，不可能记入（ 财务费用）账户。
-企业结转已销售产品的成本时，应（贷记“库存商品”账户）。
-企业收到客户偿还的货款并存入银行，这项经济业务对会计等式产生的影响是（仅使等式左边资产要素内部某些项目产生增加变动）。
-企业收到投资者投入的货币资金，其账务处理是记入“银行存款”账户借方和（“实收资本”账户的贷方）。
-企业收到投资者投入的货币资金，这项经济业务对会计等式产生的影响是（使等式左右两边的某些项目同时增加相等的金额）。
-企业销售不适用材料一批，取得的价款应记入（其他业务收入）。
-企业销售一批产品，货款50 000元，增值税8 500元，代垫运费1 500元，则记入主营业务收入账户的金额是（50 000元）。
-企业销售一批产品，货款50 000元，增值税8 500元，代垫运费1 500元。货已发出，货款暂未收到，则记入“应收账款”账户的金额是（60 000元）。
-企业用银行借款直接偿还原欠供应商的货款，这项经济业务对会计等式产生的影响是（仅使等式右边负债和所有者权益的某些项目产生增减变动）。
-企业在会计期末计算出本期应负担的借款利息，其账务处理是记入（“财务费用”账户的借方）。
-企业支付给生产车间管理人员的工资应记入（制造费用）。
-企业支付给专设门市部人员的工资应记入（销售费用）。
-同其他复式记账法一样，借贷记账法的理论依据是也是（资产=负债+所有者权益）。
-下列各项中，不应当直接计入当期损益的是（制造费用）。
-下列各项中不属于会计核算基本前提的是（会计要素）。
-下列各项中不属于会计信息质量要求的是（灵活性）。
-下列各项中不属于物资采购成本的是（增值税）。
-下列各项中不影响企业利润总额的是（所得税费用）。
-下列关于编制会计分录步骤的表述中错误的是（计算出这些账户的本期发生额和期末余额）。
-下列关于账户中各金额要素相互关系的各种表述中正确的是（期末余额=期初余额+本期增加发生额-本期减少发生额）。
-下列经济业务中，会引起会计等式左右两边同时发生增减变化的是（投资者投入货币资本）。
-下列经济业务中，只会引起会计等式右边负债和所有者权益某些项目发生增加变动的是（用银行借款直接偿还应付账款）。
-下列经济业务中，只会引起会计等式左边资产内部某些项目发生增加变动的是（用银行存款购买原材料）。
-应计入产品生产成本的费用是（制造费用）。
-在会计核算中，根据会计等式和记账规则检查账户记录正确与否的一种验证方法称之为（试算平衡）。
-在借贷记账法下，负债和所有者权益类账户的结构是用贷方记录增加数，借方记录减少数，期末余额（一般在贷方）。
-在借贷记账法下，简单会计分录的特征是（一个借方账户对应一个贷方账户 ）。
-在借贷记账法下，损益类账户中的收入账户年末应（没有余额）。 
-在借贷记账法下，所有者权益类账户的期末余额是根据（贷方期末余额=贷方期初余额+贷方本期发生额-借方本期发生额）计算。
-在借贷记账法下，下列错误中能够通过试算平衡查找的是（借贷方金额不等）。
-在借贷记账法下，下列各项中说法正确的是（资产类账户借方登记增加额）。
-在借贷记账法下，账户发生额试算平衡的依据是（借贷记账法的记账规则）。 
-在借贷记账法下，资产类账户的结构是用借方记录增加数，贷方记录减少数，期末余额（一般在借方）。
-在借贷记账法中，账户的哪一方记录增加数、哪一方记录减少数是由（账户性质）决定的。
-在下列账户中，其期末余额可直接转入本年利润账户的是（管理费用）。
-作为设置账户和登记账簿依据的是（会计科目）。'''
-    mapdxanswer = danxuanAutoAnswer(dxAnswer, {})
-    for key, value in mapdxanswer.items():
-        if (judgeQueTitle(elements1p, key)):
-            #找到题干后,此时取得是所有单选的选项,来点击正确答案,这里不妥.造成无法满分.2019年11月17日13:04:19在此处找具体的几个选项
-            currentelements1 = rightTiGan[-1].find_element_by_xpath("./../../div[last()]")
-            currentelements1 = currentelements1.find_elements_by_xpath(".//label")
-            rightAnswer = getAnswerElementEqualsFinal(currentelements1, value, 3, danxuanti_length*4, duoxuanti_length*5)
-            if rightAnswer is None:
-                canTakeWrongNum=canTakeWrongNum+1
-            else:
-                rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
+    dxindex = 0
+    time.sleep(4)#保证富文本框加载完毕
+
+
+    # 20单
+    dxAnswer = '''01．正确答案是：水泥
+02．正确答案是：硅酸盐水泥
+03．正确答案是：早期快后期慢
+04．正确答案是：0OC
+05．正确答案是：以上都是
+06．正确答案是：水泥在水化过程中放出的热量
+07．正确答案是：氢氧化钙和水化铝酸钙
+08．正确答案是：大体积混凝土工程
+09．正确答案是：铝酸盐水泥
+10．正确答案是：扩大其强度等级范围，以利于合理选用
+11．正确答案是：线膨胀系数
+12．正确答案是：品种和强度等级
+13．正确答案是：气干状态
+14．正确答案是：和易性
+15．正确答案是：混凝土拌合物的稀稠程度及充满模板的能力
+16．正确答案是：坍落度是保水性的指标
+17．正确答案是：每立方米混凝土中砂的质量和砂石的总质量之比
+18．正确答案是：水泥石与粗骨料的结合面先发生破坏
+19．正确答案是：早强剂
+20．正确答案是：水灰比、砂率、单位用水量'''
+    listdxanswer = danxuanAutoAnswerFix(dxAnswer, "：")
+    dxindex = 0
+    for an in listdxanswer:
+        anEle = getAnswerElementEquals(elements1, an, dxindex, 4)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.1)
+        dxindex += 1
 
+    # 10判断
+    panduan_length=10
+    danxuanti_length=20
+    duoxuanti_length=0
+    dxAnswer = '''判断题01．对”。
+判断题02．错”。
+判断题03．“错”。
+判断题04．对”。
+判断题05．错”。
+判断题06．对”。
+判断题07．错”。
+判断题08．错”。
+判断题09．错”。
+判断题10．“对”。'''
 
-    mulAnswer = '''借贷记账法下的试算平衡公式有（全部账户借方余额合计=全部账户贷方余额合计 ; 全部账户借方本期发生额合计=全部账户贷方本期发生额合计）。
-利润是企业在一定会计期间的生产经营成果，包括（营业利润 ; 净利润; 利润总额）。
-每一笔会计分录都包括（记账方向; 账户名称; 金额）。
-某车间领用一批材料直接用于产品生产，编制该项业务的会计分录时应使用的会计科目有（生产成本; 原材料）。
-企业的利润总额由以下几部分构成（营业利润; 营业外收入; 营业外支出）。
-企业会计期末计提办公用房折旧，编制会计分录时应分别记入（“管理费用”账户借方; “累计折旧”账户贷方）。
-企业计算本月应发放的职工工资，包括生产车间的工人和车间管理人员、厂部管理人员以及专设销售门市部的工作人员，编制该业务的会计分录时应借记的会计科目有（管理费用; 销售费用; 生产成本; 制造费用）。
-企业实现的净利润应进行下列分配（向投资者分配利润; 提取法定盈余公积 ; 提取任意盈余公积）。
-企业销售一批商品，价款30 000元，增值税5 100元，代垫运费600元，该项经济业务的账务处理是（贷记“银行存款（或库存现金”账户600元; 借记应收账款账户35 700元; 贷记“主营业务收入”账户30 000元; 贷记“应交税费——应交增值税（销项税额）”。账户5 100元）。
-下列费用中，属于期间费用的是（销售费用; 管理费用; 财务费用）。
-下列各项中，可记入物资采购成本的有（进口关税; 买价; 损耗; 挑选整理费; 运杂费）。
-下列各项中属于会计核算基本前提的有（货币计量 ; 会计主体; 持续经营; 会计分期）。
-下列各项中属于会计信息质量要求的是（可比性; 重要性; 相关性; 客观性; 明晰性 ）。
-下列经济业务中，会引起会计等式左右两边同时发生增减变化的有（以银行存款归还银行借款; 投资者投入货币资本; 购进材料货款暂时未付）。
-下列经济业务中，只会引起会计等式右边负债和所有者权益中某些项目发生增减变化的是（用银行借款直接偿还应付账款; 用盈余公积转增资本）。
-下列经济业务中，只会引起会计等式左边资产内部某些项目发生增减变化的有（收到应收账款存入银行; 从银行提取现金）。
-与单式记账法相比较，复式记账法的基本特征有（对于发生的每一项经济业务，都要在两个或两个以上的账户中相互联系地进行记录; 可以通过试算平衡检查账户记录是否正确）。
-在借贷记账法下，负债类账户的结构是（贷方记录增加额; 借方记录减少额）。 
-在借贷记账法下，下列各项中说法正确的有（负债类账户借方登记减少额; 资产类账户贷方登记减少额; 资产类账户借方登记增加额; 收入类账户贷方登记增加额）。
-在借贷记账法下，资产类账户的结构是（贷方记录减少额; 借方记录增加额）。
-账户按其性质可分为（成本类账户; 损益类账户; 资产类账户; 所有者权益类账户; 负债类账户）。'''
-    mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for key, value in mapmulAnswer.items():
-        print(key, value)
-        if (judgeQueTitle(elements1p, key)):
-            for v in value:
-                currentelements1 = rightTiGan[-1].find_element_by_xpath("./../..//div[last()]")
-                currentelements1 = currentelements1.find_elements_by_xpath(".//label")
-                rightAnswer = getAnswerElementEqualsFinal(currentelements1, v.strip(), 3, danxuanti_length*4, duoxuanti_length*5)
-                if rightAnswer is None:
-                    canTakeWrongNum = canTakeWrongNum + 1
-                else:
-                    rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-                time.sleep(0.1)
+    pdAnswer = panduanAutoAnswerFix(dxAnswer, "”。")
+    dxindex = 0
+    for pd in pdAnswer:
+        anEle = getAnswerElementEqualsPanDuan(elements1, pd, dxindex, 2)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
+            time.sleep(0.1)
+        dxindex += 1
 
+    # 6个富文本
+    line = browser.page_source
+    frameId = line.split(":31_answer_id_ifr")[0][-15:].split("id=\"")[1]
+    browser.switch_to.frame(frameId + ":31_answer_id_ifr")
+    browser.find_element_by_id("tinymce").send_keys(
+        "细度是指水泥颗粒总体的粗细程度。水泥颗粒越细，与水发生反应的表面积越大，因而水化反应速度较快，而且较完全，早期强度也越高，但在空气中硬化收缩性较大，成本也较高。如水泥颗粒过粗则不利于水泥活性的发挥。一般认为水泥颗粒小于40μm（0.04mm）时，才具有较高的活性，大于100μm（0.1mm）活性就很小了。硅酸盐水泥和普通硅酸盐水泥细度用比表面积表示。比表面积是水泥单位质量的总表面积")
+    browser.switch_to.default_content()
 
-    pdAnswer = '''在复式记账法下，由于每一项经济业务发生后，都是以相等的金额在两个或两个以上相互联系的账户同时记录，因此可以通过试算平衡检查账户记录是否正确（对）。	
-不同的记账方法具有不同的账户结构，但同一记账方法下不同性质的账户其结构是相同的（错）。
-持续经营假设是假定会计主体的经营活动在可预见的未来，按照现在的形式和目标无限期地继续下去，不会进行破产清算（对）。
-复式记账法的理论依据是会计对象可以划分为资产、负债等六大会计要素（错）。
-复式记账法是对发生的每一笔经济业务所引起的会计要素的增减变动，都以相等的金额同时在两个或两个以上的账户中相互联系地进行记录的一种方法（对）。	
-会计对象的具体内容是会计要素，而每个会计要素都包含若干具体项目会计科目就是对会计要素具体内容进行分类核算的项目（对）。
-会计分录是指按照借贷记账法记账规则的要求，对发生的经济业务列示出应借、应贷的账户名称和金额的一种记录（对）。
-会计分期假设是指将企业持续不断的经营过程人为地划分为一定的时间段，以便核算和报告会计主体的财务状况和经营成果（对）。
-会计核算中对于那些对企业的经济活动或会计信息的使用者相对重要的会计事项，应单独报告，分项反映；而对于那些次要的会计事项，则可以适当简化会计核算和报告手续。这体现了会计信息质量要求中的谨慎性要求（错）。
-会计科目和账户是两个既有区别又有联系的概念，但在实际工作中往往不作区分（对）。
-会计信息质量要求中的相关性要求是指企业提供的信息应当与企业的实际情况相关，不得虚构（错）。
-会计要素是设置账户和登记账簿的依据（错）。
-会计主体也称为会计个体或会计实体，是指会计工作为之服务的一个特定单位，通常是一个法人单位（错）。
-目前世界各国普遍采用的复式记账方法是借贷记账法，我国会计准则规定企业会计核算可以采用借贷记账法，也可以采用增减记账法或收付记账法（错）。
-年末，企业用银行存款支付下一年的财产保险费2 400元，应记入管“管理费用”账户的借方（错）。
-企业财务人员的工资应记入财务费用账户（错）。
-企业购入一批材料，买价20 000元，增值税3 400元，运杂费500元，则该批材料的采购成本为23 900元（错）。
-企业会计期末计提的固定资产折旧费，应根据固定资产的使用部门不同分别记入制造费用、管理费用和销售费用（对）。
-企业生产车间的工人工资应记入生产成本账户，车间管理人员工资应记入制造费用账户（对）。
-企业收到投资者的投资时应记入“实收资本”账户的借方，而向投资者分配利润时则应记入“实收资本”账户的贷方（错）。
-企业摊销本月负担的财产保险费，应记入管理费用账户借方和其他应收款账户贷方（对）。
-损益类账户中的费用支出类账户其结构与资产类账户基本相同，也是用借方记录增加额，贷方记录减少额或转出额，期末余额在借方（错）。
-损益类账户中的收入类账户其结构与负债和所有者权益类账户基本相同，也是用贷方记录增加额，借方记录减少额或转出额，期末余额在贷方（错）。
-无论采用哪种记账方法，账户属于何种性质，账户的基本结构都由左、右两部分组成，一部分记录增加额，另一部分记录减少额（对）。
-在借贷记账法下，成本类账户的结构与资产类账户基本相同，借方记录增加额，贷方记录减少额，但有的成本类账户有期末余额，有的则没有期末余额（对）。
-在借贷记账法下，负债和所有者权益类账户的借方记录增加额，贷方记录减少额，期末余额一般在借方（错）。
-在借贷记账法下，账户的基本结构也分为左、右两方，左方为贷方，右方为借方（错）。
-在借贷记账法下，资产类账户的借方记录增加额，贷方记录减少额，期末余额一般在贷方（错）。
-账户的哪一方记录增加额，哪一方记录减少额，是由记账方法所决定的（错）。
-账户是根据会计要素在账簿中开设的记账单元（错）。	
-账户是用来记录经济业务的，必须具有一定的结构和格式（对）。'''
-    pdWrongAnswer = pdAutoAnswer(pdAnswer, [])
-    for pdindex in range(panduan_length):
-        #这里要注意取题干的xpath可能会有误区,此处要严重注意
-        pdUtil5(pdWrongAnswer, elements1p, ratios, danxuanti_length+duoxuanti_length+pdindex+3, danxuanti_length, pdindex)
-        time.sleep(0.1)
+    line = browser.page_source
+    frameId = line.split(":32_answer_id_ifr")[0][-15:].split("id=\"")[1]
+    browser.switch_to.frame(frameId + ":32_answer_id_ifr")
+    browser.find_element_by_id("tinymce").send_keys(
+        "水泥的初凝时间是指从水泥加水拌合起至水泥浆开始失去可塑性所需的时间的时间，这个时间对施工影响较大，为了保证有足够的时间在初凝之前完成混凝土的搅拌、运输和浇捣及砂浆的粉刷、砌筑等施工工序，初凝时间不宜过短，为此，国家标准规定硅酸盐水泥的初凝时间不早于45分。短于这个时间很容易导致混凝土还来不及施工就已经失去了塑性。")
+    browser.switch_to.default_content()
+
+    line = browser.page_source
+    frameId = line.split(":33_answer_id_ifr")[0][-15:].split("id=\"")[1]
+    browser.switch_to.frame(frameId + ":33_answer_id_ifr")
+    browser.find_element_by_id("tinymce").send_keys(
+        "砂、石有专门的试验方法，通过不同孔径的筛子进行筛分细算。不同孔径筛子上的筛余量有一定的范围。如果其各个筛的筛余量在标准规定的范围内，那么就称其为连续级配。连续级配对混凝土和易性（尤其是流动性），对强度也有帮助。")
+    browser.switch_to.default_content()
+
+    line = browser.page_source
+    frameId = line.split(":34_answer_id_ifr")[0][-15:].split("id=\"")[1]
+    browser.switch_to.frame(frameId + ":34_answer_id_ifr")
+    browser.find_element_by_id("tinymce").send_keys(
+        "1、严格控制水灰比，保证足够的水泥用量；2、合理选择水泥品种；3、选用较好砂、石骨料，并尽量采用合理砂率；4、掺引气剂、减水剂等外加剂；5、掺入高效活性矿物掺料；6、施工中搅拌均匀、振捣密实、加强养护、增加混凝土密实度、提高混凝土质量。")
+    browser.switch_to.default_content()
+
+    line = browser.page_source
+    frameId = line.split(":35_answer_id_ifr")[0][-15:].split("id=\"")[1]
+    browser.switch_to.frame(frameId + ":35_answer_id_ifr")
+    browser.find_element_by_id("tinymce").send_keys(
+        "质量吸水率:《建筑材料》形成性考核册答案 w. m, x10 m 29002500/2500 x0 、frac{29002500}{2500}xI0 2500×1006169 2.密度:《建筑材料》形成性考核册答案 p= fn/J  50/18.5- 2m7 3.体积密度:《建筑材料》形成性考核册答案 R po Vo m/y0  -24-x21vI05-0、times5-3 2119 4.孔隙率:《建筑材料》形成性考核册答案 PD-×100 2.7-1.71 2.7x1OB363%")
+    browser.switch_to.default_content()
+
+    line = browser.page_source
+    frameId = line.split(":36_answer_id_ifr")[0][-15:].split("id=\"")[1]
+    browser.switch_to.frame(frameId + ":36_answer_id_ifr")
+    browser.find_element_by_id("tinymce").send_keys(
+        "施工每立方混凝土各种材料用量：水泥C = 286Kg砂子S = 286×2.28（1 + 0.03）=672Kg石子G = 286×4.47（1 + 0.01）=1291Kg水W = 286×0.64 - 286×2.28×0.03 - 286×4.47×0.01 = 151Kg施工配合比：（286 / 286）：（672 / 286）：（1291 / 286）：（151 / 286）=1: 2.35:4.51: 0.53")
+    browser.switch_to.default_content()
 
     # end answer
-    if canTakeWrongNum>3:
+    if canTakeWrongNum > 3:
         return
     browser.find_element_by_xpath('//input[@type="submit"]').click()
     time.sleep(0.1)
@@ -400,149 +391,116 @@ def writeAnswer2(browser):
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
 def writeAnswer3(browser):
-    danxuanti_length = 25
-    duoxuanti_length = 15
-    panduan_length = 20
+    canTakeWrongNum = 0
+    #单多选在同一页混的时候,标记下单选题的数量
+    danxuanLength=9
 
-    canTakeWrongNum=0
-
-    # 试卷444布局
-    # div class="qtext",2019年11月16日14:32:26发现bug,如果有一模一样的选项,系统默认勾选第一个,逻辑略复杂,暂不处理.并非一定要满分.
+    # 试卷题目固定布局
     ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
     elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
-
-    # 单选多选混合,根据题库判断单选还是多选,进行相应的点击,,,规律-前4单,中3多,后3判
     elements1 = browser.find_elements_by_xpath('//label')
-    dxAnswer = '''“待处理财产损溢”账户的核算内容不包括（盘盈的固定资产）。
-财产清查的内容不包括（成本费用的核实）。
-财产清查结果的账务处理一般需要（分两步进行）。
-采购员报销3 450元差旅费，出纳员补付其现金450元以结清其暂借款，这项业务应编制（付款凭证和转账凭证）。
-采用收付实现制，由于没有将各个会计期间所实现的收入和为实现收入所应负担的费用进行配比，因而也就不能正确计算各期的（经营成果）。
-对现金进行盘点时，下列人员中必须在场的是（出纳员）。
-对于在财产清查中盘盈的固定资产，正确的处理是（记入“以前年度损益调整”账户）。
-对账的内容不包括（银企核对）。
-会计凭证分为原始凭证和记账凭证，其分类标准是（按其填制的程序和用途不同）。
-会计凭证是记录经济业务、明确经济责任的书面证明，也是（登记账簿的依据）。
-将现金存入银行这笔经济业务，按规定应编制（现金付款凭证）。
-某企业9月以银行存款支付第四季度的办公用房租金，10月末借记管理费用、贷记其他应收款，该项账务处理属于（预付费用的调整）。
-某企业本月收到客户偿还上月所欠货款50 000元存入银行，下列账务处理中的哪一种符合权责发生制要求（借：银行存款 50 000  贷：应收账款 50 000）。
-目前，我国会计核算中权责发生制的应用范围是（企业会计和事业单位中的经营业务）。
-能够提供企业某一类经济业务增减变化较为详细会计信息的账簿是（明细分类账）。
-能够提供企业某一类经济业务增减变化总括会计信息的账簿是（ 总分类账）。
-企业对外出租某项固定资产，上月已收取半年的租金，本月末借记“其他应付款”、贷记“其他业务收入”，该项账务处理属于（预收收入的调整）。
-企业用现金支付某职工报销的市内交通费78元，会计人员编制的付款凭证为借记管理费用87元，贷记现金87元，并登记入账。对当年发生的该项记账错误应采用的更正方法是（ 红字更正法 ）。
-清查各项结算往来款项时一般采用的方法是（函证法）。
-收款凭证左上角“借方科目”后应填写的账户名称是（银行存款或库存现金）。
-下列各项中，不属于按形式划分的账簿种类是（多栏式账簿）。
-下列各项中，不属于按用途划分的账簿种类是（订本式账簿）。
-下列各项中，不属于按账页格式划分的账簿种类是（卡片式账簿）。
-下列各项中不属于记账凭证基本内容的是（接受凭证单位名称）。
-下列各项中不属于记账凭证审核内容的是（填制是否及时）。
-下列各项中不属于未达账项的是（银行和企业都已入账但金额不同的业务）。
-下列各项中不属于原始凭证基本内容的是（会计科目的名称和金额）。
-下列各项中不属于原始凭证审核内容的是（凭证的科学性）。
-下列各项中不属于原始凭证填制要求的是（科目运用正确）。
-下列各项中业务中，其账务处理与权责发生制和收付实现制无关的是（购买材料，货款以银行存款支付）。
-下列各项中应建立备查账簿登记的是（经营性租入固定资产 ）。
-下列各种方法中，不属于确定存货单价方法的是（技术推算法）。
-下列各种关于会计凭证作用的说法中不正确的是（连续、系统地提供经济信息）。
-下列明细账中，可以采用数量金额式账页的是（库存商品明细分类账 ）。
-下列账簿中可以采用卡片账的是（固定资产明细账）。 
-限额领料单属于（累计凭证）。
-永续盘存制和实地盘存制是两种（确定存货账面结存数量的方法）。
-总分类账与明细分类账平行登记的要点不包括（登记的时间相同）。'''
-    mapdxanswer = danxuanAutoAnswer(dxAnswer, {})
-    for key, value in mapdxanswer.items():
-        if (judgeQueTitle(elements1p, key)):
-            #找到题干后,此时取得是所有单选的选项,来点击正确答案,这里不妥.造成无法满分.2019年11月17日13:04:19在此处找具体的几个选项
-            currentelements1 = rightTiGan[-1].find_element_by_xpath("./../../div[last()]")
-            currentelements1 = currentelements1.find_elements_by_xpath(".//label")
-            rightAnswer = getAnswerElementEqualsFinal(currentelements1, value.strip(), 3, danxuanti_length*4, duoxuanti_length*5)
-            if rightAnswer is None:
-                canTakeWrongNum=canTakeWrongNum+1
-            else:
-                rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
+    dxindex = 0
+    time.sleep(4)  # 保证富文本框加载完毕
+
+    # 20单
+    dxAnswer = '''01．正确答案是：砌筑砂浆
+02．正确答案是：沉入度
+03．正确答案是：3
+04．正确答案是：中层砂浆
+05．正确答案是：水泥砂浆
+06．正确答案是：泛霜
+07．正确答案是：蒸压灰砂砖
+08．正确答案是：陶瓷锦砖
+09．正确答案是：玻璃在冲击作用下易破碎，是典型的塑性材料
+10．正确答案是：平板玻璃
+11．正确答案是：黏土
+12．正确答案是：颈缩阶段
+13．正确答案是：伸长率
+14．正确答案是：沸腾钢
+15．正确答案是：冷弯性能
+16 . 正确答案是：疲劳破坏
+17．正确答案是：若含硅量超过1%时，会增大钢材的可焊性
+18．正确答案是：强度提高，伸长率降低
+19.  正确答案是：强度提高，塑性和冲击韧性下降
+20．正确答案是：增大'''
+    listdxanswer = danxuanAutoAnswerFix(dxAnswer, "：")
+    dxindex = 0
+    for an in listdxanswer:
+        anEle = getAnswerElementEquals(elements1, an, dxindex, 4)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.1)
+        dxindex += 1
 
+    # 10判断
+    panduan_length=10
+    danxuanti_length=20
+    duoxuanti_length=0
+    dxAnswer = '''判断题01．对”。
+判断题02．“对”。
+判断题03．错”。
+判断题04．“对”。
+判断题05．错”。
+判断题06．错”。
+判断题07．对”。
+判断题08．错”。
+判断题09．对”。
+判断题10．错”。'''
 
-    mulAnswer = '''按照权责发生制的要求，每个会计期末都要对已经入账和没有入账的相关收入、费用进行必要的调整，包括（其他账项的调整; 应计收入的调整; 应计费用的调整 ; 预收收入的调整; 预付费用的调整）。
-采用余额法编制银行存款余额调节表的具体做法是，在企业银行存款日记账与银行对账单各自余额的基础上（加上对方已经收款入账而本方尚未收款入账的金额; 减去对方已经付款入账而本方尚未付款入账的金额）。
-错账更正的正确方法有（补充登记法; 红字更正法; 划线更正法）。
-对账包括（账簿与账簿核对; 账簿与实物核对; 账簿与凭证核对）。
-会计的记账基础包括（权责发生制; 收付实现制）。
-会计凭证按照填制程序和用途的不同，可以分为（原始凭证; 记账凭证）。
-会计账簿按其形式不同可分为（订本式账簿; 卡片式账簿; 活页式账簿）。
-会计账簿按用途不同可分为（序时账簿; 备查账簿; 分类账簿）。
-会计账簿按账页格式不同可分为（多栏式账簿; 数量金额式账簿; 三栏式账簿）。
-记账凭证按照所反映的经济业务内容划分可分为（专用记账凭证; 通用记账凭证）。
-记账凭证的基本内容包括（会计科目的名称和金额; 经济业务摘要 ; 所附原始凭证张数; 凭证编号; 填制凭证的日期 ）。
-权责发生制要求（凡是当期已经实现的收入和已经发生或应当负担的费用，无论款项是否收付，都应当作为当期的收入和费用; 凡是不属于当期的收入和费用，即使款项已在当期收付，也不应当作为当期的收入和费用）。
-确定存货单价的方法有（个别计价法; 加权平均法; 先进先出法）。
-确定存货账面结存数量的方法有（永续盘存制; 实地盘存制）。
-收付实现制要求（凡是当期没有实际收到和付出现金，都不应当作为本期收入和费用; 凡是当期收到和支付的现金，都应当作为当期的收入和费用）。
-所谓财产清查，就是采用一定的专门方法确定下列各项的实存数，以便查明账存数与实存数是否相符（债权债务; 货币资金; 财产物资）。
-下列各种账户中不需要按月结计本期发生额的有（总分类账户; 库存商品明细分类账; 应收账款明细分类账）。
-银行存款中的未达账项包括下列几种情况（银行已付款入账，而企业尚未付款入账; 银行已收款入账，而企业尚未收款入账; 企业已收款入账，而银行尚未收款入账; 企业已付款入账，而银行尚未付款入账）。
-原始凭证审核的内容包括（凭证的真实性、合法性和合理性; 凭证的完整性、及时性; 凭证的准确性）。
-凭证的真实性、合法性和合理性; 凭证的完整性、及时性; 凭证的准确性
-专用记账凭证一般分为（收款凭证; 转账凭证; 付款凭证）。
-总分类账和明细分类账平行登记的要点包括（登记的方向一致; 登记的依据相同; 登记的金额相等）。'''
-    mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for key, value in mapmulAnswer.items():
-        print(key, value)
-        if (judgeQueTitle(elements1p, key)):
-            for v in value:
-                currentelements1 = rightTiGan[-1].find_element_by_xpath("./../..//div[last()]")
-                currentelements1 = currentelements1.find_elements_by_xpath(".//label")
-                rightAnswer = getAnswerElementEqualsFinal(currentelements1, v.strip(), 3, danxuanti_length*4, duoxuanti_length*5)
-                if rightAnswer is None:
-                    canTakeWrongNum = canTakeWrongNum + 1
-                else:
-                    rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-                time.sleep(0.1)
+    pdAnswer = panduanAutoAnswerFix(dxAnswer, "”。")
+    dxindex = 0
+    for pd in pdAnswer:
+        anEle = getAnswerElementEqualsPanDuan(elements1, pd, dxindex, 2)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
+            time.sleep(0.1)
+        dxindex += 1
 
+    # 6个富文本
+    line = browser.page_source
+    frameId = line.split(":31_answer_id_ifr")[0][-15:].split("id=\"")[1]
+    browser.switch_to.frame(frameId + ":31_answer_id_ifr")
+    browser.find_element_by_id("tinymce").send_keys(
+        "根据建筑力学分类共分为压力、拉力、扭力、剪力和弯曲五种。再针对各种建筑材料来判断，其中砂浆所承受的力绝大多数是压力，砂浆承受压力的大小也就成为了评判砂浆级别的标准。抗压强度技术指标直接体现了砂浆的受力特点")
+    browser.switch_to.default_content()
 
-    pdAnswer = '''编制银行存款余额调节表的余额法是在企业银行存款日记账与银行对账单余额的基础上把对方已经记账而自己尚未记账的业务补上，而差额法则是在同样的基础上把自己已经记账而对方尚未记账的业务去掉（对）。	
-采用权责发生制，可以正确反映各个会计期间所实现的收入和为实现收入所应负担的费用，从而可以把各期的收入与其相关的成本、费用相比较，正确计算出各期的经营成果（对）。	
-采用收付实现制，由于没有将各个会计期间所实现的收入与为实现收入所应负担的费用进行配比，因而也就不能正确计算各期的经营成果（对）。
-当发生库存现金和银行存款之间的经济业务，如将库存现金送存银行时，为避免重复进行账户处理，只填制银行存款收款凭证（错）。
-登记账簿时，日期栏应填写登账当天的日期（错）。
-对于记载内容不完整、不准确的原始凭证，会计人员有权拒绝办理相关手续，并要向单位负责人报告（错）。
-根据记账凭证记账以后，发现记账凭证中的应借、应贷会计科目和记账方向都正确，只是所记金额大于应记金额，并按照凭证上的错误数据登记了账簿，对此应采用划线更正法进行错账更正（错）。
-根据我国《企业会计准则第1号——存货》的规定，我国企业可采用的存货计价方法有先进先出法、、移动加权平均法、月末一次加权平均法和个别计价法（对）。	
-会计凭证按照填制程序和用途的不同，可以分为原始凭证和记账凭证（对）。
-会计账簿按形式划分可分为订本式账簿、活页式账簿和卡片式账簿（对）。
-会计账簿按账页格式划分可分为三栏式账簿、多栏式账簿和数量金额式账簿（对）。
-会计账簿按照用途划分可分为序时账簿、分类账簿和备查账簿（对）。	
-记账凭证按照所反映的经济内容划分可分为专用记账凭证和通用记账凭证（对）。
-记账凭证的基本内容包括制证、审核、记账、会计主管等有关人员的签名或者盖章，其中收款凭证和付款凭证还要由出纳人员签名或者盖章（对）。
-记账凭证是会计人员根据审核无误的原始凭证或汇总原始凭证，按照经济业务的内容加以归类，并依据复式记账原理填制的、作为登记账簿直接依据的会计凭证（对）。
-目前，我国的行政单位会计采用收付实现制，企业和事业单位会计采用权责发生制（错）。
-权责发生制又称应收应付制或应计制，是以是否实际收到现金或支出现金为标志来确认当期收入和费用（错）。
-确定存货账面结存数量的方法通常有实地盘存制和永续盘存制两种（对）。
-如果经过未达账项调节后银行存款日记账的余额与银行对账单的余额相等，则企业可以根据银行存款余额调节表登记相关账簿（错）。
-审核原始凭证时，对于不真实、不合法的原始凭证，会计人员应当将其退还给有关经办人员，由其补充、更正后，再行办理会计手续（错）。
-实地盘存制又称定期盘存制。采用这种方法，平时根据会计凭证在有关账簿中只登记存货的减少数而不登记增加数，月末通过实地盘点，将盘点的实存数作为账面结存数量，然后倒挤推算出本期收入数，并将其登记入账（错）。
-收付实现制又称现收现付制或现金制，是与权责发生制相对应的一种会计基础，它是以实际收到或付出现金的时间来确认各会计期间的收入、费用（对）。
-所谓未达账项，是指本单位与银行之间由于结算凭证传递的时间不同，而造成双方入账金额不一致的款项（错）。
-应计费用是指本期或前期已经支付入账，但系后续会计期间受益而应归属于后续会计期间的费用（错）。
-应计收入是指已经收到款项，但尚未交付商品或提供劳务的收入（错）。
-永续盘存制又称账面盘存制，是根据账簿记录计算期末存货账面结存数量的一种存货核算方法。采用这种方法，对存货的增加和减少，平时都要在账簿中连续加以记录，并随时结出账面结存数（对）。
-由于总分类账与明细分类账提供的会计信息详略程度不同，因此总分类账要根据记账凭证登记，明细分类账要根据原始凭证登记（错）。
-预付费用是指本期已经发生，或已经由本期受益，但尚未入账，也未支付现金（含银行存款）的费用（错）。
-预收收入是指本期已经实现，但尚未收到款项的收入（错）。
-原始凭证的基本内容中不包括会计科目的名称和金额（对）。	
-原始凭证是在经济业务发生时取得的、用以证明经济业务发生情况，并作为记账直接依据的会计凭证（错）。	
-在企业的财产清查中，不论财产物资盘盈还是盘亏或者毁损，也不论其原因是什么，首先都要调整各种财产物资的账面记录，以使其与实际结存数额相一致（对）。
-在权责发生制下，每个会计期末都要对已经入账和没有入账的相关收入、费用进行必要的调整，以便正确计算本期损益，这就是会计期末账项调整（对）。'''
-    pdWrongAnswer = pdAutoAnswer(pdAnswer, [])
-    for pdindex in range(panduan_length):
-        #这里要注意取题干的xpath可能会有误区,此处要严重注意
-        pdUtil5(pdWrongAnswer, elements1p, ratios, danxuanti_length+duoxuanti_length+pdindex+3, danxuanti_length, pdindex)
-        time.sleep(0.1)
+    line = browser.page_source
+    frameId = line.split(":32_answer_id_ifr")[0][-15:].split("id=\"")[1]
+    browser.switch_to.frame(frameId + ":32_answer_id_ifr")
+    browser.find_element_by_id("tinymce").send_keys(
+        "地下水泥砂浆，地上除有水房间外用混合砂浆，有水房间用水泥砂浆")
+    browser.switch_to.default_content()
+
+    line = browser.page_source
+    frameId = line.split(":33_answer_id_ifr")[0][-15:].split("id=\"")[1]
+    browser.switch_to.frame(frameId + ":33_answer_id_ifr")
+    browser.find_element_by_id("tinymce").send_keys(
+        "最主要是因为釉面砖吸水率较高(国家规定其吸水率小于21%)，容易吸入大量水分，严重的甚至在贴完瓷砖后不久，能够将水泥的脏水从背面吸进来，进入釉面。陶体吸水膨胀后，吸湿膨胀小的表层釉面处于张压力状态下，长期冻融，会出现剥落掉皮现象，还有就是很可能受到温度的影响而脱落，所以釉面砖不能用于室外。")
+    browser.switch_to.default_content()
+
+    line = browser.page_source
+    frameId = line.split(":34_answer_id_ifr")[0][-15:].split("id=\"")[1]
+    browser.switch_to.frame(frameId + ":34_answer_id_ifr")
+    browser.find_element_by_id("tinymce").send_keys(
+        "钢材的屈服点（屈服强度）与抗拉强度的比值，称为屈强比。屈强比越大，结构零件的可靠性越大，一般碳素钢屈强比为0.6-0.65，低合金结构钢为0.65-0.75合金结构钢为0.84-0.86。 机器零件的屈强比高，节约材料，减轻重量。")
+    browser.switch_to.default_content()
+
+    line = browser.page_source
+    frameId = line.split(":35_answer_id_ifr")[0][-15:].split("id=\"")[1]
+    browser.switch_to.frame(frameId + ":35_answer_id_ifr")
+    browser.find_element_by_id("tinymce").send_keys(
+        "1、钢材耐腐蚀性差。 2、钢材耐热但不耐火。")
+    browser.switch_to.default_content()
+
+    line = browser.page_source
+    frameId = line.split(":36_answer_id_ifr")[0][-15:].split("id=\"")[1]
+    browser.switch_to.frame(frameId + ":36_answer_id_ifr")
+    browser.find_element_by_id("tinymce").send_keys(
+        "【解】1.计算砂浆的配制强度：查表3－40,取值σ＝1.88MPa. ƒm,o＝ƒ2+0.645σ ＝7.5+0.645×1.88＝8.7MPa 2.计算单位水泥用量： Qc=217Kg(公式打不上去,此题实测强度fce=36MPa) 3.计算单位石灰膏用量： QD ＝QA－Qc ＝350－217＝133kg 4.计算单位砂的用量: Qs＝1× ×（1+w′） ＝1×1450×（1+2％）＝1479kg 5.得到砂浆初步配合比： 采用质量比表示为：水泥∶石灰膏∶砂 Qc：QD：Qs＝217∶133∶1479＝1∶0.61∶6.11")
+    browser.switch_to.default_content()
 
     # end answer
-    if canTakeWrongNum>3:
+    if canTakeWrongNum > 3:
         return
     browser.find_element_by_xpath('//input[@type="submit"]').click()
     time.sleep(0.1)
@@ -550,136 +508,116 @@ def writeAnswer3(browser):
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
 def writeAnswer4(browser):
-    danxuanti_length = 25
-    duoxuanti_length = 15
-    panduan_length = 20
+    canTakeWrongNum = 0
+    #单多选在同一页混的时候,标记下单选题的数量
+    danxuanLength=9
 
-    canTakeWrongNum=0
-
-    # 试卷444布局
-    # div class="qtext",2019年11月16日14:32:26发现bug,如果有一模一样的选项,系统默认勾选第一个,逻辑略复杂,暂不处理.并非一定要满分.
+    # 试卷题目固定布局
     ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
     elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
-
-    # 单选多选混合,根据题库判断单选还是多选,进行相应的点击,,,规律-前4单,中3多,后3判
     elements1 = browser.find_elements_by_xpath('//label')
-    dxAnswer = '''“应付账款”所属明细分类账户期末如果出现借方余额，则应将其填入资产负债表中的（预付款项项目）。
-“应付账款”账户所属明细账户期末如果出现贷方余额，应填入资产负债表中的（预收款项项目）。
-“预付账款”所属明细分类账户期末如果出现贷方余额，则应将其填入资产负债表的（应付账款项目）。
-编制现金流流量表的会计基础是（收付实现制）。
-利润表的编制依据是会计等式（收入-费用=利润）。
-利润表又称收益表、损益表，是反映企业（在一定期间经营成果的报表）。
-某企业“固定资产”账户的期末余额为2 800万元，“累计折旧”账户的期末余额为500万元，“固定资产减值准备”账户的期末余额为100万元。则应填入资产负债表“固定资产”项目的金额是（2 200万元）。
-某企业“应付账款”明细账中A企业为贷方余额200 000元，B企业为借方余额180 000元，C企业为贷方余额300 000元。假如该企业“预付账款”明细账均为借方余额，则应填入资产负债表“应付账款”项目的金额为是（500 000）。
-某企业“应收账款”明细账户中F企业为借方余额300 000元，H企业为贷方余额50 000元；“预收账款”明细账户中甲企业为借方余额30 000元，乙企业为贷方余额100 000元。则填入资产负债表“应收账款”项目的金额是（330 000元）。
-某企业“预付账款”明细账户中甲企业为借方余额100 000元，乙企业为贷方余额30 000元；“应付账款”明细账中W企业为贷方余额50 000元，K企业为借方余额80 000元。则填入资产负债表“预付款项”项目的金额是（180 000元）。
-某企业“预收账款”明细账中丙企业为借方余额100 000元，丁企业为贷方余额80 000元；应收账款明细账中D企业为借方余额200 000元，E企业为贷方余额300 000元。则填入资产负债表预收款项项目的金额是（380 000元）。
-某企业“原材料”账户期末余额为100 000元，“库存商品”账户期末余额为120 000元，“生产成本”账户期末余额为30 000元，“固定资产”账户期末余额为200 000元。资产负债表中的存货项目应填入（250 000元）。
-企业编制利润表的金额依据是（损益类账户的本期发生额）。
-我国《会计法》开始施行的时间是（1985年5月1日）。 
-我国企业会计准则的制定机构是（财政部）。
-我国企业会计准则分为三个层次，它们是（基本准则、具体准则和应用指南）。
-我国企业会计准则规定利润表的格式为（多步式）。
-下列各项中，不属于利润表基本内容的是（未分配利润）。 
-下列各项中，不应直接计入利润表的是（制造费用）。
-下列各项中，不影响企业利润总额的是（所得税费用）。
-下列各项中，属于会计法律的是（《中华人民共和国会计法》）。
-下列资产负债表项目中，可以根据有关总分类账户期末余额直接填列的是（短期借款）。
-下列资产负债表项目中，需要根据几个总分类账户的期末余额计算填列的是（货币资金）。
-下列资产负债表项目中，需要根据总分类账户和明细分类账户余额分析计算填列的是（长期借款）。
-下列资产负债表项目中，需要根据总分类账户所属明细分类账户期末余额分析计算填列的是（应收账款）。
-已知某企业营业收入300万元，营业成本200万，管理费用20万元，销售费用10万元，财务费用5万元，营业外收入8万元。填入利润表中的营业利润是（65万元）。
-在一些规模小、会计业务简单的单位，可以（在其它有关机构配备专职会计人员）。
-资产负债表中“短期借款”项目的填列依据是（短期借款总分类账户期末余额）。
-资产负债表中的应付账款项目应根据应付账款和另一个总分类账户所属明细分类账户的期末贷方余额合计数填列，这个账户是（预付账款账户）。
-资产负债表中的“预付款项”项目，是根据“预付账款”总账所属明细分类账户的借方余额与另一个总账所属明细分类账户的借方余额合计数填列，这个总账账户是（应付账款）。
-资产负债表中的“预收款项”项目应根据“预收账款”和另一个总分类账户所属明细分类账户的期末贷方余额合计数填列，这个账户是（“应收账款”账户）。'''
-    mapdxanswer = danxuanAutoAnswer(dxAnswer, {})
-    for key, value in mapdxanswer.items():
-        if (judgeQueTitle(elements1p, key)):
-            #找到题干后,此时取得是所有单选的选项,来点击正确答案,这里不妥.造成无法满分.2019年11月17日13:04:19在此处找具体的几个选项
-            currentelements1 = rightTiGan[-1].find_element_by_xpath("./../../div[last()]")
-            currentelements1 = currentelements1.find_elements_by_xpath(".//label")
-            rightAnswer = getAnswerElementEqualsFinal(currentelements1, value.strip(), 3, danxuanti_length*4, duoxuanti_length*5)
-            if rightAnswer is None:
-                canTakeWrongNum=canTakeWrongNum+1
-            else:
-                rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
+    dxindex = 0
+    time.sleep(4)  # 保证富文本框加载完毕
+
+    # 20单
+    dxAnswer = '''01．正确答案是：聚酯树脂
+02．正确答案是：合成树脂
+03．正确答案是：63~188kJ/m3
+04．正确答案是：塑料和玻璃纤维
+05．正确答案是：溶剂
+06．正确答案是：结构胶粘剂、非结构胶粘剂、次结构胶粘剂
+07．正确答案是：石油沥青
+08．正确答案是：油分
+09．正确答案是：石油沥青在外力作用下产生变形而不破坏，除去外力后仍保持变形后的形状不变的性质
+10．正确答案是：沥青牌号越高，黏性越小，塑性越好
+11．正确答案是：建筑石油沥青的软化点过高夏季易流淌，过低冬季易硬脆甚至开裂
+12．正确答案是：石油产品系统的轻质油
+13．正确答案是：虽然橡胶的品种不同，掺入的方法也有所不同，但各种橡胶沥青的性能几乎一样
+14．正确答案是：老化
+15．正确答案是：丁苯橡胶
+16．正确答案是：温度稳定性
+17．正确答案是：纤维饱和点
+18．正确答案是：纤维板
+19．正确答案是：木材
+20．正确答案是：方孔筛'''
+    listdxanswer = danxuanAutoAnswerFix(dxAnswer, "：")
+    dxindex = 0
+    for an in listdxanswer:
+        anEle = getAnswerElementEquals(elements1, an, dxindex, 4)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.1)
+        dxindex += 1
 
+    # 10判断
+    panduan_length=10
+    danxuanti_length=20
+    duoxuanti_length=0
+    dxAnswer = '''判断题01．“对”。
+判断题02．“错”。
+判断题03．“对”。
+判断题04．“错”。
+判断题05“  对”。
+判断题06．“对”。
+判断题07．对”。
+判断题08．对”。
+判断题09．对”。
+判断题10．“错”。'''
 
-    mulAnswer = '''按照企业经济活动发生的性质，可以将企业一定会计期间产生的现金流量分为（筹资活动产生的现金流量; 投资活动产生的现金流量; 经营活动产生的现金流量）。
-财务报表是对企业财务状况、经营成果和现金流量的结构性表述，至少应当包括（资产负债表; 利润表; 所有者权益变动表; 报表附注; .现金流量表）。
-独立核算单位的会计工作组织形式有（非集中核算; 集中核算 ）。
-根据有关法规的规定，我国会计人员的主要权限有（有权要求本单位有关部门、人员认真执行国家批准的计划、预算; 有权参与本单位编制计划、制定定额、签订经济合同等工作; 有权提出有关财务开支和经济效益方面的问题和建议; 有权监督、检查本单位有关部门的财务收支、资金使用和财产保管、收发、计算、检验等情况）。
-利润表的格式有（多步式; 单步式）。
-利润表中的“营业收入”应根据下列账户的本期发生额之和来填列（主营业务收入 ; 其他业务收入）。
-企业利润总额的构成内容包括（营业外支出   ; 营业利润 ; 营业外收入）。
-我国的会计法律规范包括（总会计师条例; 会计制度; 会计准则; 会计法 ）。
-下列各项中，属于财务报表中动态报表的是（现金流量表 ; 所有者权益变动表; 利润表）。
-下列各项中，影响企业“营业利润”的项目有（资产减值损失 ; 投资收益; 其他业务成本; 主营业务收入）。
-下列关于资产负债表的各种表述中正确的有（资产负债表是反映企业财务状况的报表; 资产负债表是反映企业财务状况的静态报表; 资产负债表是反映企业某一特定日期财务状况的报表）。
-现金流量表的“现金”是指广义的现金，具体包括（现金等价物; 银行存款; 其他货币资金; 库存现金）。
-一般而言，一个单位是否单独设置会计机构，主要取决于（单位规模的大小; 经济业务和财务收支的繁简; 经营管理的要求）。
-资产负债表“期末余额”栏内各项数字应根据会计账簿记录填列，具体填列方法分为以下几种情况（直接根据总分类账户余额填列; 根据总分类账户所属明细分类账户余额分析计算填列; 根据若干个总分类账户余额计算填列; 根据总分类账户和明细分类账户余额分析计算填列）。
-资产负债表的格式分为（报告式; 账户式）。
-资产负债表中，存货项目填列的依据是以下账户的期末余额（在途物资; 生产成本; 原材料; 库存商品）。
-资产负债表中，货币资金项目填列的依据是以下账户的期末余额（库存现金; 其他货币资金 ; 银行存款）。
-资产负债表中，可以根据有关总分类账户期末余额直接填列的项目有（实收资本; 其他应付款 ; 短期借款）。
-资产负债表中的“应付账款”项目，应根据下列总分类账所属明细分类账户的期末贷方余额合计数填列（预付账款; 应付账款）。
-资产负债表中的“应收账款”项目，应根据下列总分类账户或其所属明细分类账户的期末余额分析计算填列（预收账款 ; 坏账准备; 应收账款）。  
-资产负债表中的“预付款项”项目，应根据下列总分类账所属明细分类账户的期末借方余额合计数填列（应付账款; 预付账款）。'''
-    mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for key, value in mapmulAnswer.items():
-        print(key, value)
-        if (judgeQueTitle(elements1p, key)):
-            for v in value:
-                currentelements1 = rightTiGan[-1].find_element_by_xpath("./../..//div[last()]")
-                currentelements1 = currentelements1.find_elements_by_xpath(".//label")
-                rightAnswer = getAnswerElementEqualsFinal(currentelements1, v.strip(), 3, danxuanti_length*4, duoxuanti_length*5)
-                if rightAnswer is None:
-                    canTakeWrongNum = canTakeWrongNum + 1
-                else:
-                    rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-                time.sleep(0.1)
+    pdAnswer = panduanAutoAnswerFix(dxAnswer, "”。")
+    dxindex = 0
+    for pd in pdAnswer:
+        anEle = getAnswerElementEqualsPanDuan(elements1, pd, dxindex, 2)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
+            time.sleep(0.1)
+        dxindex += 1
 
+    # 6个富文本
+    line = browser.page_source
+    frameId = line.split(":31_answer_id_ifr")[0][-15:].split("id=\"")[1]
+    browser.switch_to.frame(frameId + ":31_answer_id_ifr")
+    browser.find_element_by_id("tinymce").send_keys(
+        "1. 确定要粘接的材料，玻璃粘玻璃， 金属粘玻璃，塑料粘塑料等等2. 确定粘接工艺，是加热固化，UV灯照，还是湿气固化。等等3.确定所需胶粘剂的作用，是用于灌封，密封还是粘接，对粘接强度要求高不高。")
+    browser.switch_to.default_content()
 
-    pdAnswer = '''报告式资产负债表是将资产、负债和所有者权益各项目垂直排列，表的上部分列示资产各项目，下面依次列示负债和所有者权益各项目，报表中三个要素的关系为资产-负债=所有者权益（对）。
-编制利润表时，企业的其他业务收入、其他业务支出、营业外收入、营业外支出都不影响营业利润的金额（错）。
-编制资产负债表时，如果应收账款总分类账户所属明细分类账户出现贷方余额，应在预收款项项目中填列；如果预收账款总分类账户所属明细分类账户出现借方余额，则应填入资产负债表的应收账款项目之中（对）。
-财务报表至少应当包括资产负债表、利润表、所有者权益变动表、现金流量表和报表附注，但小企业编制的财务报表可以不包括现金流量表和报表附注（错）。
-独立核算单位会计工作的组织形式，一般分为集中核算和非集中核算两种（对）。
-根据《企业会计准则第30号——财务报表列报》的规定，我国企业的资产负债表采用账户式结构（对）。
-根据《企业会计准则第30号——财务报表列报》的规定，资产负债表中资产类项目按照重要性的不同分为流动资产和非流动资产（错）。
-根据有关会计法规规定，不具备单独设置会计机构条件的单位，应当在有关机构中配备专职会计人员（对）。
-会计法是调整整个国民经济活动中会计关系法律规范的总称。在我国，会计法主要是指全国人大制定和颁布的《中华人民共和国会计法》，它是我国最基本的会计法，也是一切会计法规的母法（对）。 
-利润表的格式有单步式和多步式两种，我国企业的利润表多采用单步式格式（错）。
-利润表是一种动态报表，反映的是企业在某一会计期间的经营成果，因此它是以全部账户在一定会计期间的发生额为依据编制的（错）。
-利润表又称收益表、损益表，是反映企业在一定会计期间经营成果的财务报表，它是以资产=负债+所有者权益+（收入-费用）这一会计等式为依据编制的（错）。
-利润表中的利润总额=营业利润+营业外收入-营业外支出-所得税费用（错）。
-所谓会计工作组织，就是为了适应会计工作的特点，对会计机构的设置、会计人员的配备、会计制度的制定和执行等项工作所做的统筹安排（对）。
-我国的会计法律规范包括会计法、会计行政管理法规、会计部门规章三个层次（对） 。
-现金流量表是反映企业在一定会计期间现金和现金等价物流入和流出的财务报表，表明企业获得现金和现金等价物的能力，其编制的会计基础是权责发生制（错）。
-现金流量表中的现金等价物是指企业持有的期限短、流动性高、易于转换为已知金额的现金以及价值变动风险很小的投资，通常指购买后在三个月或更短时间内即到期或可转换为现金的投资（对）。
-由于资产负债表是总括反映企业某一特定日期的全部资产、负债、所有者权益情况的报表，决定了资产负债表各项目应根据各有关账户的期末余额直接填列（错）。
-账户式资产负债表的基本结构分为左、右两方，左方为资产方，反映企业各项资产的情况；右方为负债和所有者权益方，反映资产来源的情况。各资产项目金额的合计等于负债和所有者权益各项目金额的合计（对）。
-资产负债表的固定资产项目应按照固定资产账户余额扣除累计折旧和固定资产减值准备账户余额后填列（对）。
-资产负债表的货币资金项目应根据库存现金、银行存款、其他货币资金账户余额合计数填列（对）。
-资产负债表的应付账款项目应根据应付账款和预付账款两个总分类账户各自所属明细分类账户的贷方期末余额合计数填列（对）。
-资产负债表的预付款项项目应根据预付账款和应付账款两个总分类账户各自所属明细分类账户的借方期末余额合计数填列（对）。
-资产负债表的预收款项项目应根据预收账款和应收账款两个总分类账户各自所属明细分类账户的贷方期末余额合计数填列（对）。
-资产负债表中应收票据、短期借款、其他应付款、实收资本、资本公积、盈余公积等报表项目与会计科目相同，可根据有关总分类账户的期末余额直接填列（对）。
-资产负债表中的负债类项目按照偿还期限的不同分为流动负债和非流动负债（对）。
-资产负债表中的所有者权益一般按照净资产的不同来源和特定用途进行分类，其排列顺序依次为实收资本（或股本）、资本公积、盈余公积、未分配利润（对）。	
-总会计师是一个会计专业技术职务，而不是一个行政职位（错）。'''
-    pdWrongAnswer = pdAutoAnswer(pdAnswer, [])
-    for pdindex in range(panduan_length):
-        #这里要注意取题干的xpath可能会有误区,此处要严重注意
-        pdUtil5(pdWrongAnswer, elements1p, ratios, danxuanti_length+duoxuanti_length+pdindex+3, danxuanti_length, pdindex)
-        time.sleep(0.1)
+    line = browser.page_source
+    frameId = line.split(":32_answer_id_ifr")[0][-15:].split("id=\"")[1]
+    browser.switch_to.frame(frameId + ":32_answer_id_ifr")
+    browser.find_element_by_id("tinymce").send_keys(
+        "塑料的优点加工特性好2、质轻3、比强度大4、导热系数小5、化学稳定性好6、电绝缘性好7、性能设计性好8、富有装饰性9、有利于建筑工业化塑料的缺点：1、易老化2、易燃3、耐热性差4、刚度小")
+    browser.switch_to.default_content()
+
+    line = browser.page_source
+    frameId = line.split(":33_answer_id_ifr")[0][-15:].split("id=\"")[1]
+    browser.switch_to.frame(frameId + ":33_answer_id_ifr")
+    browser.find_element_by_id("tinymce").send_keys(
+        "主要分为四种：饱和分、芳香分、胶质和沥青质。饱和分和芳香分是液体的，起到溶剂作用，胶质是胶体状的，沥青质是固体，相当于溶质，起到一定的支架作用")
+    browser.switch_to.default_content()
+
+    line = browser.page_source
+    frameId = line.split(":34_answer_id_ifr")[0][-15:].split("id=\"")[1]
+    browser.switch_to.frame(frameId + ":34_answer_id_ifr")
+    browser.find_element_by_id("tinymce").send_keys(
+        "这要看矿物填充物的成分了。")
+    browser.switch_to.default_content()
+
+    line = browser.page_source
+    frameId = line.split(":35_answer_id_ifr")[0][-15:].split("id=\"")[1]
+    browser.switch_to.frame(frameId + ":35_answer_id_ifr")
+    browser.find_element_by_id("tinymce").send_keys(
+        "木材的腐朽主要是木材里面有木腐菌、白蚁等生物，他们以木材内部的木质素为食，所以木材会逐渐腐朽，对于木材防腐的措施， 有很多，根据木材的使用环境不同而不同，最常见的是对木材进行防腐处理，处理的方法有喷涂防腐药剂，喷涂油漆，而防腐药剂有很多种，有油性的，也有水溶性的，均能有效防止木材的腐朽，目前室外使用的防腐木主要是通过真空加压防腐处理的方法，通过高压，把水溶性防腐药剂打入木材内部，是木腐菌不能在木材内部生存。之外，也有一种炭化木，他的防腐处理方法跟之前的不同，他是通过对木材进行高温热处理，破坏木材内部物质结构，使木腐菌等生存依赖的物质通过高温脱水，变成以外一种物质，不能够为木腐菌食用，这样达到木材防腐的效果。")
+    browser.switch_to.default_content()
+
+    line = browser.page_source
+    frameId = line.split(":36_answer_id_ifr")[0][-15:].split("id=\"")[1]
+    browser.switch_to.frame(frameId + ":36_answer_id_ifr")
+    browser.find_element_by_id("tinymce").send_keys(
+        "1 湿润坍落度筒及其他用具，并把筒房子不吸水的刚性水平底上，然后用脚踩住两个踏板，使坍落度筒在装料时保持位置固定。2 把取得的混凝土试样用小铲分三层均匀的装入桶内，捣实后每层高度为筒高1/3左右，每层用捣棒沿螺旋方向在截面上由外向中心均匀插捣25次，插捣筒边混凝土时，捣棒可以稍稍倾斜，插捣底层时，捣棒应贯穿整个深度。插捣第二层和顶层时，捣棒应插透本层至下一层表面。装顶层混凝土时应高出筒口。插捣过程中，如混凝土坍落到低于筒口，则应随时添加。顶层插捣完后，刮出躲雨的混凝土，并用抹刀抹平。3 清除筒边地板上的混凝土后，垂直平稳的提起坍落度筒。坍落度筒的提高过程应在5~10秒内完成，从开始装料到提起坍落度筒的过程中，应不间断的进行，并应在150S内完成。4 提起筒后，两侧筒高与坍落后混凝土试体最高点之间的高度差，即为混凝土拌合物的坍落度值。 ")
+    browser.switch_to.default_content()
 
     # end answer
-    if canTakeWrongNum>3:
+    if canTakeWrongNum > 3:
         return
     browser.find_element_by_xpath('//input[@type="submit"]').click()
     time.sleep(0.1)
@@ -694,88 +632,8 @@ def writeAnswer4(browser):
 
 
 
-def writeAnswer5(browser):
-    # 试卷444布局
-    # div class="qtext",2019年11月16日14:32:26发现bug,如果有一模一样的选项,系统默认勾选第一个,逻辑略复杂,暂不处理.并非一定要满分.
-    ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
-    elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
 
-    # 单选多选混合,根据题库判断单选还是多选,进行相应的点击,,,规律-前4单,中3多,后3判
-    elements1 = browser.find_elements_by_xpath('//label')
-    dxAnswer = '''定价决策的基本目标不包括下列哪一项（贡献毛益总额最大）。
-    某企业生产需要甲材料，年需要量为100千克，如果自制，单位变动成本20元，而且需购买生产设备，每年发生专属固定费用2 000元；如果外购，单价为30元。企业应选择（外购）。
-    如果开发新产品需要增加专属固定成本，在决策时作为判断方案优劣的标准是各种产品的（剩余贡献毛益总额）。
-    剩余贡献毛益等于（贡献毛益总额-专属固定成本）。 
-    为了弥补生产能力不足的缺陷，增加有关装置、设备、工具等长期资产而发生的成本是（专属成本）。
-    下列情况中，亏损产品应该停产的条件是（亏损产品的贡献毛益小于零）。
-    新产品开发决策中，如果不追加专属成本，且生产经营能力不确定时，决策应采用的指标是（贡献毛益）。
-    在经营决策过程中，由于选取最优方案而放弃次优方案所丧失的潜在收益，也就是选择目前接受的方案所付出的代价，这是指（机会成本）。
-    在决策过程中，由于选取最优方案而放弃次优方案所丧失的潜在收益，也就是选择目前接受的方案所付出的代价的成本是（机会成本）。
-    在需求导向的定价策略中，对于弹性较小的产品，可以（制定较高的价格）。
-    差量成本也称为差别成本，形成成本差异的原因是（生产能力利用程度不同）。'''
-    mapdxanswer = danxuanAutoAnswer(dxAnswer, {})
-    for key, value in mapdxanswer.items():
-        if (judgeQueTitle(elements1p, key)):
-            rightAnswer = getAnswerElementEqualsFinal(elements1, value, 1, 16, 20)
-            rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-            time.sleep(0.1)
-    # if (judgeQueTitle(elements1p, "生产需要甲材料，年需要量为100千克，如果自制，单位变动成本20")):
-    #     rightAnswer = getAnswerElementEquals4(elements1, "保本点升高，利润减少", 1)
-    #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-    #     time.sleep(0.1)
 
-    mulAnswer = '''定价策略的主要类型有（需求导向的定价策略; 利益导向的定价策略; 竞争导向的定价策略; 成本导向的定价策略）。 
-    定价决策的影响因素有（政策与法律的约束; 产品的市场生命周期; 供求关系; 产品的价值）。
-    关于变动成本加成定价，下列说法正确的有（成本加成率=贡献毛益÷变动成本; 单位价格=单位-单位变动成本。
-    某企业现有生产设备可用于甲、乙、丙三种产品的生产，相关资料如表所示。下列说法正确的有（乙丙两种产品的差别收入为162000元; 甲产品贡献毛益总额为160000元; 甲乙两种产品的差别利润为82000元 ）。
-    某企业现有用于新产品生产的剩余生产工时为3 000小时，有甲、乙、丙三种新产品可供投入生产，但由于剩余生产能力有限，公司只能选择一种产品进行生产。有关资料如下表所示，不需追加专属成本。下列说法中正确的有（该企业应生产丙产品; 生成丙产品可以获得利润7500元; 乙产品的贡献毛益总额为5250元; 甲产品的单位贡献毛益为70元）。
-    某企业新投产一种甲产品，预计年产销量1 000件，生产中耗用直接材料250 000元，直接工资50 000元，制造费用50 000元。经研究决定，在产品完全成本的基础上加成40%作为产品的目标售价。下列说法正确的是（单位甲产品的完全成本为350元; 甲产品的目标售价为490元）。
-    企业短期经营决策的特点有（是多种方案的选择; 有明确的目标; 着眼于未来）。
-    生产决策要解决的问题主要有三个，即（如何组织和实施生产 ; 利用现有生产能力生产什么产品; 各种产品的生产量是多少 ）。 
-    属于相关成本的是（付现成本; 重置成本; 专属成本; 机会成本）。
-    影响短期经营决策的因素主要包括（相关收入; 相关成本; 相关业务量 ）。'''
-    mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for key, value in mapmulAnswer.items():
-        print(key, value)
-        if (judgeQueTitle(elements1p, key)):
-            for v in value:
-                rightAnswer = getAnswerElementEqualsFinal(elements1, v, 2, 16, 20)
-                rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-                time.sleep(0.1)
-
-    # if (judgeQueTitle(elements1p, "从保本图得知（")):
-    #     rightAnswer = getAnswerElementEquals4(elements1, "在其他因素不变的情况，保本点越低，盈利面积越大",2)
-    #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
-    #     rightAnswer = getAnswerElementEquals4(elements1, "实际销售量超过保本点销售量部分即是安全边际",2)
-    #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
-
-    pdAnswer = '''边际收入是指业务量增加或减少一个单位所引起的收入变动。（对）
-    差量收入是指与特定决策方案相联系、能对决策产生重大影响、决策时必须予以充分考虑的收入。（错）
-    根据顾客的不同需求，区别对待，采用不同的定价方式，属于成本导向的定价策略。（错）
-    机会成本是指在决策过程中，由于选取最优方案而放弃次优方案所丧失的潜在收益，也就是选择目前接受的方案所付出的代价。（对）
-    跨国公司为了实现整体利益最大化，可以根据不同国家和地区在税率、汇率、外汇管制等方面的差异而采取不同的转移定价政策。这种定价策略属于竞争导向的定价策略。（错）
-    亏损产品满足单价大于其单位变动成本条件下时，就不应当停产。 （对）
-    相关成本分析法是指在备选方案收入相同的情况下，只分析各备选方案增加的固定成本和变动成本之和，采用这一方法必须是在备选方案业务量确定的条件下。（对）
-    相关业务量是指在短期经营决策中必须重视的，与特定决策方案相联系的产量或销量。（对）
-    以利益为导向的定价策略是根据企业追求利润最大化这一目标，采用不同的定价策略。（对）
-    在变动成本加成定价法下，成本加成率=贡献毛益÷变动成本。（对）
-    在新产品开发决策中，如果不追加专属成本时，决策方法可为利润总额比对法。（错）
-    专属成本是指明确归属于特定决策方案的固定成本。（对）
-    变动成本加成法是以产品生产的完全成本作为定价基础，加上一定比例的利润来确定产品价格的一种方法。（错）
-    长期经营决策是对企业的生产经营决策方案进行经济分析。（错）'''
-    pdUtil5(pdAutoAnswer(pdAnswer, []), elements1p, ratios, 8, 4, 0)
-    pdUtil5(pdAutoAnswer(pdAnswer, []), elements1p, ratios, 9, 4, 1)
-    pdUtil5(pdAutoAnswer(pdAnswer, []), elements1p, ratios, 10, 4, 2)
-    pdUtil5(pdAutoAnswer(pdAnswer, []), elements1p, ratios, 11, 4, 3)
-
-    # end answer
-    browser.find_element_by_xpath('//input[@type="submit"]').click()
-    time.sleep(0.1)
-    # save and submit
-    browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
-    browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
 def writeAnswer6(browser):
     # 试卷444布局
     # div class="qtext",2019年11月16日14:32:26发现bug,如果有一模一样的选项,系统默认勾选第一个,逻辑略复杂,暂不处理.并非一定要满分.
@@ -819,7 +677,7 @@ def writeAnswer6(browser):
 长期投资决策的过程比较复杂，需要考虑的因素很多。其中主要的因素包括（投资项目计算期; 货币时间价值; 资本成本; 现金流量 ）。
 长期投资决策中关于现金流量的假设有（建设期投入全部资金假设; 全投资假设; 现金流量符号假设; 项目计算期时点假设 ）。'''
     mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for key, value in mapmulAnswer.items():
+    for value in mapmulAnswer:
         print(key, value)
         if (judgeQueTitle(elements1p, key)):
             for v in value:
@@ -856,6 +714,8 @@ def writeAnswer6(browser):
     # save and submit
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
+
+
 def writeAnswer7(browser):
     # 试卷444布局
     # div class="qtext",2019年11月16日14:32:26发现bug,如果有一模一样的选项,系统默认勾选第一个,逻辑略复杂,暂不处理.并非一定要满分.
@@ -895,7 +755,7 @@ def writeAnswer7(browser):
 算的基本功能主要包括（评价业绩  ; 控制业务 ; 整合资源 ; 确立目标）。 
 预算控制的原则主要包括（全员控制 ; 全程控制 ; 全面控制）。 '''
     mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for key, value in mapmulAnswer.items():
+    for value in mapmulAnswer:
         print(key, value)
         if (judgeQueTitle(elements1p, key)):
             for v in value:
@@ -928,6 +788,8 @@ def writeAnswer7(browser):
     # save and submit
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
+
+
 def writeAnswer8(browser):
     # 试卷444布局
     # div class="qtext",2019年11月16日14:32:26发现bug,如果有一模一样的选项,系统默认勾选第一个,逻辑略复杂,暂不处理.并非一定要满分.
@@ -957,7 +819,7 @@ def writeAnswer8(browser):
     取得成本是下列哪些选择之和（购置成本; 订货变动成本; 订货固定成本 ）。
     下列可以影响直接材料用量差异的原因有（材料的质量; 工人的技术熟练程度; 工人的责任感; 材料加工方式的改变）。'''
     mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for key, value in mapmulAnswer.items():
+    for value in mapmulAnswer:
         print(key, value)
         if (judgeQueTitle(elements1p, key)):
             for v in value:
@@ -1017,7 +879,7 @@ def writeAnswer9(browser):
 责任中心的设置应具备的条件（责任者; 经营绩效; 资金运动; 职责和权限 ）。
 酌量性成本中心发生的费用包括以下哪些（管理费用; 销售费用 ）。'''
     mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for key, value in mapmulAnswer.items():
+    for value in mapmulAnswer:
         print(key, value)
         if (judgeQueTitle(elements1p, key)):
             for v in value:
@@ -1047,6 +909,8 @@ def writeAnswer9(browser):
     # save and submit
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
+
+
 def writeAnswer10(browser):
     # 试卷444布局
     # div class="qtext",2019年11月16日14:32:26发现bug,如果有一模一样的选项,系统默认勾选第一个,逻辑略复杂,暂不处理.并非一定要满分.
@@ -1073,7 +937,7 @@ def writeAnswer10(browser):
 平衡计分卡的四个视角是（财务视角 ; 内部业务流程视角; 学习与成长视角; 客户视角 ）。
 在ABC中，依据作业是否会增加顾客价值，分为（ 不增值作业 ; 增值作业 ）。'''
     mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for key, value in mapmulAnswer.items():
+    for value in mapmulAnswer:
         print(key, value)
         if (judgeQueTitle(elements1p, key)):
             for v in value:
@@ -1117,10 +981,12 @@ def enterTest(browser, xkurl):
     enterStudy(browser)  # 进入学习的按钮会新开一个tab
     time.sleep(1)
     windowstabs = browser.window_handles
-    if len(windowstabs)>1:#如果没找到课程,至少别报错
+    if len(windowstabs) > 1:  # 如果没找到课程,至少别报错
         browser.switch_to.window(windowstabs[1])
         browser.find_elements_by_css_selector('img[class="pull-right"]')  # find一下,保证新页面加载完成
         browser.get(xkurl)  # 先考形1
+    else:
+        return 0
 
 
 # 2.立即考试.判断一下,防止多次考试
@@ -1133,7 +999,6 @@ def readyToTest(browser):
     return 0
 
 
-
 # 论坛形式试卷进入方法
 def readyToTestForum(browser):
     readyTest = browser.find_element_by_xpath('//button[starts-with(@id,"single_")]')
@@ -1141,7 +1006,7 @@ def readyToTestForum(browser):
     return 1
 
 
-# 等待三秒,让我们看到卷子已经答题提交完成,然后关tab,切到第一个tab,再进学习
+
 def wait3AndCloseTab(browser):
     time.sleep(2)
     browser.close()
@@ -1149,11 +1014,11 @@ def wait3AndCloseTab(browser):
     time.sleep(1.5)
 
 
-xingkao1 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=478067'
-xingkao2 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=478068'
-xingkao3 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=478069'
-xingkao4 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=478070'
-
+xingkao1 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=469745'
+xingkao2 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=469746'
+xingkao3 = 'http://hubei.ouchn.cn/mod/forum/view.php?id=518134'
+xingkao4 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=469747'
+xingkao5 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=469748'
 
 option = webdriver.ChromeOptions()
 option.add_argument('disable-infobars')
@@ -1178,27 +1043,25 @@ for key in keys:
     browser.find_element_by_css_selector('button[value="login"]').click()
     # enter study...此处要注意,不同账号进来看到的开放大学指南的位置不同,要动态抓元素...2019年11月13日09:10:54发现不用抓元素,直接根据URL进入国开开放指南页面,并且形考1-5的URL也是指定的,所以不用抓元素
 
-    enterTest(browser, xingkao1)
-    if readyToTestForum(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer1(browser)
-    wait3AndCloseTab(browser)
+    if enterTest(browser, xingkao1) != 0:
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer1(browser)
+        wait3AndCloseTab(browser)
 
-    enterTest(browser, xingkao2)
-    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer2(browser)
-    wait3AndCloseTab(browser)
+        enterTest(browser, xingkao2)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer2(browser)
+        wait3AndCloseTab(browser)
 
-    enterTest(browser, xingkao3)
-    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer3(browser)
-    wait3AndCloseTab(browser)
+        enterTest(browser, xingkao3)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer3(browser)
+        wait3AndCloseTab(browser)
 
-    enterTest(browser, xingkao4)
-    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer4(browser)
-    wait3AndCloseTab(browser)
-
-
+        enterTest(browser, xingkao4)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer4(browser)
+        wait3AndCloseTab(browser)
     # 5个形考走完提交之后直接换账号
     browser.get("http://passport.ouchn.cn/Account/Logout?logoutId=student.ouchn.cn")
     time.sleep(2)

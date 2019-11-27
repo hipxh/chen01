@@ -24,6 +24,12 @@ driver.find_element_by_xpath('//input[@id="login_account"]').send_keys("junlin")
 driver.find_element_by_xpath('//input[@id="login_password"]').send_keys("123")
 time.sleep(2)
 driver.find_element_by_xpath('//button[@id="login_btn"]').click()#登录
+driver.find_element_by_xpath('//td[contains(text(), "第一")]')
+time.sleep(2)
+driver.execute_script('var q=document.getElementsByClassName("wtHolder")[0].scrollTop=100000')
+time.sleep(2)
+driver.execute_script('var q=document.getElementsByClassName("wtHolder")[0].scrollLeft=100000')
+time.sleep(2)
 driver.find_element_by_xpath('//td[contains(text(), "第一")]').click()#点击第一事业部
 proxy.new_har("kappa", options={'captureHeaders': True, 'captureContent': True})#准备抓请求
 driver.find_element_by_xpath('//td[contains(text(), "第一")]')

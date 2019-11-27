@@ -166,21 +166,21 @@ def writeAnswer1(browser):
 
 
     # 5单
-    dxAnswer = '''题目： —Do you have much experience with caring for babies?—    .	答案：Yes, I do. I often take care of kids in my free time.
-题目： Lily is a good student except ________ she is a little bit careless.	答案：that 
-题目：—How do you feel about your family life? —                      .	答案：Not bad. I think it is a good choice to be a full-time mother.
-题目：—It's raining so heavily outside. I'm terribly anxious about my son's safety.—                      .	答案：Don't worry about him. He will come back safe and sound.
-题目：—Ken did badly in his math test. I'm terribly worried about the result.—                      .	答案： Come on. It isn't the end of the world.
-题目：—Our son has picked up some bad habits recently, and I am really worried about it.—                      .	答案：Cheer up. I believe he will overcome it.
-题目：He asked me ___________ Zhang Hua came to school or not. 	答案： whether
-题目：I want to know________ . 	答案：what his name is
-题目：It is said that ______ 2000 factories were closed down during the economic crisis. 	答案： approximately
-题目：The birth rate of the country decreases ______ with years.	答案：progressively
-题目：This movie is ________ that one. 	答案：as interesting as
-题目：Tom won the first prize of oral English contest, which is beyond his _.	答案：expectation
-题目：We consider it necessary ______ Tom should improve his behavior.	答案： that 
-题目：We often compare children ______ flowers.	答案： to
-题目：Young people ______ 62% of University teaching staff.	答案：comprise'''
+    dxAnswer = '''题目：– Do you think I can borrow your bike for a few hours?答案：I'm sorry, but I really need it this afternoon.
+题目：– Excuse me, could you tell the time?答案：It's three thirty by my watch.
+题目：– Good afternoon. Can I help you?答案：I need to buy a birthday present for my son.
+题目：– Hello, may I speak to John?答案：Just a second, please.
+题目：– Thank you for your invitation.答案：It's a pleasure.
+题目：As the bus came round the corner, it ran ________ a big tree by the roadside.答案：into
+题目：Both the kids and their parents __________English, I think. I know it from their accent.答案：are
+题目：Did you notice the guy _________head looked like a big potato?答案：whose
+题目：John's father _________ mathematics in this school ever since he graduated from Harvard答案：has taught
+题目：Never before _________ see such a terrible car accident on the road!答案：did I
+题目：On average, a successful lawyer has to talk to several ________ a day.答案：clients
+题目：Our house is about a mile from the railway station and there are not many houses答案：in between
+题目：Professor Smith promised to look _ my paper, that is, to read it carefully before the答案：over
+题目：What is the train ___________ to Birmingham?答案：fare
+题目：When Lily came home at 5 pm yesterday, her mother ______dinner in the kitchen.答案：was cooking'''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
@@ -191,10 +191,12 @@ def writeAnswer1(browser):
 
     listAnswer2=[]
     dxindex=0
-    if "阅读理解：选择题" in browser.page_source:
-        dxAnswer='''子问题 1：C; 子问题 2：B; 子问题 3：C; 子问题 4：B; 子问题 5：A'''
-    if "阅读理解：正误判断" in browser.page_source:
-        dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：T; 子问题 4：T; 子问题 5：F'''
+    if "排序题" in browser.page_source:
+        dxAnswer='''子问题 1：C; 子问题 2：E; 子问题 3：A; 子问题 4：D; 子问题 5：B'''
+    if "判断题" in browser.page_source:
+        dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：T; 子问题 4：F; 子问题 5：F'''
+    if "选择题" in browser.page_source:
+        dxAnswer = '''子问题 1：C; 子问题 2：B; 子问题 3：B; 子问题 4：C; 子问题 5：A'''
 
     for an in dxAnswer.split("; "):
         listAnswer2.append(an[-1])
@@ -204,8 +206,6 @@ def writeAnswer1(browser):
         sel.send_keys(listAnswer2[dxindex])
         dxindex+=1
 
-
-
     # end answer-翻页的情况下用的结束答题
     if canTakeWrongNum > 3:
         return
@@ -214,7 +214,6 @@ def writeAnswer1(browser):
     # save and submit
     browser.find_elements_by_xpath('//input[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
-
 
 def writeAnswer2(browser):
     canTakeWrongNum = 0
@@ -229,11 +228,21 @@ def writeAnswer2(browser):
 
 
     # 5单
-    dxAnswer = '''题目： —Do you mind if I record your lecture?—                      .	答案：No，not at all.
-题目： —Linda, what's wrong with your grandmother?—                      .	答案：She hurt her leg.
-题目：—I'm sorry to hear that your grandmother is ill in hospital.—  	答案： It's very kind of you.
-题目：—Is your grandmother getting well now?—                      .	答案：Yes, she is much better now.
-题目：—Looking after a baby is not an easy job, is it?—                      .	答案：No, it isn't.'''
+    dxAnswer = '''题目：– How many languages does Peter speak?答案：Five languages.
+题目：– Something went wrong with my television last night.答案：I'm sorry to hear that.
+题目：– Would you like something to drink? What about a cup of tea?答案：No, thanks.
+题目：– You are late. The discussion started 30 minutes ago.答案：I am really sorry.
+题目：– Your ID card, please.答案：Here you are.
+题目：_________ the War of Independence, the United States was an English colony.答案：Before
+题目：Eggs, though rich in nourishments, have ________ of fat.答案：a large number
+题目：Every year thousands of lives ________ in road accidents because of careless driving.答案：are lose
+题目：Had you come five minutes earlier, you _________ the train to Birmingham. But now you答案：would have caught
+题目：If she wants to stay thin, she must make a __________ in her diet.答案：change
+题目：No matter _________, the little sisters managed to round the sheep up and drive them答案：how hard it was snowing
+题目：The student were all entertained in a Mexican restaurant, at Professor Brian's ________答案：expense
+题目：The young lady coming over to us _______ our English teacher; the way she walks tells us答案：must be
+题目：Tom, what did you do with my documents? I have never seen such a ________ and答案：mess
+题目：You shouldn't ________ your time like that, Bob; you have to finish your school work答案：kill'''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
@@ -244,8 +253,12 @@ def writeAnswer2(browser):
 
     listAnswer2=[]
     dxindex=0
-    if "阅读短文" in browser.page_source:
-        dxAnswer='''子问题 1：A; 子问题 2：B; 子问题 3：B; 子问题 4：A; 子问题 5：C'''
+    if "排序题" in browser.page_source:
+        dxAnswer='''子问题 1：E; 子问题 2：B; 子问题 3：C; 子问题 4：A; 子问题 5：D'''
+    if "选择题" in browser.page_source:
+        dxAnswer='''子问题 1：B; 子问题 2：C; 子问题 3：A; 子问题 4：A; 子问题 5：C'''
+    if "正误判断题" in browser.page_source:
+        dxAnswer='''子问题 1：T; 子问题 2：F; 子问题 3：T; 子问题 4：T; 子问题 5：F'''
 
     for an in dxAnswer.split("; "):
         listAnswer2.append(an[-1])
@@ -254,8 +267,6 @@ def writeAnswer2(browser):
     for sel in browser.find_elements_by_class_name("custom-select"):
         sel.send_keys(listAnswer2[dxindex])
         dxindex+=1
-
-
 
     # end answer-翻页的情况下用的结束答题
     if canTakeWrongNum > 3:
@@ -267,8 +278,7 @@ def writeAnswer2(browser):
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
 
 
-
-
+# 有两个选择题的题干一样，答案不一样
 def writeAnswer3(browser):
     canTakeWrongNum = 0
     #单多选在同一页混的时候,标记下单选题的数量
@@ -282,16 +292,21 @@ def writeAnswer3(browser):
 
 
     # 5单
-    dxAnswer = '''题目： He asked John ______ he could swim.	答案： if 
-题目： He is worth ____________.	答案：trusting
-题目：John asked me _______ to visit his uncle's farm with him.	答案：whether I would like
-题目：She _________ the children not to make any noise.	答案：told 
-题目：She is a ___________ woman. 	答案：confident young
-题目：She said she __________ lost a pen.	答案：had
-题目：There is only one thing that people can't _____________you, and that is your wisdom.	答案：take away from
-题目：We found him ___________ in the laboratory.	答案： working
-题目：We must keep our classroom _____________.	答案：clean
-题目：You'd better ________ to hospital at once. 	答案：go'''
+    dxAnswer = '''题目：- Good morning, sir. May I help you?答案：Yes, I need some salt.
+题目：– I didn't know my identity card was needed, sir.答案：Sorry, but that's no excuse.
+题目：Although he did not know London well, he made his way _____ to the airport.答案：easily enough
+题目：-Can you go out with us for dinner this evening?答案：Thanks a lot, but I'm busy tonight.
+题目：Do you know the man _______ under the apple tree?答案：lying
+题目：-Excuse me, where is Dr Smith's office?答案：Sorry, I don't know. But you can ask the man over there.
+题目：Harry, who had failed in the final exam, had a great worry ________ his mind.答案：on
+题目：I don't know the park, but it's _________ to be quite beautiful. 答案：said
+题目：Is the library ________ now? No, it's ______.答案：open; closed
+题目：Mike is better than Peter ________ swimming. 答案：at
+题目：Nancy is ________ girl.答案：an eighteen-year-old
+题目：The baby is hungry, but there's ________ milk in the bottle.答案：little
+题目：-These are certainly beautiful flowers. Thank you very much.答案：It's my pleasure.
+题目：They have learned about _____in recent years.答案：hundreds of English words
+题目：Two thousand dollars ____ enough for the car.答案：is'''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
@@ -302,10 +317,12 @@ def writeAnswer3(browser):
 
     listAnswer2=[]
     dxindex=0
-    if "阅读理解：选择题" in browser.page_source:
-        dxAnswer = '''子问题 1：C; 子问题 2：C; 子问题 3：A; 子问题 4：B; 子问题 5：B'''
-    if "阅读理解：正误判断" in browser.page_source:
-        dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：T; 子问题 4：F; 子问题 5：F'''
+    if "排序题" in browser.page_source:
+        dxAnswer = '''子问题 1：B; 子问题 2：E; 子问题 3：C; 子问题 4：A; 子问题 5：D'''
+    if "选择题" in browser.page_source:
+        dxAnswer = '''子问题 1：A; 子问题 2：B; 子问题 3：A; 子问题 4：C; 子问题 5：C'''
+    if "选择题" in browser.page_source:
+        dxAnswer = '''子问题 1：C; 子问题 2：C; 子问题 3：C; 子问题 4：A; 子问题 5：B'''
 
     for an in dxAnswer.split("; "):
         listAnswer2.append(an[-1])
@@ -326,7 +343,7 @@ def writeAnswer3(browser):
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
 
 
-
+# 有两个选择题的题干一样，答案不一样
 def writeAnswer4(browser):
     canTakeWrongNum = 0
     #单多选在同一页混的时候,标记下单选题的数量
@@ -340,16 +357,21 @@ def writeAnswer4(browser):
 
 
     # 5单
-    dxAnswer = '''题目： I have trouble in ________ my homework. 	答案：doing
-题目： This plant can't be exposed ____________strong sunshine.	答案：to
-题目：– Brand was Jane's brother!–          he reminded me so much of Jane!	答案：No wonder 
-题目：– How about going to the cinema?– ___________	答案： Sounds like a good idea!
-题目：– May I open the window to let in some fresh air?–______	答案：Go ahead!
-题目：– Ok, I'll fix your computer right now.– Oh, take your time. _____	答案：I'm in no hurry.
-题目：– Susan, will you please go and empty that drawer?  –   	答案： What for？
-题目：A dictionary may define genetics _________ simply “the science of the study of heredity”.	答案：as
-题目：He asked his neighbor to ________  his house.	答案：keep an eye on
-题目：People __________ foxes __________ clever but sly animals. 	答案：consider…as'''
+    dxAnswer = '''题目：— Can you tell me where I can park the car?答案：Well, just over there
+题目：— Could I talk to Prof. Lee?答案：Yes, speaking 
+题目：— I've got a bad cold today.答案： Oh, dear! I hope you get better soon
+题目：— Sam, this is my friend, Jane.答案： Glad to meet you, Jane 
+题目：— What's the matter with you?答案：I feel a bit sick
+题目： I was giving a talk to a large group of people，the same talk I ___to half a dozen other答案：had given
+题目： Neither John         his father was able to wake up early enough to catch the morning答案：nor
+题目： The atmosphere            certain gases mixed together in definite proportions.答案：consists of 
+题目： The new order means _____ overtime. 答案：working
+题目： With his work completed, the manager stepped back to his seat, feeling pleased ____ he答案：that
+题目：It is said that _____ boys in your school like playing football in their spare time, though答案：quite a few
+题目：Jane's dress is similar in design            her sister's.答案：to
+题目：She has two best friends. _____of them is in the country.答案：Neither
+题目：The sports meeting was put off till the next week            rain.答案： because of
+题目：Today's weather is _____worse than yesterday's.答案：much '''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
@@ -360,10 +382,13 @@ def writeAnswer4(browser):
 
     listAnswer2=[]
     dxindex=0
-    if "英译汉" in browser.page_source:
-        dxAnswer = '''子问题 1：B; 子问题 2：A; 子问题 3：C; 子问题 4：B; 子问题 5：B'''
-    if "阅读理解：正误判断" in browser.page_source:
-        dxAnswer = '''子问题 1：F; 子问题 2：F; 子问题 3：T; 子问题 4：T; 子问题 5：T'''
+    if "排序题" in browser.page_source:
+        dxAnswer = '''子问题 1：E; 子问题 2：C; 子问题 3：D; 子问题 4：B; 子问题 5：A'''
+    if "选择题" in browser.page_source:
+        dxAnswer = '''子问题 1：A; 子问题 2：B; 子问题 3：C; 子问题 4：C; 子问题 5：C'''
+    if "正误判断题" in browser.page_source:
+        dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：F; 子问题 4：T; 子问题 5：F'''
+
 
     for an in dxAnswer.split("; "):
         listAnswer2.append(an[-1])
@@ -394,23 +419,22 @@ def writeAnswer5(browser):
     elements1 = browser.find_elements_by_xpath('//label')
     dxindex = 0
 
-
     # 5单
-    dxAnswer = '''题目： I have no idea _____ to make my speech interesting.	答案：how  
-题目： My suggestion is that Tom _____ to see a doctor at once. 	答案：go
-题目：- I'm sorry for breaking the cup.- Oh, ____ . I've got plenty.	答案：forget it
-题目：-I've been using the computer for a long time and my neck doesn't feel well.-____________________	答案：You'd better stop the work and take a rest.
-题目：-It's rather cold in here. Do you mind if I close the window?-_______.	答案：No, go ahead
-题目：-Must I finish the report today?-_____. You can finish it tomorrow.	答案：No, you don't have to
-题目：-We've worked for a long time, what about stopping a while to have a rest?-_____________________.	答案：That's a good idea.
-题目：Does the design _____ the needs of our users? 	答案：meet
-题目：He left the company by mutual ______ last September. 	答案：consent
-题目：Nowadays people spend more time exercising to keep _____. 	答案：fit
-题目：Parents transmit some of their _____ to their children. 	答案：characteristics 
-题目：People wear _____ suits on formal occasions.	答案：formal 
-题目：The company is trying every _____ to improve the quality of products. 	答案：means
-题目：The news came _____ we won the first prize in the competition. 	答案：that  
-题目：We have worries _____ we'll miss the best selling season of the skirts. 	答案：that '''
+    dxAnswer = '''题目：— Can you help me clear up the mess?答案： No problem
+题目：— Have a nice holiday, Ted.答案：Thank you, and you too
+题目：— How was the journey to London?答案：It went very well
+题目：— What's the best way to get to the Empire Hotel from here?答案： Walking through the wood
+题目：— You needn't do the work till after the New Year.答案：Oh, good! Thank you.
+题目： He is fond of playing ____ piano while his brother is interested in listening to ___ music. 答案： the; /    
+题目： Important ________ his discovery might be, it was regarded as a matter of no account in答案： as  
+题目：_______ her and then try to copy what she does.答案： Watch 
+题目：_______ tomorrow's lessons, Frank has no time to go out with his friends. 答案： Not having prepared 
+题目：__________ these honours he received a sum of money. 答案：Besides 
+题目：A police officer claimed that the young man had attempted to __________ paying his fare.答案： avoid
+题目：I want to buy a ______ wallet for him. 答案： small black leather 
+题目：The young ______ interested in pop music. 答案：are
+题目：This kind of material expands _________ the temperature increasing. 答案： with  
+题目：Will you _____ me a favor, please?答案：do '''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
@@ -421,8 +445,12 @@ def writeAnswer5(browser):
 
     listAnswer2=[]
     dxindex=0
-    if "翻译" in browser.page_source:
-        dxAnswer = '''子问题 1：B; 子问题 2：C; 子问题 3：A; 子问题 4：C; 子问题 5：A'''
+    if "填写主题句" in browser.page_source:
+        dxAnswer = '''子问题 1：C; 子问题 2：E; 子问题 3：A; 子问题 4：B; 子问题 5：D'''
+    if "选择题" in browser.page_source:
+        dxAnswer = '''子问题 1：C; 子问题 2：B; 子问题 3：A; 子问题 4：C; 子问题 5：B'''
+    if "正误判断题" in browser.page_source:
+        dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：F; 子问题 4：F; 子问题 5：T'''
 
     for an in dxAnswer.split("; "):
         listAnswer2.append(an[-1])
@@ -441,9 +469,7 @@ def writeAnswer5(browser):
     browser.find_elements_by_xpath('//input[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
 
-
-
-
+# 有两个选择题的题干一样，答案不一样
 def writeAnswer6(browser):
     canTakeWrongNum = 0
     #单多选在同一页混的时候,标记下单选题的数量
@@ -457,16 +483,21 @@ def writeAnswer6(browser):
 
 
     # 5单
-    dxAnswer = '''题目： ___________ was not very wise.	答案：Telling her the truth
-题目： _________, the number of private cars will increase sharply in the coming couple of years. 	答案：Undoubtedly
-题目： Hardly had the train arrived at the destination when the passengers ________ out in no time. 	答案：flooded
-题目： It is an open secret _____he is not a qualified manager. 	答案：that 
-题目： The more people you know, ___________ knowledge you get. 	答案：the more
-题目：Good friends means sharing happiness but also sadness ____ each 	答案：with
-题目：It is in the afternoon _______ he got the bad news.	答案：that
-题目：This is an opportunity to _______ the reputation of the company. 	答案：enhance
-题目：Without your help, I ______ obtained today's success. 	答案：would not have
-题目：You'd better        listening to the teacher in the lesson.	答案：pay attention to'''
+    dxAnswer = '''题目：— Are you on holiday here?答案：No, we aren't. We live here 
+题目：— Do you mind if I read the newspaper on the table?答案：Go ahead, please
+题目：— Is it going to be warm next week?答案： Yes, it is 
+题目：— What do you usually do in your spare time?答案：Reading
+题目：— What's the fare to the museum?答案： Five dollars
+题目： Would you like something ______________?答案：to drink
+题目：_______________ is the population of Paris?答案：What
+题目：As the busiest woman there, she made ______________ her duty to look after all the other答案：it
+题目：Before the final examination, some students have shown ______ of tension. They even答案：signs
+题目：It was getting __________, he had to stop to have a rest.  答案：darker and darker
+题目：It's a good idea. But who's is going to _______ the plan?答案：carry out
+题目：It's bad _____ for you to smoke in the public places where smoking is not allowed.答案：behavior
+题目：The problem is not _____ so easy as you think. It's far from being settled.答案：nearly
+题目：The wild flowers looked like a soft orange blanket ______________ the desert.答案：covering
+题目：The young actor who had been thought highly of _______ to be a great disappointment.答案：turned out'''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
@@ -477,10 +508,13 @@ def writeAnswer6(browser):
 
     listAnswer2=[]
     dxindex=0
-    if "阅读理解：选择题" in browser.page_source:
-        dxAnswer = '''子问题 1：D; 子问题 2：B; 子问题 3：E; 子问题 4：A; 子问题 5：C'''
-    if "阅读理解：正误判断" in browser.page_source:
-        dxAnswer = '''子问题 1：F; 子问题 2：F; 子问题 3：F; 子问题 4：T; 子问题 5：F'''
+    if "选择题" in browser.page_source:
+        dxAnswer = '''子问题 1：A; 子问题 2：A; 子问题 3：C; 子问题 4：B; 子问题 5：C'''
+    if "选择题" in browser.page_source:
+        dxAnswer = '''子问题 1：C; 子问题 2：A; 子问题 3：B; 子问题 4：C; 子问题 5：C'''
+    if "正误判断" in browser.page_source:
+        dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：F; 子问题 4：T; 子问题 5：T'''
+
 
     for an in dxAnswer.split("; "):
         listAnswer2.append(an[-1])
@@ -500,7 +534,7 @@ def writeAnswer6(browser):
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
 
 
-
+# 有两个选择题的题干一样，答案不一样
 def writeAnswer7(browser):
     canTakeWrongNum = 0
     #单多选在同一页混的时候,标记下单选题的数量
@@ -514,16 +548,21 @@ def writeAnswer7(browser):
 
 
     # 5单
-    dxAnswer = '''题目：_________ we've no money, we can't buy it.	答案：Since
-题目：Apple developed its iPad-based textbooks in ____________ with major textbook publishers.	答案：conjunction
-题目：But the Internet can bring some ________ effects, too. The most common one, some teenagers are addicted to computer games on the Internet. 	答案：negative
-题目：I have _________ some courses and software to my Smartphone, and I find they are very interesting and easy to use. 	答案：downloaded
-题目：No more having to buy expensive textbooks which you will only use for a year or two and then sell or _______ away. 	答案：give
-题目：Quizzes are part of the lecture program to keep students engaged and keep them _________, for students to be able to check that they understood what was covered.	答案：thinking
-题目：Smartphone makes it simple ________ us ________ take a photo. 	答案：for…to
-题目：Some universities offer free, non-credit MOOCs __________ to anyone in the world.	答案：available
-题目：We can certainly deliver high-quality education to many students at much ________ cost.	答案：lower
-题目：Well, that's to say, every coin has two sides, ________ technology.	答案：so does '''
+    dxAnswer = '''"题目：— Here you are, Sir.答案：Thank you very much
+"题目：— May I speak to Prof . Li please?答案：I'm afraid you've got the wrong number 
+"题目：— So sorry to trouble you.答案：It's a pleasure
+"题目：— What does your English teacher look like?答案：She looks much like her mother
+"题目：— Would you like a tea?答案：Yes, please
+"题目：--Did the medicine make you feel better?--No. The more __________, ___________ I feel.答案：medicine I take; the worse
+"题目：Have you ever visited the Summer Palace, _____ there are many beautiful halls, ridges答案：where
+"题目：How can he _____________ if he is not _____________?答案：hear; listening
+"题目：It is not until you have lost your health _____________ you know its value.答案：that
+"题目：It's high time that he settled down in the country and __________ a new life.答案：started
+"题目：The computer system ___________suddenly while he was searching for information on the答案：broke down
+"题目：The film brought the hours back to me _________ I was taken good care of in that remote答案：when
+"题目：The red flower goes from one to __________ in the class.答案：another
+"题目：There's lots of fruit _________ the tree. Our little cat is also in the tree.答案：on
+"题目：Two days is not enough for him to finish the work. He needs __________ day.答案：a third '''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
@@ -534,10 +573,12 @@ def writeAnswer7(browser):
 
     listAnswer2=[]
     dxindex=0
-    if "阅读理解：判断题" in browser.page_source:
-        dxAnswer = '''子问题 1：F; 子问题 2：F; 子问题 3：T; 子问题 4：T; 子问题 5：F'''
-    if "阅读理解：选择题" in browser.page_source:
-        dxAnswer = '''子问题 1：A; 子问题 2：C; 子问题 3：B; 子问题 4：A; 子问题 5：C'''
+    if "选择题" in browser.page_source:
+        dxAnswer = '''子问题 1：B; 子问题 2：C; 子问题 3：C; 子问题 4：A; 子问题 5：A'''
+    if "选择题" in browser.page_source:
+        dxAnswer = '''子问题 1：A; 子问题 2：B; 子问题 3：C; 子问题 4：A; 子问题 5：C'''
+    if "正误判断题" in browser.page_source:
+        dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：T; 子问题 4：F; 子问题 5：T'''
 
     for an in dxAnswer.split("; "):
         listAnswer2.append(an[-1])
@@ -556,6 +597,7 @@ def writeAnswer7(browser):
     browser.find_elements_by_xpath('//input[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
 
+# 有两个选择题的题干一样，答案不一样
 def writeAnswer8(browser):
     canTakeWrongNum = 0
     #单多选在同一页混的时候,标记下单选题的数量
@@ -569,23 +611,21 @@ def writeAnswer8(browser):
 
 
     # 5单
-    dxAnswer = '''题目： I hope you are making ________ for continuous education in your life. 	答案：room
-题目： Mr. Wang, _________, is coming up to us.	答案：our new teacher 
-题目： One big         of formal education is the high cost. 	答案：disadvantage
-题目：_________ the regular classes, you can also attend many different seminars and take part in many extracurricular activities. 	答案：Apart from
-题目：– Did you enjoy your college life?– ______	答案：Yes, it was rich and colorful. 
-题目：– How long have you been graduated from your college?–         	答案： I've been graduated for five years.
-题目：– I often feel lonely when I engage in my online learning. ________
-– I join the online course community.	答案：How do you solve this problem?
-题目：– The advancement of technology has boosted the pace of our lives, and requires us to learn something new every day.
-–                   I have chosen the online program at OU.	答案：That is the reason why
-题目：– What are your great strengths?–                      	答案：I am very active in discussion.
-题目：By making learning possible anytime and anywhere, distance education is a powerful tool _________ supporting lifelong learning. 	答案：for 
-题目：I have just finished the        in the online forum. 	答案：discussion
-题目：It is believed lifelong learning is a crucial response to the challenge of the global ________ economy. 	答案：knowledge
-题目：Lifelong learning is both formal and non-formal; and the boundaries between face-to-face teaching and ___________ education are increasingly blurred. 	答案：distance
-题目：The advancement of technology has boosted the pace of our lives, and requires us to learn ___________ every day just to stay current in the workplace. 	答案：something new
-题目：The fact ________ that we are behind the other classes.	答案：remains '''
+    dxAnswer = '''"题目：— Have you ever been to Tokyo?答案：No, but I hope to go there next year
+"题目：— How are you feeling now?答案：Much better
+"题目：— How long will you be away from Italy?答案：About a month
+"题目：— What time does the train leave?答案：At half past five
+"题目：— What's the weather like in this area?答案：It's rainy
+"题目：_____________ no need _____________ the radio as I'm used to studying with it on.答案：There's; turning off
+"题目：All students are required to translate this poem ________English into Chinese.答案：from
+"题目：By the year 2020, China's population probably _________1.4 billion.答案：will have reached
+"题目：He studied hard at school when he was young, _________contributed a lot to his success.答案：which
+"题目：He would be studying at the university now if he ________the entrance examination.答案：had passed
+"题目：How much has the company ________________ this year?答案：brought in
+"题目：In _____________, the northerners have a particular liking for dumplings while the答案：general
+"题目：It is no use _________to remember only grammar rules.答案：trying
+"题目：The old houses are being pulled down to ______________ a new office block.答案：make room for
+"题目：This overcoat cost _______________. What's more, they are ________small for me.答案：too much; much too '''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
@@ -596,8 +636,12 @@ def writeAnswer8(browser):
 
     listAnswer2=[]
     dxindex=0
-    if "阅读理解：判断正误" in browser.page_source:
-        dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：F; 子问题 4：T; 子问题 5：T'''
+    if "选择题" in browser.page_source:
+        dxAnswer = '''子问题 1：A; 子问题 2：C; 子问题 3：C; 子问题 4：B; 子问题 5：B'''
+    if "选择题" in browser.page_source:
+        dxAnswer = '''子问题 1：B; 子问题 2：A; 子问题 3：C; 子问题 4：A; 子问题 5：B'''
+    if "正误判断题" in browser.page_source:
+        dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：T; 子问题 4：F; 子问题 5：T'''
 
     for an in dxAnswer.split("; "):
         listAnswer2.append(an[-1])
@@ -667,14 +711,14 @@ def wait3AndCloseTab(browser):
     time.sleep(1.5)
 
 
-xingkao1 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474416'
-xingkao2 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474417'
-xingkao3 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474418'
-xingkao4 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474419'
-xingkao5 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474420'
-xingkao6 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474422'
-xingkao7 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474421'
-xingkao8 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474423'
+xingkao1 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474590'
+xingkao2 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474591'
+xingkao3 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474592'
+xingkao4 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474593'
+xingkao5 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474594'
+xingkao6 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474595'
+xingkao7 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474596'
+xingkao8 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474597'
 
 option = webdriver.ChromeOptions()
 option.add_argument('disable-infobars')

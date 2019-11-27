@@ -3,10 +3,11 @@
 import time
 from threading import Thread
 
-import timeunit
 import bs4
 from selenium import webdriver
 import os
+
+from selenium.webdriver.common.keys import Keys
 
 studyName = os.path.basename(__file__).split('.')[0]
 
@@ -212,7 +213,7 @@ def writeAnswer1(browser):
     # end answer-翻页的情况下用的结束答题
     if canTakeWrongNum > 3:
         return
-    browser.find_elements_by_xpath('//input[@name="next"]')[1].click()
+    browser.find_element_by_xpath('//input[@name="next"]').click()
     time.sleep(0.1)
     # save and submit
     browser.find_elements_by_xpath('//input[@type="submit"]')[1].click()
@@ -227,7 +228,6 @@ def writeAnswer2(browser):
     elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
     elements1 = browser.find_elements_by_xpath('//label')
     dxindex = 0
-
 
     # 5单
     dxAnswer = '''题目：- Are you a member of the _________?  - I'm her brother.	答案：household
@@ -249,20 +249,165 @@ def writeAnswer2(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()#find_element_by_xpath("./../input[last()]").
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
+            time.sleep(0.5)
+        dxindex += 1
+        print(dxindex)
+
+    listAnswer2=[]
+    dxindex=0
+    if "听录音" in browser.page_source:
+        dxAnswer = '''子问题 1：part-time; 子问题 2：special; 子问题 3：need; 子问题 4：look after; 子问题 5：cool'''
+        for an in dxAnswer.split("; "):
+            listAnswer2.append(an.split("：")[-1])
+        for sel in browser.find_elements_by_xpath('//input[@type="text"]'):
+            sel.send_keys(listAnswer2[dxindex])
+            dxindex += 1
+
+    else:
+        if "阅读理解：判断正误题" in browser.page_source:
+            dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：F; 子问题 4：T; 子问题 5：T'''
+        if "阅读理解：填空题" in browser.page_source:
+            dxAnswer = '''子问题 1：C; 子问题 2：E; 子问题 3：D; 子问题 4：B; 子问题 5：A'''
+        elif "翻译题" in browser.page_source:
+            dxAnswer = '''子问题 1：B; 子问题 2：C; 子问题 3：B; 子问题 4：A; 子问题 5：B'''
+
+        for an in dxAnswer.split("; "):
+            listAnswer2.append(an[-1])
+        print(listAnswer2)
+        print(len(browser.find_elements_by_class_name("custom-select")))
+        for sel in browser.find_elements_by_class_name("custom-select"):
+            sel.send_keys(listAnswer2[dxindex])
+            dxindex+=1
+
+
+
+    # end answer-翻页的情况下用的结束答题
+    if canTakeWrongNum > 3:
+        return
+    browser.find_element_by_xpath('//input[@name="next"]').click()
+    time.sleep(0.1)
+    # save and submit
+    browser.find_elements_by_xpath('//input[@type="submit"]')[1].click()
+    browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
+def writeAnswer3(browser):
+    canTakeWrongNum = 0
+    #单多选在同一页混的时候,标记下单选题的数量
+    danxuanLength=9
+
+    # 试卷题目固定布局
+    ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
+    elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
+    elements1 = browser.find_elements_by_xpath('//label')
+    dxindex = 0
+
+
+    # 5单
+    dxAnswer = '''题目：______recent report stated that the number of Spanish speakers in the U.S .would be higher than the number of English speaker by_____ year 2090.	答案：A, the
+题目：— Haven't seen you for ages, Mike. ________________?— Pretty good. Everything goes well.	答案：How's it going
+题目：— Hi, Tom, how's everything with you?— ________, and how are you?	答案：Hm, not too bad
+题目：—Oh, no! It's raining. We can't go skating on the square.— ________	答案：What a shame !
+题目：—Shall we play football after class together?—______ _______	答案：Great, that's a good idea.
+题目：—Tomorrow will be fine. Shall we go out for a picnic?—___________.	答案：Sounds great
+题目：A student will probably attend four or five courses during each _______.	答案：semester
+题目：He ________ her a beautiful hat on her next birthday.	答案：is going to give
+题目：He is respected as a very aggressive and ________ executive.	答案：competitive
+题目：I would like to do the job ________ you don't force me to study.	答案：as long as
+题目：If it rains tomorrow, we _________ to picnic.	答案：won't go
+题目：Jim is one of the most popular ________ in my company.	答案：colleagues
+题目：The train is running fifty miles ______.	答案：an hour
+题目：Tom is good at playing ________ piano.	答案：the
+题目：We can't afford a bicycle, ________a car. 	答案：let alone'''
+    mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
+    for key, value in mapdxanswer.items():
+        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.2)
         dxindex += 1
 
     listAnswer2=[]
     dxindex=0
-    if "翻译" in browser.page_source:
-        dxAnswer='''子问题 1：B; 子问题 2：C; 子问题 3：B; 子问题 4：A; 子问题 5：B'''
     if "听录音" in browser.page_source:
-        dxAnswer = '''子问题 1：part-time; 子问题 2：special; 子问题 3：need; 子问题 4：look after; 子问题 5：cool'''
-    if "阅读理解：判断正误题" in browser.page_source:
+        dxAnswer = '''子问题 1：mind; 子问题 2：beginning; 子问题 3：sure; 子问题 4：best; 子问题 5：friends'''
+        for an in dxAnswer.split("; "):
+            listAnswer2.append(an.split("：")[-1])
+        if len(browser.find_elements_by_class_name("custom-select")) > 0:
+            for sel in browser.find_elements_by_class_name("custom-select"):
+                sel.send_keys(listAnswer2[dxindex])
+                dxindex += 1
+        else:
+            for sel in browser.find_elements_by_xpath('//input[@type="text"]'):
+                sel.send_keys(listAnswer2[dxindex])
+                dxindex += 1
+    else:
+        if "阅读理解：判断题" in browser.page_source:
+            dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：T; 子问题 4：F; 子问题 5：T'''
+        if "阅读理解：选择题" in browser.page_source:
+            dxAnswer = '''子问题 1：A; 子问题 2：C; 子问题 3：B; 子问题 4：A; 子问题 5：B'''
+
+        for an in dxAnswer.split("; "):
+            listAnswer2.append(an[-1])
+        print(listAnswer2)
+        print(len(browser.find_elements_by_class_name("custom-select")))
+        for sel in browser.find_elements_by_class_name("custom-select"):
+            sel.send_keys(listAnswer2[dxindex])
+            dxindex+=1
+
+    # end answer-翻页的情况下用的结束答题
+    if canTakeWrongNum > 3:
+        return
+    browser.find_element_by_xpath('//input[@name="next"]').click()
+    time.sleep(0.1)
+    # save and submit
+    browser.find_elements_by_xpath('//input[@type="submit"]')[1].click()
+    browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
+def writeAnswer4(browser):
+    canTakeWrongNum = 0
+    #单多选在同一页混的时候,标记下单选题的数量
+    danxuanLength=9
+
+    # 试卷题目固定布局
+    ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
+    elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
+    elements1 = browser.find_elements_by_xpath('//label')
+    dxindex = 0
+
+
+    # 5单
+    dxAnswer = '''题目：______________he left school at 16, he still managed to become a great writer.	答案：Even though
+题目：–Happy New Year!– ________________	答案：The same to you.
+题目：–What will you buy for the Spring Festival?– ________________	答案：I will buy gifts for my family.
+题目：–Would you like to come to my house for dinner Sunday night?– _____	答案：All right! Thanks for inviting me.
+题目：–Would you mind joining us?– _________________	答案：No, of course not.
+题目：Everything in it ___________ that Jacob is a Christian.	答案：suggests
+题目：He______________ to Shanghai for I saw here a minute ago.	答案：can't have gone
+题目：I am very familiar with him, so I recognized his voice ___________.	答案：immediately
+题目：I thought you_______ like something to read. So I have brought you some books.	答案：would
+题目：It's been a(n) ___________ tradition ever since. People celebrate it every year.	答案：annual
+题目：Many western festivals are ___________ at the very beginning.	答案：religious
+题目：Peter_______ come with us tonight, but he isn't very sure.	答案：may
+题目：The Mid-Autumn Festival falls on the fifteenth day of the eighth ______ month.	答案：lunar
+题目：This is not like him. Something_______ be wrong.	答案：must'''
+    mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
+    for key, value in mapdxanswer.items():
+        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
+            time.sleep(0.2)
+        dxindex += 1
+
+    listAnswer2=[]
+    dxindex=0
+    if "阅读理解：填空" in browser.page_source:
+        dxAnswer = '''子问题 1：C; 子问题 2：D; 子问题 3：A; 子问题 4：E; 子问题 5：B'''
+    if "听录音，判断正误" in browser.page_source:
         dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：F; 子问题 4：T; 子问题 5：T'''
-    if "阅读理解：填空题" in browser.page_source:
-        dxAnswer = '''子问题 1：C; 子问题 2：E; 子问题 3：D; 子问题 4：B; 子问题 5：A'''
+    if "阅读理解：选择题" in browser.page_source:
+        dxAnswer = '''子问题 1：A; 子问题 2：C; 子问题 3：A; 子问题 4：C; 子问题 5：B'''
 
     for an in dxAnswer.split("; "):
         listAnswer2.append(an[-1])
@@ -282,563 +427,277 @@ def writeAnswer2(browser):
     # save and submit
     browser.find_elements_by_xpath('//input[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
-
-
-def writeAnswer3(browser):
-    canTakeWrongNum = 0
-    # 单多选在同一页混的时候,标记下单选题的数量
-    danxuanLength = 9
-
-    # 试卷题目固定布局
-    ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
-    elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
-    browser.find_element_by_id("quiznavbutton1").click()
-    browser.find_element_by_id("quiznavbutton1")
-    elements1 = browser.find_elements_by_xpath('//label')
-    dxindex = 0
-
-    # 10单
-    dxAnswer = '''1.单元格在工作表中的位置
-2.0 1/2
-3.启动Excel后不能再新建空白工作簿
-4.=IF（A5<60，"不及格"，"及格"）
-5.# VALUE!
-6.=$A$2*$B$1
-7.不可以按单元格颜色进行排序
-8.饼图
-9.自动更新
-10.单击“视图”→“工作簿视图”→“页面布局”选项'''
-    listdxanswer = danxuanAutoAnswerFix(dxAnswer, ".")
-    dxindex = 0
-    for an in listdxanswer:
-        anEle = getAnswerElementEquals(elements1, an, dxindex, 4)  # 找到指定的那个label选项
-        if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
-            time.sleep(0.1)
-        dxindex += 1
-
-    browser.find_element_by_xpath('//input[@name="next"]').click()
-    time.sleep(4)
-    elements1 = browser.find_elements_by_xpath('//input[@type="text"]')  # 下一页后label重新拿
-
-    # 10填空
-
-    dxAnswer = '''11.不包括
-12.单元格本身
-12.绝对引用
-13.30
-13.40
-14.TRUE
-15.FALSE
-15.最大值
-16.最小值
-16.所有数据
-17.排序
-18.条件格式
-19.选中图表
-20.当前工作表所有内容
-20.设置打印区域'''
-    listdxanswer = danxuanAutoAnswerFix(dxAnswer, ".")
-    dxindex = 0
-    for an in listdxanswer:
-        elements1[dxindex].send_keys(an)
-        time.sleep(0.2)
-        dxindex += 1
-
-    # end answer-翻页的情况下用的结束答题
-    if canTakeWrongNum > 3:
-        return
-    browser.find_elements_by_xpath('//input[@type="submit"]')[1].click()
-    time.sleep(0.1)
-    # save and submit
-    browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
-    browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
-def writeAnswer4(browser):
-    canTakeWrongNum = 0
-    # 单多选在同一页混的时候,标记下单选题的数量
-    danxuanLength = 9
-
-    # 试卷题目固定布局
-    ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
-    elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
-    browser.find_element_by_id("quiznavbutton1").click()
-    browser.find_element_by_id("quiznavbutton1")
-    elements1 = browser.find_elements_by_xpath('//label')
-    dxindex = 0
-
-    # 10单
-    dxAnswer = '''1.显示幻灯片的方式
-2.普通视图
-3.为文本、图形预留位置
-4.幻灯片之间的跳转
-5.预定义的幻灯片样式和配色方案
-6.文本和线条
-7.幻灯片切换
-8.动作设置
-9.“视图”菜单的“幻灯片放映”命令
-10.修改母版不会对演示文稿中任何一张幻灯片带来影响'''
-    listdxanswer = danxuanAutoAnswerFix(dxAnswer, ".")
-    dxindex = 0
-    for an in listdxanswer:
-        anEle = getAnswerElementEquals(elements1, an, dxindex, 4)  # 找到指定的那个label选项
-        if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
-            time.sleep(0.1)
-        dxindex += 1
-
-    browser.find_element_by_xpath('//input[@name="next"]').click()
-    time.sleep(4)
-    elements1 = browser.find_elements_by_xpath('//input[@type="text"]')  # 下一页后label重新拿
-
-    # 10填空
-
-    dxAnswer = '''11.大纲视图
-12.普通视图
-13.幻灯片浏览视图
-14.幻灯片视图
-12.图表
-13.图表
-13.插入
-14.幻灯片切换
-15.动画效果
-15.普通
-15.动画方案
-16.内容提示向导
-16.设计模板
-16.空演示文稿
-17.人工
-17.排练计时
-18.动作设置
-19.全部应用
-20.幻灯片母版
-20.讲义母版
-20.备注母版
-20.标题母版'''
-    listdxanswer = danxuanAutoAnswerFix(dxAnswer, ".")
-    dxindex = 0
-    for an in listdxanswer:
-        elements1[dxindex].send_keys(an)
-        time.sleep(0.2)
-        dxindex += 1
-
-    # end answer-翻页的情况下用的结束答题
-    if canTakeWrongNum > 3:
-        return
-    browser.find_elements_by_xpath('//input[@type="submit"]')[1].click()
-    time.sleep(0.1)
-    # save and submit
-    browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
-    browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
 def writeAnswer5(browser):
     canTakeWrongNum = 0
-    # 单多选在同一页混的时候,标记下单选题的数量
-    danxuanLength = 9
+    #单多选在同一页混的时候,标记下单选题的数量
+    danxuanLength=9
 
     # 试卷题目固定布局
     ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
     elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
-    browser.find_element_by_id("quiznavbutton1").click()
-    browser.find_element_by_id("quiznavbutton1")
     elements1 = browser.find_elements_by_xpath('//label')
     dxindex = 0
 
-    # 10单
-    dxAnswer = '''1.建立在严格的数学理论，集合论和谓词演算公式的基础之上
-2.可由一个或多个其值能唯一标识该关系模式中任何元组的属性组成
-3.数据库管理员
-4.数据库表
-5.前后顺序可以任意颠倒，不影响库中的数据关系
-6.可靠性
-7.数据表既相对独立、又相互联系
-8.数据库→数据表→记录→字段
-9.选择
-10.书号'''
-    listdxanswer = danxuanAutoAnswerFix(dxAnswer, ".")
-    dxindex = 0
-    for an in listdxanswer:
-        anEle = getAnswerElementEquals(elements1, an, dxindex, 4)  # 找到指定的那个label选项
+
+    # 5单
+    dxAnswer = '''题目： The street is ________ for five cars to go side by side.	答案：wide enough
+题目：_______ students are playing on the ground.	答案：A number of
+题目：— Morning, boys and girls! Please try your best in today's exam! Good luck to all of you!— ________________	答案：Thanks!
+题目：—Congratulations! I just heard the news about your promotion.—____	答案：Thank you.
+题目：—I was worried about my driving test, but I passed it.— __________	答案：Congratulations! That's not easy.
+题目：—I won the first prize in today's speech contest.— _____________	答案：Congratulations!
+题目：—You won the first prize in the Physics competition.—__________________. I made several terrible mistakes.	答案：You must be joking
+题目：As a result of his hard work, he has gained ________ to the Beijing University. 	答案：admission
+题目：Our classroom is___________beautiful than theirs.	答案：much more
+题目：The CEO ________ that Tony was appointed as the manager of the marketing department in today's meeting.	答案：announced
+题目：The higher the temperature is, __________ the liquid evaporates.	答案： the faster
+题目：The novel I bought last week is_______ of reading, I think.	答案：worthy
+题目：They got there an hour __________ than the others.	答案：earlier
+题目：Tom is considered to be _________ the other students in her class.	答案：as intelligent as'''
+    mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
+    for key, value in mapdxanswer.items():
+        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
-            time.sleep(0.1)
+            time.sleep(0.2)
         dxindex += 1
 
-    browser.find_element_by_xpath('//input[@name="next"]').click()
-    time.sleep(4)
-    elements1 = browser.find_elements_by_xpath('//input[@type="text"]')  # 下一页后label重新拿
+    listAnswer2=[]
+    dxindex=0
 
-    # 10填空
+    if "听录音" in browser.page_source:
+        dxAnswer = '''子问题 1：mail; 子问题 2：letter; 子问题 3：August; 子问题 4：visa; 子问题 5：wonderful'''
+        for an in dxAnswer.split("; "):
+            listAnswer2.append(an.split("：")[-1])
+        for sel in browser.find_elements_by_xpath('//input[@type="text"]'):
+            sel.send_keys(listAnswer2[dxindex])
+            dxindex += 1
+    else:
+        if "翻译题" in browser.page_source:
+            dxAnswer = '''子问题 1：B; 子问题 2：A; 子问题 3：C; 子问题 4：A; 子问题 5：A'''
+        elif "阅读理解：判断题" in browser.page_source:
+            dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：T; 子问题 4：F; 子问题 5：T'''
+        elif "阅读理解：选择题" in browser.page_source:
+            dxAnswer = '''子问题 1：A; 子问题 2：B; 子问题 3：C; 子问题 4：B; 子问题 5：A'''
 
-    dxAnswer = '''11.Office2010
-12.数据库管理
-12.记录或元组
-13.字段或属性
-13.一对一
-14.一对多
-15.多对多
-14.操作
-15.实体完整性
-15.操作完整性
-15.自定义完整性
-16.数据结构
-16.操纵及完整性约束
-16.存储结构
-17.唯一确定一条记录的字段
-18.关系
-19.一对多
-20.查询
-20.窗体'''
-    listdxanswer = danxuanAutoAnswerFix(dxAnswer, ".")
-    dxindex = 0
-    for an in listdxanswer:
-        elements1[dxindex].send_keys(an)
-        time.sleep(0.2)
-        dxindex += 1
+        for an in dxAnswer.split("; "):
+            listAnswer2.append(an[-1])
+        print(listAnswer2)
+        print(len(browser.find_elements_by_class_name("custom-select")))
+        for sel in browser.find_elements_by_class_name("custom-select"):
+            sel.send_keys(listAnswer2[dxindex])
+            dxindex+=1
 
     # end answer-翻页的情况下用的结束答题
     if canTakeWrongNum > 3:
         return
+    browser.find_element_by_xpath('//input[@name="next"]').click()
+    time.sleep(0.1)
+    # save and submit
     browser.find_elements_by_xpath('//input[@type="submit"]')[1].click()
-    time.sleep(0.1)
-    # save and submit
-    browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
-
-
-
-
-
-
-
-
 def writeAnswer6(browser):
-    # 试卷444布局
-    # div class="qtext",2019年11月16日14:32:26发现bug,如果有一模一样的选项,系统默认勾选第一个,逻辑略复杂,暂不处理.并非一定要满分.
+    canTakeWrongNum = 0
+    #单多选在同一页混的时候,标记下单选题的数量
+    danxuanLength=9
+
+    # 试卷题目固定布局
     ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
     elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
-
-    # 单选多选混合,根据题库判断单选还是多选,进行相应的点击,,,规律-前4单,中3多,后3判
     elements1 = browser.find_elements_by_xpath('//label')
-    dxAnswer = '''是按复利计算的某一特定金额在若干期后的本利和（ 复利终值 ）。
-    不考虑货币时间价值的项目评价指标是（平均报酬率）。
-    递延年金的特点是（没有第一期的支付额 ）。
-    某股票每年的股利为8元，若某人想长期持有，则其在股票价格为（80）时才愿意买？假设银行的存款利率为10%。
-    某人每年末将5000元资金存入银行作为孩子的教育基金，假定期限为10年，10%的年金现值系数为2.594，年金终值系数为15．937。到第10年末，可用于孩子教育资金额为（79685）元。
-    能使投资方案的净现值等于零的折现率是（内含报酬率 ）。
-    下列项目中，不属于现金流出项目的是（折旧费 ）。
-    现金流量中的各项税款是指企业在项目生产经营期依法缴纳的各项税款，其中不包括（ 增值税）。
-    在项目投资决策的现金流量分析中使用的“营运资本”是指（ 付现成本）。
-    在长期投资决策的评价指标中，哪个指标属于反指标（投资回收期 ）。
-    下列项目中哪个属于普通年金终值系数（F/A,i,n ）。'''
-    mapdxanswer = danxuanAutoAnswer(dxAnswer, {})
+    dxindex = 0
+
+
+    # 5单
+    dxAnswer = '''题目：—Are you ready to take a ride in my new sports car?—                      .	答案：Yes, I'd love to.
+题目：—Ok, I'll drink my last can of beer when I drive home.—               	答案：No way. You'll be stopped by the police.
+题目：—Seat belts save lives.—               	答案：It's true. I agree.
+题目：—Though I have been drinking, I can drive home safely.—No, I will be the driver.	答案：When you drink, you can't drive.
+题目：—Why did you stop my car, police officer?—You just ran a red light.     	答案：Your driver's license please.
+题目：Don't forget to ___________ your seat belt when you're driving.	答案：put on
+题目：He ______ in jail because he broke the traffic law last night.	答案：drank
+题目：He suggested that the drunk driver _________.	答案：be punished
+题目：John ________ three bottles of beer just now, so he can't drive himself home now.	答案：did drink
+题目：The _________ driver was seriously hurt in the traffic accident.	答案：40-year-old
+题目：The __________ were shocked to see the workers pulling the car along the street.	答案：passers-by
+题目：The couple was _________ that they could not drive home.	答案：so drunk
+题目：The police asked the driver to __________ the car to have an alcohol test.	答案：pull over
+题目：You'd better ____________ the car because you are drunk.	答案： let me drive'''
+    mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        if (judgeQueTitle(elements1p, key)):
-            rightAnswer = getAnswerElementEqualsFinal(elements1, value, 1, 16, 20)
-            rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-            time.sleep(0.1)
-    # if (judgeQueTitle(elements1p, "生产需要甲材料，年需要量为100千克，如果自制，单位变动成本20")):
-    #     rightAnswer = getAnswerElementEquals4(elements1, "保本点升高，利润减少", 1)
-    #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-    #     time.sleep(0.1)
+        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
+            time.sleep(0.2)
+        dxindex += 1
 
-    mulAnswer = '''固定资产更新改造项目，涉及（固定资产; 开办费; 无形资产 ）投资。
-年金需要同时满足以下哪三个条件（连续性; 等额性; 同方向性 ）。
-投资项目现金流出量是指整个投资和回收过程中所发生的实际现金支出，主要包括（垫付的流动资金; 建设投资支出; 营运资本 ）。
-投资项目现金流出量主要包括（ 建设投资支出; 营运资本; 各项税款; 垫付流动资金）。
-相比短期经营决策，长期投资决策具有（风险高; 周期长; 投入多 ）等特点。
-项目的动态评价指标包括（ 获利指数; 净现值）。
-项目计算期包括（生产经营期; 达产期; 试产期; 建设期 ）。
-项目经营期内的净现金流量是指项目投产后，在整个生产经营期内正常生产经营所发生的现金流入量与流出量的差额。其计算公式为：（税后净利+年折旧+年摊销额; 营业收入－付现成本－所得税 ）。
-一个投资方案可行性的评价标准有（投资方案的平均报酬率≥期望的平均报酬率; 投资方案的净现值≥0 ）。
-在长期投资决策的评价指标中，哪些考虑了货币资金的时间价值（ 获利指数; 净现值; 内含报酬率）。
-长期投资决策的过程比较复杂，需要考虑的因素很多。其中主要的因素包括（投资项目计算期; 货币时间价值; 资本成本; 现金流量 ）。
-长期投资决策中关于现金流量的假设有（建设期投入全部资金假设; 全投资假设; 现金流量符号假设; 项目计算期时点假设 ）。'''
-    mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for value in mapmulAnswer:
-        print(key, value)
-        if (judgeQueTitle(elements1p, key)):
-            for v in value:
-                rightAnswer = getAnswerElementEqualsFinal(elements1, v, 2, 16, 20)
-                rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-                time.sleep(0.1)
+    listAnswer2=[]
+    dxindex=0
+    if "听录音" in browser.page_source:
+        dxAnswer = '''子问题 1：ride; 子问题 2：drinking; 子问题 3：lives; 子问题 4：safer; 子问题 5：safely'''
+        for an in dxAnswer.split("; "):
+            listAnswer2.append(an.split("：")[-1])
+        for sel in browser.find_elements_by_xpath('//input[@type="text"]'):
+            sel.send_keys(listAnswer2[dxindex])
+            dxindex += 1
+    else:
+        if "翻译题" in browser.page_source:
+            dxAnswer = '''子问题 1：B; 子问题 2：C; 子问题 3：B; 子问题 4：A; 子问题 5：C'''
+        if "阅读理解：判断题" in browser.page_source:
+            dxAnswer = '''子问题 1：F; 子问题 2：F; 子问题 3：T; 子问题 4：T; 子问题 5：F'''
+        if "阅读理解：完型填空" in browser.page_source or "阅读理解：完形填空" in browser.page_source:
+            dxAnswer = '''子问题 1：B; 子问题 2：A; 子问题 3：B; 子问题 4：C; 子问题 5：C'''
 
-    # if (judgeQueTitle(elements1p, "从保本图得知（")):
-    #     rightAnswer = getAnswerElementEquals4(elements1, "在其他因素不变的情况，保本点越低，盈利面积越大",2)
-    #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
-    #     rightAnswer = getAnswerElementEquals4(elements1, "实际销售量超过保本点销售量部分即是安全边际",2)
-    #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
+        for an in dxAnswer.split("; "):
+            listAnswer2.append(an[-1])
+        print(listAnswer2)
+        print(len(browser.find_elements_by_class_name("custom-select")))
+        for sel in browser.find_elements_by_class_name("custom-select"):
+            sel.send_keys(listAnswer2[dxindex])
+            dxindex+=1
 
-    pdAnswer = '''非折线指标又称为动态评价指标，包括净现值、获利指数和内含报酬率。（错）
-净现值是指项目投产后各年报酬的现值合计与投资现值合计之间的差额。（错）
-内插法是一种近似计算的方法，它假定当自变量在一个比较小的区间范围内，自变量与因变量之间存在着线性关系；只有在按逐次测试逼近法计算内部收益率时，才有应用内插法的必要。（错）
-如果某投资方案净现值指标大于零，则该方案的静态投资回收期一定小于基准回收期。（错）
-如果某一投资项目所有的正评价指标均小于或等于相应的基准指标，反指标大于或等于基准指标，则可以断定该投资项目完全具备财务可行性。（错）
-无论在什么情况下，都可以采用列表法直接求得不包括建设期的投资回收期。（错）
-运用内插法近似计算内部收益率时，为缩小误差，两个近似净现值所相对应的折现率之差通常不得大于5%。（对）
-在更新改造投资项目决策中，如果差额投资内部收益率小于设定折现率，就应当进行更新改造。（错）
-在互斥方案的选优分析中，若差额内部收益率指标大于基准折现率或设定的折现率时，则原始投资额较小的方案为较优方案。（错）
-如果某期累计的净现金流量等于零，则该期所对应的期间值就是包括建设期的投资回收期。（对）'''
-    pdUtil5(pdAutoAnswer(pdAnswer, []), elements1p, ratios, 8, 4, 0)
-    pdUtil5(pdAutoAnswer(pdAnswer, []), elements1p, ratios, 9, 4, 1)
-    pdUtil5(pdAutoAnswer(pdAnswer, []), elements1p, ratios, 10, 4, 2)
-    pdUtil5(pdAutoAnswer(pdAnswer, []), elements1p, ratios, 11, 4, 3)
-
-    # end answer
-    browser.find_element_by_xpath('//input[@type="submit"]').click()
+    # end answer-翻页的情况下用的结束答题
+    if canTakeWrongNum > 3:
+        return
+    browser.find_element_by_xpath('//input[@name="next"]').click()
     time.sleep(0.1)
     # save and submit
-    browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
+    browser.find_elements_by_xpath('//input[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
-
-
 def writeAnswer7(browser):
-    # 试卷444布局
-    # div class="qtext",2019年11月16日14:32:26发现bug,如果有一模一样的选项,系统默认勾选第一个,逻辑略复杂,暂不处理.并非一定要满分.
+    canTakeWrongNum = 0
+    #单多选在同一页混的时候,标记下单选题的数量
+    danxuanLength=9
+
+    # 试卷题目固定布局
     ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
     elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
-
-    # 单选多选混合,根据题库判断单选还是多选,进行相应的点击,,,规律-前4单,中3多,后3判
     elements1 = browser.find_elements_by_xpath('//label')
-    dxAnswer = '''"按照“以销定产”模式，预算的编制起点是（销售预算）。
-对任何一个预算期、任何一种预算费用项目的开支都不是从原有的基础出发，根本不考虑基期的费用开支水平，一切以零为起点，这种编制预算的方法是（零基预算）。
-企业编制全面预算的依据是 （战略目标与战略计划）。
-下列各项中，其预算期可以不与会计年度挂钩的预算方法是（滚动预算）。
-下列哪项不属于经营预算（现金预算 ）。
-下列预算中，属于财务预算的是（  现金收支预算 ）。
-以业务量、成本和利润之间的逻辑关系，按照多个业务量水平为基础，编制能够适应多种情况预算的一种预算方法是（ 弹性预算）。
-预算最基本的功能是（控制业务）。
-在编制预算时以不变的会计期间（定期预算）。'''
-    mapdxanswer = danxuanAutoAnswer(dxAnswer, {})
+    dxindex = 0
+
+
+    # 5单
+    dxAnswer = '''题目：____ day of June is International Children's Day.	答案：The first
+题目：____she wins  ____loses, this is her last chance. 	答案：Whether……or
+题目：—But actually, I'm at work. So rather not wait. Would you mind taking a message?—. Go ahead.	答案：No, not at all.
+题目：—Hello, Can I speak to Liu Hui, please?—____________________	答案：Yes, speaking.
+题目：—Hello, May I speak to Zhang Hua?—___________________I'm afraid he isn't in at the moment.	答案：One moment, please.
+题目：—Is that Jim speaking?—No.___________________	答案：This is Tom.
+题目：—Social Work Service Center!—Hello, May I speak to Zhang Hua? 	答案：Can I help you ?
+题目：Bankers were __________ of  a world banking crisis.	答案：fearful
+题目：He made up a good __________for staying at home.	答案：excuse
+题目：He usually __________from headache.	答案：suffers
+题目：Listen! The baby ____ in the next room.	答案：is crying
+题目：The government ____them with accommodation. 	答案：provides
+题目：The old lady __________Tom for breaking the window. 	答案：blamed
+题目：The pace of __________ growth is picking up.	答案：economic
+题目：You are ____ to finish your homework on time. 	答案：supposed'''
+    mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        if (judgeQueTitle(elements1p, key)):
-            rightAnswer = getAnswerElementEqualsFinal(elements1, value, 1, 16, 12)
-            rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-            time.sleep(0.1)
-    # if (judgeQueTitle(elements1p, "生产需要甲材料，年需要量为100千克，如果自制，单位变动成本20")):
-    #     rightAnswer = getAnswerElementEquals4(elements1, "保本点升高，利润减少", 1)
-    #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-    #     time.sleep(0.1)
+        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
+            time.sleep(0.2)
+        dxindex += 1
 
-    mulAnswer = '''按编制预算的时间特征不同，编制预算的方法可以分为（滚动预算; 定期预算）。
-财务预算主要包括（ 预计利润表; 预计资产负债表; 现金收支预算 ）。
-滚动预算按其预算编制和滚动的时间单位不同可分为（混合滚动; 逐月滚动; 逐季滚动=）。
-全面预算按其内容和功能不同可以分为（ 资本预算; 经营预算; 财务预算）。 
-相对于固定预算而言，弹性预算的优点有（预算使用范围宽; 预算可比性强）。
-预算编制的程序包括（ 审查平衡; 下达目标 ; 议批准并下达执行 ; 编制上报 ）。
-预算控制的程序包括以下步骤（ 反馈结果; 分析偏差; 下达执行; 采取措施 ）。
-预算控制的方法主要包括（预算授权控制 ; 预算调整控制 ; 预算审核控制）。
-算的基本功能主要包括（评价业绩  ; 控制业务 ; 整合资源 ; 确立目标）。 
-预算控制的原则主要包括（全员控制 ; 全程控制 ; 全面控制）。 '''
-    mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for value in mapmulAnswer:
-        print(key, value)
-        if (judgeQueTitle(elements1p, key)):
-            for v in value:
-                rightAnswer = getAnswerElementEqualsFinal(elements1, v.strip(), 2, 16, 12)
-                rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-                time.sleep(0.1)
+    listAnswer2=[]
+    dxindex=0
 
-    # if (judgeQueTitle(elements1p, "从保本图得知（")):
-    #     rightAnswer = getAnswerElementEquals4(elements1, "在其他因素不变的情况，保本点越低，盈利面积越大",2)
-    #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
-    #     rightAnswer = getAnswerElementEquals4(elements1, "实际销售量超过保本点销售量部分即是安全边际",2)
-    #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
+    if "听录音" in browser.page_source:
+        dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：T; 子问题 4：F; 子问题 5：F'''
+    if "翻译题" in browser.page_source:
+        dxAnswer = '''子问题 1：B; 子问题 2：C; 子问题 3：B; 子问题 4：A; 子问题 5：C'''
+    if "阅读理解：填写主题句" in browser.page_source:
+        dxAnswer = '''子问题 1：B; 子问题 2：A; 子问题 3：E; 子问题 4：C; 子问题 5：D'''
+    if "阅读理解：完型填空" in browser.page_source or "阅读理解：完形填空" in browser.page_source:
+        dxAnswer = '''子问题 1：C; 子问题 2：A; 子问题 3：A; 子问题 4：B; 子问题 5：C'''
 
-    pdAnswer = '''弹性预算方法的优点是不受现有费用项目限制，能够调动各方面降低费用的积极性和有助于企业未来发展。（错）
-滚动预算方法是以基期成本费用水平为基础，结合预算期业务量水平及有关降低成本的措施，通过调整有关原有费用项目而编制预算的方法。（错）
-企业关于日常经营活动如销售、采购、生产等需要多少资源以及如何获得和使用这些资源的计划，是指特种决策预算。 （错）
-企业预算总目标的具体落实以及将其分解为责任目标并下达给预算执行者的过程称为预算编制。（对）
-相对于固定预算而言，弹性预算的优点预算成本低，工作量小。（错）
-与固定预算相对应的预算是增量预算。 （错）
-资本预算是全面预算体系的中心环节。（错）'''
-    pdUtil5(pdAutoAnswer(pdAnswer, []), elements1p, ratios, 7, 4, 0)
-    pdUtil5(pdAutoAnswer(pdAnswer, []), elements1p, ratios, 8, 4, 1)
-    pdUtil5(pdAutoAnswer(pdAnswer, []), elements1p, ratios, 9, 4, 2)
+    for an in dxAnswer.split("; "):
+        listAnswer2.append(an[-1])
+    print(listAnswer2)
+    print(len(browser.find_elements_by_class_name("custom-select")))
+    for sel in browser.find_elements_by_class_name("custom-select"):
+        sel.send_keys(listAnswer2[dxindex])
+        dxindex+=1
 
-    # end answer
-    browser.find_element_by_xpath('//input[@type="submit"]').click()
+    # end answer-翻页的情况下用的结束答题
+    if canTakeWrongNum > 3:
+        return
+    browser.find_element_by_xpath('//input[@name="next"]').click()
     time.sleep(0.1)
     # save and submit
-    browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
+    browser.find_elements_by_xpath('//input[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
-
-
 def writeAnswer8(browser):
-    # 试卷444布局
-    # div class="qtext",2019年11月16日14:32:26发现bug,如果有一模一样的选项,系统默认勾选第一个,逻辑略复杂,暂不处理.并非一定要满分.
+    canTakeWrongNum = 0
+    #单多选在同一页混的时候,标记下单选题的数量
+    danxuanLength=9
+
+    # 试卷题目固定布局
     ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
     elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
-
-    # 单选多选混合,根据题库判断单选还是多选,进行相应的点击,,,规律-前4单,中3多,后3判
     elements1 = browser.find_elements_by_xpath('//label')
-    dxAnswer = '''是指由存货的买价和运杂费等构成的成本，其总额取决于采购数量和单位采购成本（购置成本）。
-    成本差异是指在标准成本控制系统下，企业在一定时期生产一定数量的产品所发生的实际成本与（标准成本 ）之间的差额。
-    某公司生产甲产品100件，实际耗用工时为200小时，单位产品标准工时为1.8小时，标准工资率为5元/小时，实际工资率为4.5元/小时，则直接人工效率差异为（100元 ）。
-    一般情况下，对直接材料用量差异负责的部门应该是（ 生产部门）。
-    在变动成本法下，标准成本卡不包括（固定制造费用 ）。 '''
-    mapdxanswer = danxuanAutoAnswer(dxAnswer, {})
+    dxindex = 0
+
+
+    # 5单
+    dxAnswer = '''题目：—                — It's dark brown.	答案：What color is his hair?
+题目：—                     — Less than 50 miles per hour.	答案：How fast were you driving?
+题目：—Did you see the car before it hit you?—                  	答案：No, I didn't.
+题目：—How about his weight?—                 	答案：Medium, maybe a bit on the heavy side.
+题目：—Which direction were you heading?—                    	答案：I was heading from east to west.
+题目：He gave no _______ of being a suspect.	答案：indication
+题目：Kids must __________ when they walk to school.	答案：be on their guard
+题目：The case happened _________ Tuesday afternoon.	答案：on
+题目：The firefighters are going to ______________ the cause of the fire.	答案：look into
+题目：The girl _____________ the case to the staff when her parents arrived.	答案：was reporting
+题目：The gunman stood ____________ the theatre and shoot at the audience inside.	答案：at the front of
+题目：The police saw him _________ on the ground when they arrived.	答案：lying
+题目：The schools informed the parents _____ the case immediately.	答案：of
+题目：The traffic accident _________ three days ago.	答案：took place
+题目：They often saw me ____________.	答案：out and about'''
+    mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        if (judgeQueTitle(elements1p, key)):
-            rightAnswer = getAnswerElementEqualsFinal(elements1, value, 1, 8, 4)
-            rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-            time.sleep(0.1)
-    # if (judgeQueTitle(elements1p, "生产需要甲材料，年需要量为100千克，如果自制，单位变动成本20")):
-    #     rightAnswer = getAnswerElementEquals4(elements1, "保本点升高，利润减少", 1)
-    #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-    #     time.sleep(0.1)
+        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
+            time.sleep(0.2)
+        dxindex += 1
 
-    mulAnswer = '''下列影响再订货点的因素是（ 安全存量; 订货提前期; 存货日均耗用量）。
-    三差异分析法，是指将固定制造费用的成本差异分解为（耗费差异; 能力差异; 能量差异）来进行分析的。
-    取得成本是下列哪些选择之和（购置成本; 订货变动成本; 订货固定成本 ）。
-    下列可以影响直接材料用量差异的原因有（材料的质量; 工人的技术熟练程度; 工人的责任感; 材料加工方式的改变）。'''
-    mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for value in mapmulAnswer:
-        print(key, value)
-        if (judgeQueTitle(elements1p, key)):
-            for v in value:
-                rightAnswer = getAnswerElementEqualsFinal(elements1, v.strip(), 2, 8, 4)
-                rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-                time.sleep(0.1)
+    listAnswer2=[]
+    dxindex=0
+    if "听录音" in browser.page_source:
+        dxAnswer = '''子问题 1：traffic accident; 子问题 2：too fast; 子问题 3：driving; 子问题 4：coming from; 子问题 5：check on'''
+        for an in dxAnswer.split("; "):
+            listAnswer2.append(an.split("：")[-1])
+        for sel in browser.find_elements_by_xpath('//input[@type="text"]'):
+            sel.send_keys(listAnswer2[dxindex])
+            dxindex += 1
+    else:
+        if "翻译题" in browser.page_source:
+            dxAnswer = '''子问题 1：B; 子问题 2：C; 子问题 3：B; 子问题 4：A; 子问题 5：C'''
+        if "阅读理解：判断正误题" in browser.page_source:
+            dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：F; 子问题 4：T; 子问题 5：F'''
+        if "阅读理解：选择题" in browser.page_source:
+            dxAnswer = '''子问题 1：C; 子问题 2：B; 子问题 3：C; 子问题 4：B; 子问题 5：A'''
 
-    # if (judgeQueTitle(elements1p, "从保本图得知（")):
-    #     rightAnswer = getAnswerElementEquals4(elements1, "在其他因素不变的情况，保本点越低，盈利面积越大",2)
-    #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
-    #     rightAnswer = getAnswerElementEquals4(elements1, "实际销售量超过保本点销售量部分即是安全边际",2)
-    #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
+        for an in dxAnswer.split("; "):
+            listAnswer2.append(an[-1])
+        print(listAnswer2)
+        print(len(browser.find_elements_by_class_name("custom-select")))
+        for sel in browser.find_elements_by_class_name("custom-select"):
+            sel.send_keys(listAnswer2[dxindex])
+            dxindex+=1
 
-    pdAnswer = '''从实质上看，直接工资的工资率差异属于价格差异。（对）
-    全面成本控制原则就是要求进行全过程控制。（错）
-    缺货成本是简单条件下的经济批量控制必须考虑的相关成本之一。（错）
-    在标准成本控制系统中，成本超支差应记入成本差异账户的贷方。（错）'''
-    pdUtil5(pdAutoAnswer(pdAnswer, []), elements1p, ratios, 3, 2, 0)
-    pdUtil5(pdAutoAnswer(pdAnswer, []), elements1p, ratios, 4, 2, 1)
-
-    # end answer
-    browser.find_element_by_xpath('//input[@type="submit"]').click()
+    # end answer-翻页的情况下用的结束答题
+    if canTakeWrongNum > 3:
+        return
+    browser.find_element_by_xpath('//input[@name="next"]').click()
     time.sleep(0.1)
     # save and submit
-    browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
+    browser.find_elements_by_xpath('//input[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
 
-
-def writeAnswer9(browser):
-    # 试卷444布局
-    # div class="qtext",2019年11月16日14:32:26发现bug,如果有一模一样的选项,系统默认勾选第一个,逻辑略复杂,暂不处理.并非一定要满分.
-    ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
-    elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
-
-    # 单选多选混合,根据题库判断单选还是多选,进行相应的点击,,,规律-前4单,中3多,后3判
-    elements1 = browser.find_elements_by_xpath('//label')
-    dxAnswer = '''当产品的市场价格不止一种时，供求双方有权在市场上销售或采购，且供给部门的生产能力不受限制时，应当作为内部转移价格的是（双重市场价格）。
-建立责任会计的目的是为了（实现责、权、利的协调统一 ）。
-利润中心和投资中心的区别在于，不对（投资效果 ）负责。
-下列不属于责任中心考核指标的是（ 产品成本）。
-以市场价格作为基价的内部转移价格主要适用于自然利润中心和（投资中心 ）。'''
-    mapdxanswer = danxuanAutoAnswer(dxAnswer, {})
-    for key, value in mapdxanswer.items():
-        if (judgeQueTitle(elements1p, key)):
-            rightAnswer = getAnswerElementEqualsFinal(elements1, value, 1, 8, 4)
-            rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-            time.sleep(0.1)
-    # if (judgeQueTitle(elements1p, "生产需要甲材料，年需要量为100千克，如果自制，单位变动成本20")):
-    #     rightAnswer = getAnswerElementEquals4(elements1, "保本点升高，利润减少", 1)
-    #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-    #     time.sleep(0.1)
-
-    mulAnswer = '''内部转移价格的作用（有利于分清各个责任中心的经济责任; 有利于正确评价各责任中心的经营业绩; 有利于进行正确的经营决策 ）。
-投资中心的考核指标包括（ 投资报酬率; 剩余收益）。
-责任中心的设置应具备的条件（责任者; 经营绩效; 资金运动; 职责和权限 ）。
-酌量性成本中心发生的费用包括以下哪些（管理费用; 销售费用 ）。'''
-    mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for value in mapmulAnswer:
-        print(key, value)
-        if (judgeQueTitle(elements1p, key)):
-            for v in value:
-                rightAnswer = getAnswerElementEqualsFinal(elements1, v.strip(), 2, 8, 4)
-                rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-                time.sleep(0.1)
-
-    # if (judgeQueTitle(elements1p, "从保本图得知（")):
-    #     rightAnswer = getAnswerElementEquals4(elements1, "在其他因素不变的情况，保本点越低，盈利面积越大",2)
-    #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
-    #     rightAnswer = getAnswerElementEquals4(elements1, "实际销售量超过保本点销售量部分即是安全边际",2)
-    #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
-
-    pdAnswer = '''利润或投资中心之间相互提供产品或劳务，最好以市场价格作为内部转移价格。（对）
-剩余收益指标的优点是可以使投资中心的业绩评价与企业目标协调一致。（对）
-一般来讲，成本中心之间相互提供产品或劳务，最好以“实际成本”作为内部转移价格。（错）
-因利润中心实际发生的利润数大于预算数而形成的差异是不利差异。（错）
-责任会计制度的最大优点是可以精确计算产品成本。（对）'''
-    pdUtil5(pdAutoAnswer(pdAnswer, []), elements1p, ratios, 3, 2, 0)
-    pdUtil5(pdAutoAnswer(pdAnswer, []), elements1p, ratios, 4, 2, 1)
-
-    # end answer
-    browser.find_element_by_xpath('//input[@type="submit"]').click()
-    time.sleep(0.1)
-    # save and submit
-    browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
-    browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
-
-
-def writeAnswer10(browser):
-    # 试卷444布局
-    # div class="qtext",2019年11月16日14:32:26发现bug,如果有一模一样的选项,系统默认勾选第一个,逻辑略复杂,暂不处理.并非一定要满分.
-    ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
-    elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
-
-    # 单选多选混合,根据题库判断单选还是多选,进行相应的点击,,,规律-前4单,中3多,后3判
-    elements1 = browser.find_elements_by_xpath('//label')
-    dxAnswer = '''平衡计分卡从四个方面来设计出相应的评价指标，来反映企业的整体运营状况，为企业的平衡管理和战略实现服务，其中不包括（ 销售视角  ）。
-作业成本法的核算对象是（作业）。 
-作业成本法首先将（间接费用 ）按作业成本库进行归集。'''
-    mapdxanswer = danxuanAutoAnswer(dxAnswer, {})
-    for key, value in mapdxanswer.items():
-        if (judgeQueTitle(elements1p, key)):
-            rightAnswer = getAnswerElementEqualsFinal(elements1, value, 1, 4, 5)
-            rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-            time.sleep(0.1)
-    # if (judgeQueTitle(elements1p, "生产需要甲材料，年需要量为100千克，如果自制，单位变动成本20")):
-    #     rightAnswer = getAnswerElementEquals4(elements1, "保本点升高，利润减少", 1)
-    #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-    #     time.sleep(0.1)
-
-    mulAnswer = '''EVA在技术方法上对经济利润的改进处是（对会计报表进行调整 ; 引进了资本资产定价模型 ; 矫正了传统财务指标的信息失真 ）。
-平衡计分卡的四个视角是（财务视角 ; 内部业务流程视角; 学习与成长视角; 客户视角 ）。
-在ABC中，依据作业是否会增加顾客价值，分为（ 不增值作业 ; 增值作业 ）。'''
-    mapmulAnswer = duoxuanAutoAnswer(mulAnswer, {})
-    for value in mapmulAnswer:
-        print(key, value)
-        if (judgeQueTitle(elements1p, key)):
-            for v in value:
-                rightAnswer = getAnswerElementEqualsFinal(elements1, v.strip(), 2, 4, 5)
-                rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-                time.sleep(0.1)
-
-    # if (judgeQueTitle(elements1p, "从保本图得知（")):
-    #     rightAnswer = getAnswerElementEquals4(elements1, "在其他因素不变的情况，保本点越低，盈利面积越大",2)
-    #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
-    #     rightAnswer = getAnswerElementEquals4(elements1, "实际销售量超过保本点销售量部分即是安全边际",2)
-    #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
-
-    pdAnswer = '''在作业成本法下，成本动因是导致成本发生的诱因，是成本分配的依据。（对）
-经济增加值与会计利润的主要区别在于会计利润扣除债务利息，而经济增加值扣除了股权资本费用，而不不扣除债务利息。（错）'''
-    pdUtil5(pdAutoAnswer(pdAnswer, []), elements1p, ratios, 2, 1, 0)
-
-    # end answer
-    browser.find_element_by_xpath('//input[@type="submit"]').click()
-    time.sleep(0.1)
-    # save and submit
-    browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
-    browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
 
 
 # 找到指定的课程名称,未找到返回0
@@ -859,7 +718,10 @@ def enterTest(browser, xkurl):
     windowstabs = browser.window_handles
     if len(windowstabs) > 1:  # 如果没找到课程,至少别报错
         browser.switch_to.window(windowstabs[1])
-        browser.find_element_by_xpath('//div[@class="help_close"]').click()  # find一下,保证新页面加载完成
+        try:
+            browser.find_element_by_xpath('//div[@class="help_close"]').click()  # find一下,保证新页面加载完成
+        except:
+            pass
         browser.get(xkurl)  # 先考形1
     else:
         return 0
@@ -892,14 +754,17 @@ def wait3AndCloseTab(browser):
 
 xingkao1 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474515'
 xingkao2 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474516'
-xingkao3 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=457962'
-xingkao4 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=457965'
-xingkao5 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=457968'
+xingkao3 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474517'
+xingkao4 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474518'
+xingkao5 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474519'
+xingkao6 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474520'
+xingkao7 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474521'
+xingkao8 = 'http://guangzhou.ouchn.cn/mod/quiz/view.php?id=474522'
 
 option = webdriver.ChromeOptions()
 option.add_argument('disable-infobars')
 browser = webdriver.Chrome(chrome_options=option)
-# browser.maximize_window()  #max_window
+browser.maximize_window()  #max_window
 
 browser.get('http://student.ouchn.cn/')
 browser.implicitly_wait(8)  # wait
@@ -919,29 +784,45 @@ for key in keys:
     browser.find_element_by_css_selector('button[value="login"]').click()
     # enter study...此处要注意,不同账号进来看到的开放大学指南的位置不同,要动态抓元素...2019年11月13日09:10:54发现不用抓元素,直接根据URL进入国开开放指南页面,并且形考1-5的URL也是指定的,所以不用抓元素
 
-    # if enterTest(browser, xingkao1) != 0:
-        # if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        #     writeAnswer1(browser)
-        # wait3AndCloseTab(browser)
+    if enterTest(browser, xingkao1) != 0:
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer1(browser)
+        wait3AndCloseTab(browser)
 
-    # enterTest(browser, xingkao2)
-    # if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-    #     writeAnswer2(browser)
-    # wait3AndCloseTab(browser)
+        enterTest(browser, xingkao2)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer2(browser)
+        wait3AndCloseTab(browser)
 
-    enterTest(browser, xingkao3)
-    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer3(browser)
-    wait3AndCloseTab(browser)
+        enterTest(browser, xingkao3)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer3(browser)
+        wait3AndCloseTab(browser)
 
-    enterTest(browser, xingkao4)
-    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer4(browser)
-    wait3AndCloseTab(browser)
-    enterTest(browser, xingkao5)
-    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer5(browser)
-    wait3AndCloseTab(browser)
+        enterTest(browser, xingkao4)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer4(browser)
+        wait3AndCloseTab(browser)
+
+        enterTest(browser, xingkao5)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer5(browser)
+        wait3AndCloseTab(browser)
+
+        enterTest(browser, xingkao6)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer6(browser)
+        wait3AndCloseTab(browser)
+
+        enterTest(browser, xingkao7)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer7(browser)
+        wait3AndCloseTab(browser)
+
+        enterTest(browser, xingkao8)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer8(browser)
+        wait3AndCloseTab(browser)
 
     # 5个形考走完提交之后直接换账号
     browser.get("http://passport.ouchn.cn/Account/Logout?logoutId=student.ouchn.cn")
