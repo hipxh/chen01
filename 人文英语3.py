@@ -185,15 +185,18 @@ def writeAnswer1(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
     listAnswer2=[]
     dxindex=0
-    if "阅读理解：选择题" in browser.page_source:
+    if "选择题（每题" in browser.page_source:
         dxAnswer='''子问题 1：C; 子问题 2：B; 子问题 3：C; 子问题 4：B; 子问题 5：A'''
-    if "阅读理解：正误判断" in browser.page_source:
+    if "正误判断" in browser.page_source:
         dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：T; 子问题 4：T; 子问题 5：F'''
 
     for an in dxAnswer.split("; "):
@@ -209,7 +212,7 @@ def writeAnswer1(browser):
     # end answer-翻页的情况下用的结束答题
     if canTakeWrongNum > 3:
         return
-    browser.find_elements_by_xpath('//input[@name="next"]')[1].click()
+    browser.find_element_by_xpath('//input[@name="next"]').click()
     time.sleep(0.1)
     # save and submit
     browser.find_elements_by_xpath('//input[@type="submit"]')[1].click()
@@ -238,7 +241,10 @@ def writeAnswer2(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
@@ -296,15 +302,18 @@ def writeAnswer3(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
     listAnswer2=[]
     dxindex=0
-    if "阅读理解：选择题" in browser.page_source:
+    if "选择题（每题" in browser.page_source:
         dxAnswer = '''子问题 1：C; 子问题 2：C; 子问题 3：A; 子问题 4：B; 子问题 5：B'''
-    if "阅读理解：正误判断" in browser.page_source:
+    if "正误判断" in browser.page_source:
         dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：T; 子问题 4：F; 子问题 5：F'''
 
     for an in dxAnswer.split("; "):
@@ -354,7 +363,10 @@ def writeAnswer4(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
@@ -362,7 +374,7 @@ def writeAnswer4(browser):
     dxindex=0
     if "英译汉" in browser.page_source:
         dxAnswer = '''子问题 1：B; 子问题 2：A; 子问题 3：C; 子问题 4：B; 子问题 5：B'''
-    if "阅读理解：正误判断" in browser.page_source:
+    if "正误判断" in browser.page_source:
         dxAnswer = '''子问题 1：F; 子问题 2：F; 子问题 3：T; 子问题 4：T; 子问题 5：T'''
 
     for an in dxAnswer.split("; "):
@@ -415,7 +427,10 @@ def writeAnswer5(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
@@ -471,15 +486,18 @@ def writeAnswer6(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
     listAnswer2=[]
     dxindex=0
-    if "阅读理解：选择题" in browser.page_source:
+    if "选择题（每题" in browser.page_source:#选择题（每题
         dxAnswer = '''子问题 1：D; 子问题 2：B; 子问题 3：E; 子问题 4：A; 子问题 5：C'''
-    if "阅读理解：正误判断" in browser.page_source:
+    if "正误判断" in browser.page_source:
         dxAnswer = '''子问题 1：F; 子问题 2：F; 子问题 3：F; 子问题 4：T; 子问题 5：F'''
 
     for an in dxAnswer.split("; "):
@@ -528,15 +546,18 @@ def writeAnswer7(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
     listAnswer2=[]
     dxindex=0
-    if "阅读理解：判断题" in browser.page_source:
+    if ">判断题" in browser.page_source:
         dxAnswer = '''子问题 1：F; 子问题 2：F; 子问题 3：T; 子问题 4：T; 子问题 5：F'''
-    if "阅读理解：选择题" in browser.page_source:
+    if "选择题（每题" in browser.page_source:
         dxAnswer = '''子问题 1：A; 子问题 2：C; 子问题 3：B; 子问题 4：A; 子问题 5：C'''
 
     for an in dxAnswer.split("; "):
@@ -575,10 +596,8 @@ def writeAnswer8(browser):
 题目：_________ the regular classes, you can also attend many different seminars and take part in many extracurricular activities. 	答案：Apart from
 题目：– Did you enjoy your college life?– ______	答案：Yes, it was rich and colorful. 
 题目：– How long have you been graduated from your college?–         	答案： I've been graduated for five years.
-题目：– I often feel lonely when I engage in my online learning. ________
-– I join the online course community.	答案：How do you solve this problem?
-题目：– The advancement of technology has boosted the pace of our lives, and requires us to learn something new every day.
-–                   I have chosen the online program at OU.	答案：That is the reason why
+题目：– I often feel lonely when I engage in my online learning. ________I join the online course community.	答案：How do you solve this problem?
+题目：– The advancement of technology has boosted the pace of our lives, and requires us to learn something new every day.答案：That is the reason why
 题目：– What are your great strengths?–                      	答案：I am very active in discussion.
 题目：By making learning possible anytime and anywhere, distance education is a powerful tool _________ supporting lifelong learning. 	答案：for 
 题目：I have just finished the        in the online forum. 	答案：discussion
@@ -590,13 +609,16 @@ def writeAnswer8(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
     listAnswer2=[]
     dxindex=0
-    if "阅读理解：判断正误" in browser.page_source:
+    if "判断正误" in browser.page_source:
         dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：F; 子问题 4：T; 子问题 5：T'''
 
     for an in dxAnswer.split("; "):
@@ -636,7 +658,10 @@ def enterTest(browser, xkurl):
     windowstabs = browser.window_handles
     if len(windowstabs) > 1:  # 如果没找到课程,至少别报错
         browser.switch_to.window(windowstabs[1])
-        browser.find_element_by_xpath('//div[@class="help_close"]').click()  # find一下,保证新页面加载完成
+        try:
+            browser.find_element_by_xpath('//div[@class="help_close"]').click()  # find一下,保证新页面加载完成
+        except:
+            pass
         browser.get(xkurl)  # 先考形1
     else:
         return 0
@@ -700,34 +725,34 @@ for key in keys:
     # enter study...此处要注意,不同账号进来看到的开放大学指南的位置不同,要动态抓元素...2019年11月13日09:10:54发现不用抓元素,直接根据URL进入国开开放指南页面,并且形考1-5的URL也是指定的,所以不用抓元素
 
     # if enterTest(browser, xingkao1) != 0:
-        # if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        #     writeAnswer1(browser)
-        # wait3AndCloseTab(browser)
+    #     if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+    #         writeAnswer1(browser)
+    #     wait3AndCloseTab(browser)
+    #
+    #     enterTest(browser, xingkao2)
+    #     if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+    #         writeAnswer2(browser)
+    #     wait3AndCloseTab(browser)
 
-    # enterTest(browser, xingkao2)
+    # enterTest(browser, xingkao3)
     # if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-    #     writeAnswer2(browser)
+    #     writeAnswer3(browser)
+    # wait3AndCloseTab(browser)
+    #
+    # enterTest(browser, xingkao4)
+    # if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+    #     writeAnswer4(browser)
+    # wait3AndCloseTab(browser)
+    #
+    # enterTest(browser, xingkao5)
+    # if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+    #     writeAnswer5(browser)
     # wait3AndCloseTab(browser)
 
-    enterTest(browser, xingkao3)
-    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer3(browser)
-    wait3AndCloseTab(browser)
-
-    enterTest(browser, xingkao4)
-    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer4(browser)
-    wait3AndCloseTab(browser)
-
-    enterTest(browser, xingkao5)
-    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer5(browser)
-    wait3AndCloseTab(browser)
-
-    enterTest(browser, xingkao6)
-    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer6(browser)
-    wait3AndCloseTab(browser)
+    # enterTest(browser, xingkao6)
+    # if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+    #     writeAnswer6(browser)
+    # wait3AndCloseTab(browser)
 
     enterTest(browser, xingkao7)
     if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考

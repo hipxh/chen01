@@ -185,7 +185,10 @@ def writeAnswer1(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
@@ -193,11 +196,11 @@ def writeAnswer1(browser):
     dxindex=0
     if "翻译题" in browser.page_source:
         dxAnswer='''子问题 1：C; 子问题 2：A; 子问题 3：C; 子问题 4：B; 子问题 5：B'''
-    if "阅读理解：判断正误题" in browser.page_source:
+    elif "判断正误题" in browser.page_source:
         dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：F; 子问题 4：T; 子问题 5：T'''
-    if "阅读理解：完形填空题" in browser.page_source:
+    elif "完形填空题" in browser.page_source:
         dxAnswer = '''子问题 1：B; 子问题 2：A; 子问题 3：C; 子问题 4：A; 子问题 5：C'''
-    if "阅读理解：选择题" in browser.page_source:
+    elif "选择题" in browser.page_source:
         dxAnswer = '''子问题 1：C; 子问题 2：C; 子问题 3：C; 子问题 4：B; 子问题 5：B'''
 
     for an in dxAnswer.split("; "):
@@ -268,9 +271,9 @@ def writeAnswer2(browser):
             dxindex += 1
 
     else:
-        if "阅读理解：判断正误题" in browser.page_source:
+        if "判断正误题" in browser.page_source:
             dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：F; 子问题 4：T; 子问题 5：T'''
-        if "阅读理解：填空题" in browser.page_source:
+        if "填空题" in browser.page_source:
             dxAnswer = '''子问题 1：C; 子问题 2：E; 子问题 3：D; 子问题 4：B; 子问题 5：A'''
         elif "翻译题" in browser.page_source:
             dxAnswer = '''子问题 1：B; 子问题 2：C; 子问题 3：B; 子问题 4：A; 子问题 5：B'''
@@ -325,28 +328,35 @@ def writeAnswer3(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
     listAnswer2=[]
     dxindex=0
     if "听录音" in browser.page_source:
-        dxAnswer = '''子问题 1：mind; 子问题 2：beginning; 子问题 3：sure; 子问题 4：best; 子问题 5：friends'''
-        for an in dxAnswer.split("; "):
-            listAnswer2.append(an.split("：")[-1])
+
         if len(browser.find_elements_by_class_name("custom-select")) > 0:
+            dxAnswer = '''子问题 1：on your mind; 子问题 2：the beginning of; 子问题 3：get along with; 子问题 4：Try your best; 子问题 5：make friends'''
+            for an in dxAnswer.split("; "):
+                listAnswer2.append(an.split("：")[-1])
             for sel in browser.find_elements_by_class_name("custom-select"):
                 sel.send_keys(listAnswer2[dxindex])
                 dxindex += 1
         else:
+            dxAnswer = '''子问题 1：mind; 子问题 2：beginning; 子问题 3：sure; 子问题 4：best; 子问题 5：friends'''
+            for an in dxAnswer.split("; "):
+                listAnswer2.append(an.split("：")[-1])
             for sel in browser.find_elements_by_xpath('//input[@type="text"]'):
                 sel.send_keys(listAnswer2[dxindex])
                 dxindex += 1
     else:
-        if "阅读理解：判断题" in browser.page_source:
+        if "判断题" in browser.page_source:
             dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：T; 子问题 4：F; 子问题 5：T'''
-        if "阅读理解：选择题" in browser.page_source:
+        else:
             dxAnswer = '''子问题 1：A; 子问题 2：C; 子问题 3：B; 子问题 4：A; 子问题 5：B'''
 
         for an in dxAnswer.split("; "):
@@ -396,17 +406,20 @@ def writeAnswer4(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
     listAnswer2=[]
     dxindex=0
-    if "阅读理解：填空" in browser.page_source:
+    if "填空" in browser.page_source:
         dxAnswer = '''子问题 1：C; 子问题 2：D; 子问题 3：A; 子问题 4：E; 子问题 5：B'''
-    if "听录音，判断正误" in browser.page_source:
+    elif "判断正误" in browser.page_source:
         dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：F; 子问题 4：T; 子问题 5：T'''
-    if "阅读理解：选择题" in browser.page_source:
+    else:
         dxAnswer = '''子问题 1：A; 子问题 2：C; 子问题 3：A; 子问题 4：C; 子问题 5：B'''
 
     for an in dxAnswer.split("; "):
@@ -458,7 +471,10 @@ def writeAnswer5(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
@@ -475,9 +491,9 @@ def writeAnswer5(browser):
     else:
         if "翻译题" in browser.page_source:
             dxAnswer = '''子问题 1：B; 子问题 2：A; 子问题 3：C; 子问题 4：A; 子问题 5：A'''
-        elif "阅读理解：判断题" in browser.page_source:
+        elif "判断题" in browser.page_source:
             dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：T; 子问题 4：F; 子问题 5：T'''
-        elif "阅读理解：选择题" in browser.page_source:
+        else:
             dxAnswer = '''子问题 1：A; 子问题 2：B; 子问题 3：C; 子问题 4：B; 子问题 5：A'''
 
         for an in dxAnswer.split("; "):
@@ -527,7 +543,10 @@ def writeAnswer6(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
@@ -543,9 +562,9 @@ def writeAnswer6(browser):
     else:
         if "翻译题" in browser.page_source:
             dxAnswer = '''子问题 1：B; 子问题 2：C; 子问题 3：B; 子问题 4：A; 子问题 5：C'''
-        if "阅读理解：判断题" in browser.page_source:
+        if "判断题" in browser.page_source:
             dxAnswer = '''子问题 1：F; 子问题 2：F; 子问题 3：T; 子问题 4：T; 子问题 5：F'''
-        if "阅读理解：完型填空" in browser.page_source or "阅读理解：完形填空" in browser.page_source:
+        if "完型填空" in browser.page_source or "阅读理解：完形填空" in browser.page_source:
             dxAnswer = '''子问题 1：B; 子问题 2：A; 子问题 3：B; 子问题 4：C; 子问题 5：C'''
 
         for an in dxAnswer.split("; "):
@@ -596,7 +615,10 @@ def writeAnswer7(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
@@ -605,11 +627,11 @@ def writeAnswer7(browser):
 
     if "听录音" in browser.page_source:
         dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：T; 子问题 4：F; 子问题 5：F'''
-    if "翻译题" in browser.page_source:
+    elif "翻译题" in browser.page_source:
         dxAnswer = '''子问题 1：B; 子问题 2：C; 子问题 3：B; 子问题 4：A; 子问题 5：C'''
-    if "阅读理解：填写主题句" in browser.page_source:
+    elif "填写主题句" in browser.page_source:
         dxAnswer = '''子问题 1：B; 子问题 2：A; 子问题 3：E; 子问题 4：C; 子问题 5：D'''
-    if "阅读理解：完型填空" in browser.page_source or "阅读理解：完形填空" in browser.page_source:
+    elif "完型填空" in browser.page_source or "阅读理解：完形填空" in browser.page_source:
         dxAnswer = '''子问题 1：C; 子问题 2：A; 子问题 3：A; 子问题 4：B; 子问题 5：C'''
 
     for an in dxAnswer.split("; "):
@@ -660,7 +682,10 @@ def writeAnswer8(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
@@ -676,9 +701,9 @@ def writeAnswer8(browser):
     else:
         if "翻译题" in browser.page_source:
             dxAnswer = '''子问题 1：B; 子问题 2：C; 子问题 3：B; 子问题 4：A; 子问题 5：C'''
-        if "阅读理解：判断正误题" in browser.page_source:
+        elif "判断正误题" in browser.page_source:
             dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：F; 子问题 4：T; 子问题 5：F'''
-        if "阅读理解：选择题" in browser.page_source:
+        else:
             dxAnswer = '''子问题 1：C; 子问题 2：B; 子问题 3：C; 子问题 4：B; 子问题 5：A'''
 
         for an in dxAnswer.split("; "):

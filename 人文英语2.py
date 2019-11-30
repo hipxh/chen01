@@ -184,19 +184,22 @@ def writeAnswer1(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
     listAnswer2=[]
     dxindex=0
-    if "英译汉：为句子选择正确的翻译。" in browser.page_source:
+    if "英译汉" in browser.page_source:
         dxAnswer='''子问题 1：A; 子问题 2：C; 子问题 3：C; 子问题 4：A; 子问题 5：B'''
-    if "阅读理解：根据上下文，补全对话内容。" in browser.page_source:
+    if "补全对话内容。" in browser.page_source:
         dxAnswer = '''子问题 1：C; 子问题 2：A; 子问题 3：E; 子问题 4：B; 子问题 5：D'''
-    if "阅读理解：根据文章内容，判断正误。" in browser.page_source:
+    if "判断正误。" in browser.page_source:
         dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：F; 子问题 4：T; 子问题 5：F'''
-    if "阅读理解：根据文章内容，完成选择题。" in browser.page_source:
+    if "完成选择题。" in browser.page_source:
         dxAnswer = '''子问题 1：A; 子问题 2：C; 子问题 3：C; 子问题 4：C; 子问题 5：C'''
 
     for an in dxAnswer.split("; "):
@@ -212,7 +215,7 @@ def writeAnswer1(browser):
     # end answer-翻页的情况下用的结束答题
     if canTakeWrongNum > 3:
         return
-    browser.find_elements_by_xpath('//input[@name="next"]')[1].click()
+    browser.find_element_by_xpath('//input[@name="next"]').click()
     time.sleep(0.1)
     # save and submit
     browser.find_elements_by_xpath('//input[@type="submit"]')[1].click()
@@ -249,28 +252,37 @@ def writeAnswer2(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
     listAnswer2=[]
     dxindex=0
-    if "英译汉：为句子选择正确的翻译。" in browser.page_source:
-        dxAnswer='''子问题 1：B; 子问题 2：A; 子问题 3：C; 子问题 4：A; 子问题 5：C'''
-    if "阅读理解：根据文章内容，判断正误。" in browser.page_source:
-        dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：F; 子问题 4：T; 子问题 5：F'''
-    if "阅读理解：根据文章内容，完成选择题。" in browser.page_source:
-        dxAnswer = '''子问题 1：A; 子问题 2：B; 子问题 3：B; 子问题 4：A; 子问题 5：C'''
-    if "阅读理解：结合上下文内容补全填空。" in browser.page_source:
+    if "结合上下文内容补全填空。" in browser.page_source:
         dxAnswer = '''子问题 1：assisting; 子问题 2：out; 子问题 3：most; 子问题 4：enabled; 子问题 5：asking for'''
+        for an in dxAnswer.split("; "):
+            listAnswer2.append(an.split("：")[-1])
+        for sel in browser.find_elements_by_xpath('//input[@type="text"]'):
+            sel.send_keys(listAnswer2[dxindex])
+            dxindex += 1
+    else:
+        if "英译汉" in browser.page_source:
+            dxAnswer='''子问题 1：B; 子问题 2：A; 子问题 3：C; 子问题 4：A; 子问题 5：C'''
+        if "判断正误。" in browser.page_source:
+            dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：F; 子问题 4：T; 子问题 5：F'''
+        if "完成选择题。" in browser.page_source:
+            dxAnswer = '''子问题 1：A; 子问题 2：B; 子问题 3：B; 子问题 4：A; 子问题 5：C'''
 
-    for an in dxAnswer.split("; "):
-        listAnswer2.append(an[-1])
-    print(listAnswer2)
-    print(len(browser.find_elements_by_class_name("custom-select")))
-    for sel in browser.find_elements_by_class_name("custom-select"):
-        sel.send_keys(listAnswer2[dxindex])
-        dxindex+=1
+        for an in dxAnswer.split("; "):
+            listAnswer2.append(an[-1])
+        print(listAnswer2)
+        print(len(browser.find_elements_by_class_name("custom-select")))
+        for sel in browser.find_elements_by_class_name("custom-select"):
+            sel.send_keys(listAnswer2[dxindex])
+            dxindex+=1
 
 
 
@@ -314,19 +326,22 @@ def writeAnswer3(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
     listAnswer2=[]
     dxindex=0
-    if "英译汉：为句子选择正确的翻译。" in browser.page_source:
+    if "英译汉" in browser.page_source:
         dxAnswer = '''子问题 1：B; 子问题 2：B; 子问题 3：A; 子问题 4：A; 子问题 5：B'''
-    if "阅读理解：根据上下文，补全对话内容。" in browser.page_source:
+    if "补全对话内容" in browser.page_source:
         dxAnswer = '''子问题 1：D; 子问题 2：B; 子问题 3：A; 子问题 4：E; 子问题 5：C'''
-    if "阅读理解：根据文章内容，判断正误。" in browser.page_source:
+    if "判断正误" in browser.page_source:
         dxAnswer = '''子问题 1：F; 子问题 2：F; 子问题 3：T; 子问题 4：F; 子问题 5：T'''
-    if "阅读理解：根据文章内容，完成选择题。" in browser.page_source:
+    if "完成选择题" in browser.page_source:
         dxAnswer = '''子问题 1：A; 子问题 2：C; 子问题 3：B; 子问题 4：A; 子问题 5：B'''
 
     for an in dxAnswer.split("; "):
@@ -378,19 +393,22 @@ def writeAnswer4(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
     listAnswer2=[]
     dxindex=0
-    if "理解：根据文章内容，判断正误。" in browser.page_source:
+    if "判断正误。" in browser.page_source:
         dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：F; 子问题 4：T; 子问题 5：F'''
-    if "英译汉：为句子选择正确的翻译。" in browser.page_source:
+    if "英译汉" in browser.page_source:
         dxAnswer = '''子问题 1：B; 子问题 2：A; 子问题 3：C; 子问题 4：B; 子问题 5：B'''
-    if "阅读理解：根据上下文，补全对话内容。" in browser.page_source:
+    if "补全对话内容" in browser.page_source:
         dxAnswer = '''子问题 1：D; 子问题 2：A; 子问题 3：B; 子问题 4：E; 子问题 5：C'''
-    if "阅读理解：根据文章内容，完成选择题。" in browser.page_source:
+    if "完成选择题" in browser.page_source:
         dxAnswer = '''子问题 1：A; 子问题 2：B; 子问题 3：A; 子问题 4：C; 子问题 5：C'''
 
     for an in dxAnswer.split("; "):
@@ -443,28 +461,46 @@ def writeAnswer5(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
     listAnswer2=[]
     dxindex=0
-    if "英译汉：为句子选择正确的翻译。" in browser.page_source:
-        dxAnswer = '''子问题 1：B; 子问题 2：B; 子问题 3：C; 子问题 4：A'''
-    if "阅读理解：根据上下文，补全对话内容。" in browser.page_source:
-        dxAnswer = '''子问题 1：B; 子问题 2：E; 子问题 3：C; 子问题 4：A; 子问题 5：D'''
-    if "阅读理解：根据文章内容，判断正误。" in browser.page_source:
-        dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：T; 子问题 4：F; 子问题 5：F'''
+
     if "阅读理解：结合上下文内容补全填空。" in browser.page_source:
         dxAnswer = '''子问题 1：set up; 子问题 2：broke down; 子问题 3：another; 子问题 4：1970s; 子问题 5：cheaper'''
+        if len(browser.find_elements_by_xpath('//input[@type="text"]')) > 1:
+            for an in dxAnswer.split("; "):
+                listAnswer2.append(an.split("：")[-1])
+            for sel in browser.find_elements_by_xpath('//input[@type="text"]'):
+                sel.send_keys(listAnswer2[dxindex])
+                dxindex += 1
+        else:
+            for an in dxAnswer.split("; "):
+                listAnswer2.append(an.split("：")[-1])
+            for sel in browser.find_elements_by_class_name("custom-select"):
+                sel.send_keys(listAnswer2[dxindex])
+                dxindex += 1
+    else:
+        if "英译汉" in browser.page_source:
+            dxAnswer = '''子问题 1：B; 子问题 2：B; 子问题 3：C; 子问题 4：A'''
+        if "补全对话内容" in browser.page_source:
+            dxAnswer = '''子问题 1：B; 子问题 2：E; 子问题 3：C; 子问题 4：A; 子问题 5：D'''
+        if "判断正误" in browser.page_source:
+            dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：T; 子问题 4：F; 子问题 5：F'''
 
-    for an in dxAnswer.split("; "):
-        listAnswer2.append(an[-1])
-    print(listAnswer2)
-    print(len(browser.find_elements_by_class_name("custom-select")))
-    for sel in browser.find_elements_by_class_name("custom-select"):
-        sel.send_keys(listAnswer2[dxindex])
-        dxindex+=1
+
+        for an in dxAnswer.split("; "):
+            listAnswer2.append(an[-1])
+        print(listAnswer2)
+        print(len(browser.find_elements_by_class_name("custom-select")))
+        for sel in browser.find_elements_by_class_name("custom-select"):
+            sel.send_keys(listAnswer2[dxindex])
+            dxindex+=1
 
     # end answer-翻页的情况下用的结束答题
     if canTakeWrongNum > 3:
@@ -506,28 +542,44 @@ def writeAnswer6(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
     listAnswer2=[]
     dxindex=0
-    if "翻译：为句子选择正确的翻译。" in browser.page_source:
-        dxAnswer = '''子问题 1：C; 子问题 2：A; 子问题 3：B; 子问题 4：A; 子问题 5：B'''
-    if "阅读理解：根据文章内容，判断正误。" in browser.page_source:
-        dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：T; 子问题 4：T; 子问题 5：F'''
-    if "阅读理解：结合上下文内容补全填空。" in browser.page_source:
+    if "结合上下文内容补全填空。" in browser.page_source:
         dxAnswer = '''子问题 1：ways; 子问题 2：lasting; 子问题 3：better; 子问题 4：was; 子问题 5：Secondly'''
-    if "阅读理解：阅读文章，匹配段落大意。" in browser.page_source:
-        dxAnswer = '''子问题 1：C; 子问题 2：E; 子问题 3：A; 子问题 4：D; 子问题 5：B'''
+        if len(browser.find_elements_by_xpath('//input[@type="text"]')) > 1:
+            for an in dxAnswer.split("; "):
+                listAnswer2.append(an.split("：")[-1])
+            for sel in browser.find_elements_by_xpath('//input[@type="text"]'):
+                sel.send_keys(listAnswer2[dxindex])
+                dxindex += 1
+        else:
+            for an in dxAnswer.split("; "):
+                listAnswer2.append(an.split("：")[-1])
+            for sel in browser.find_elements_by_class_name("custom-select"):
+                sel.send_keys(listAnswer2[dxindex])
+                dxindex += 1
+    else:
+        if "为句子选择正确的翻译" in browser.page_source:
+            dxAnswer = '''子问题 1：C; 子问题 2：A; 子问题 3：B; 子问题 4：A; 子问题 5：B'''
+        if "判断正误" in browser.page_source:
+            dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：T; 子问题 4：T; 子问题 5：F'''
+        if "匹配段落大意" in browser.page_source:
+            dxAnswer = '''子问题 1：C; 子问题 2：E; 子问题 3：A; 子问题 4：D; 子问题 5：B'''
 
-    for an in dxAnswer.split("; "):
-        listAnswer2.append(an[-1])
-    print(listAnswer2)
-    print(len(browser.find_elements_by_class_name("custom-select")))
-    for sel in browser.find_elements_by_class_name("custom-select"):
-        sel.send_keys(listAnswer2[dxindex])
-        dxindex+=1
+        for an in dxAnswer.split("; "):
+            listAnswer2.append(an[-1])
+        print(listAnswer2)
+        print(len(browser.find_elements_by_class_name("custom-select")))
+        for sel in browser.find_elements_by_class_name("custom-select"):
+            sel.send_keys(listAnswer2[dxindex])
+            dxindex+=1
 
     # end answer-翻页的情况下用的结束答题
     if canTakeWrongNum > 3:
@@ -569,19 +621,22 @@ def writeAnswer7(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
     listAnswer2=[]
     dxindex=0
-    if "英译汉：为句子选择正确的翻译。" in browser.page_source:
+    if "英译汉" in browser.page_source:
         dxAnswer = '''子问题 1：B; 子问题 2：C; 子问题 3：A; 子问题 4：C; 子问题 5：A'''
-    if "阅读理解：根据上下文，补全文章内容。" in browser.page_source:
+    if "补全文章内容。" in browser.page_source:
         dxAnswer = '''子问题 1：C; 子问题 2：A; 子问题 3：B; 子问题 4：F; 子问题 5：E; 子问题 6：D'''
-    if "阅读理解：根据文章内容，判断正误。" in browser.page_source:
+    if "判断正误" in browser.page_source:
         dxAnswer = '''子问题 1：F; 子问题 2：F; 子问题 3：T; 子问题 4：T; 子问题 5：F'''
-    if "阅读理解：根据文章内容，完成选择题。" in browser.page_source:
+    if "完成选择题" in browser.page_source:
         dxAnswer = '''子问题 1：B; 子问题 2：C; 子问题 3：A; 子问题 4：C; 子问题 5：C'''
 
     for an in dxAnswer.split("; "):
@@ -632,28 +687,46 @@ def writeAnswer8(browser):
     for key, value in mapdxanswer.items():
         anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
+            try:
+                anEle.find_element_by_xpath("./../input[last()]").click()
+            except:
+                browser.execute_script("arguments[0].click();", anEle.find_element_by_xpath("./../input[last()]"))
             time.sleep(0.2)
         dxindex += 1
 
     listAnswer2=[]
     dxindex=0
-    if "英译汉：为句子选择正确的翻译。" in browser.page_source:
-        dxAnswer = '''子问题 1：C; 子问题 2：C; 子问题 3：B; 子问题 4：B; 子问题 5：A'''
-    if "阅读理解：根据文章内容，判断正误。" in browser.page_source:
-        dxAnswer = '''子问题 1：F; 子问题 2：F; 子问题 3：T; 子问题 4：T; 子问题 5：F'''
-    if "阅读理解：根据文章内容，完成选择题。" in browser.page_source:
-        dxAnswer = '''子问题 1：C; 子问题 2：A; 子问题 3：B; 子问题 4：B; 子问题 5：C'''
-    if "阅读理解：结合上下文内容补全填空。" in browser.page_source:
+    if "结合上下文内容补全填空" in browser.page_source:
         dxAnswer = '''子问题 1：with; 子问题 2：after; 子问题 3：well; 子问题 4：when; 子问题 5：anything'''
+        if len(browser.find_elements_by_xpath('//input[@type="text"]')) > 1:
+            for an in dxAnswer.split("; "):
+                listAnswer2.append(an.split("：")[-1])
+            for sel in browser.find_elements_by_xpath('//input[@type="text"]'):
+                sel.send_keys(listAnswer2[dxindex])
+                dxindex += 1
+        else:
+            for an in dxAnswer.split("; "):
+                listAnswer2.append(an.split("：")[-1])
+            for sel in browser.find_elements_by_class_name("custom-select"):
+                sel.send_keys(listAnswer2[dxindex])
+                dxindex += 1
+    else:
 
-    for an in dxAnswer.split("; "):
-        listAnswer2.append(an[-1])
-    print(listAnswer2)
-    print(len(browser.find_elements_by_class_name("custom-select")))
-    for sel in browser.find_elements_by_class_name("custom-select"):
-        sel.send_keys(listAnswer2[dxindex])
-        dxindex+=1
+        if "英译汉" in browser.page_source:
+            dxAnswer = '''子问题 1：C; 子问题 2：C; 子问题 3：B; 子问题 4：B; 子问题 5：A'''
+        if "判断正误" in browser.page_source:
+            dxAnswer = '''子问题 1：F; 子问题 2：F; 子问题 3：T; 子问题 4：T; 子问题 5：F'''
+        if "完成选择题" in browser.page_source:
+            dxAnswer = '''子问题 1：C; 子问题 2：A; 子问题 3：B; 子问题 4：B; 子问题 5：C'''
+
+
+        for an in dxAnswer.split("; "):
+            listAnswer2.append(an[-1])
+        print(listAnswer2)
+        print(len(browser.find_elements_by_class_name("custom-select")))
+        for sel in browser.find_elements_by_class_name("custom-select"):
+            sel.send_keys(listAnswer2[dxindex])
+            dxindex+=1
 
     # end answer-翻页的情况下用的结束答题
     if canTakeWrongNum > 3:
@@ -684,7 +757,10 @@ def enterTest(browser, xkurl):
     windowstabs = browser.window_handles
     if len(windowstabs) > 1:  # 如果没找到课程,至少别报错
         browser.switch_to.window(windowstabs[1])
-        browser.find_element_by_xpath('//div[@class="help_close"]').click()  # find一下,保证新页面加载完成
+        try:
+            browser.find_element_by_xpath('//div[@class="help_close"]').click()  # find一下,保证新页面加载完成
+        except:
+            pass
         browser.get(xkurl)  # 先考形1
     else:
         return 0
@@ -747,45 +823,45 @@ for key in keys:
     browser.find_element_by_css_selector('button[value="login"]').click()
     # enter study...此处要注意,不同账号进来看到的开放大学指南的位置不同,要动态抓元素...2019年11月13日09:10:54发现不用抓元素,直接根据URL进入国开开放指南页面,并且形考1-5的URL也是指定的,所以不用抓元素
 
-    # if enterTest(browser, xingkao1) != 0:
-        # if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        #     writeAnswer1(browser)
-        # wait3AndCloseTab(browser)
+    if enterTest(browser, xingkao1) != 0:
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer1(browser)
+        wait3AndCloseTab(browser)
 
-    # enterTest(browser, xingkao2)
-    # if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-    #     writeAnswer2(browser)
-    # wait3AndCloseTab(browser)
+        enterTest(browser, xingkao2)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer2(browser)
+        wait3AndCloseTab(browser)
 
-    enterTest(browser, xingkao3)
-    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer3(browser)
-    wait3AndCloseTab(browser)
+        enterTest(browser, xingkao3)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer3(browser)
+        wait3AndCloseTab(browser)
 
-    enterTest(browser, xingkao4)
-    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer4(browser)
-    wait3AndCloseTab(browser)
-
-    enterTest(browser, xingkao5)
-    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer5(browser)
-    wait3AndCloseTab(browser)
-
-    enterTest(browser, xingkao6)
-    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer6(browser)
-    wait3AndCloseTab(browser)
-
-    enterTest(browser, xingkao7)
-    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer7(browser)
-    wait3AndCloseTab(browser)
-
-    enterTest(browser, xingkao8)
-    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-        writeAnswer8(browser)
-    wait3AndCloseTab(browser)
+        enterTest(browser, xingkao4)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer4(browser)
+        wait3AndCloseTab(browser)
+    
+        enterTest(browser, xingkao5)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer5(browser)
+        wait3AndCloseTab(browser)
+    
+        enterTest(browser, xingkao6)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer6(browser)
+        wait3AndCloseTab(browser)
+    
+        enterTest(browser, xingkao7)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer7(browser)
+        wait3AndCloseTab(browser)
+    
+        enterTest(browser, xingkao8)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer8(browser)
+        wait3AndCloseTab(browser)
 
     # 5个形考走完提交之后直接换账号
     browser.get("http://passport.ouchn.cn/Account/Logout?logoutId=student.ouchn.cn")
