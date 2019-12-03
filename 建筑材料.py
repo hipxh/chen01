@@ -1025,13 +1025,24 @@ def wait3AndCloseTab(browser):
     time.sleep(2)
     browser.close()
     browser.switch_to.window(browser.window_handles[0])
-    time.sleep(1.5)
+    time.sleep(3.5)
 
 
 xingkao1 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=473559'
 xingkao2 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=473560'
 xingkao3 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=473561'
 xingkao4 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=473562'
+
+zhangjie2 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=473238'
+zhangjie3 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=473252'
+zhangjie4 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=473283'
+zhangjie5 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=473313'
+zhangjie6 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=473356'
+zhangjie7 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=473382'
+zhangjie8 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=473401'
+zhangjie9 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=473439'
+zhangjie10 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=473455'
+zhangjie11= 'http://hubei.ouchn.cn/mod/quiz/view.php?id=473492'
 
 option = webdriver.ChromeOptions()
 option.add_argument('disable-infobars')

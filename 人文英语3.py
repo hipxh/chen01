@@ -724,35 +724,35 @@ for key in keys:
     browser.find_element_by_css_selector('button[value="login"]').click()
     # enter study...此处要注意,不同账号进来看到的开放大学指南的位置不同,要动态抓元素...2019年11月13日09:10:54发现不用抓元素,直接根据URL进入国开开放指南页面,并且形考1-5的URL也是指定的,所以不用抓元素
 
-    # if enterTest(browser, xingkao1) != 0:
-    #     if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-    #         writeAnswer1(browser)
-    #     wait3AndCloseTab(browser)
-    #
-    #     enterTest(browser, xingkao2)
-    #     if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-    #         writeAnswer2(browser)
-    #     wait3AndCloseTab(browser)
+    if enterTest(browser, xingkao1) != 0:
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer1(browser)
+        wait3AndCloseTab(browser)
 
-    # enterTest(browser, xingkao3)
-    # if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-    #     writeAnswer3(browser)
-    # wait3AndCloseTab(browser)
-    #
-    # enterTest(browser, xingkao4)
-    # if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-    #     writeAnswer4(browser)
-    # wait3AndCloseTab(browser)
-    #
-    # enterTest(browser, xingkao5)
-    # if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-    #     writeAnswer5(browser)
-    # wait3AndCloseTab(browser)
+        enterTest(browser, xingkao2)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer2(browser)
+        wait3AndCloseTab(browser)
 
-    # enterTest(browser, xingkao6)
-    # if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-    #     writeAnswer6(browser)
-    # wait3AndCloseTab(browser)
+    enterTest(browser, xingkao3)
+    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+        writeAnswer3(browser)
+    wait3AndCloseTab(browser)
+
+    enterTest(browser, xingkao4)
+    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+        writeAnswer4(browser)
+    wait3AndCloseTab(browser)
+
+    enterTest(browser, xingkao5)
+    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+        writeAnswer5(browser)
+    wait3AndCloseTab(browser)
+
+    enterTest(browser, xingkao6)
+    if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+        writeAnswer6(browser)
+    wait3AndCloseTab(browser)
 
     enterTest(browser, xingkao7)
     if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
