@@ -4,10 +4,10 @@ import time
 from threading import Thread
 
 import timeunit
-import bs4
+import os
 from selenium import webdriver
 
-studyName='办公室管理'
+studyName=os.path.basename(__file__).split('.')[0]
 
 
 def getAnswerElement(elements,neirong):
@@ -286,25 +286,31 @@ def writeAnswer5(browser):
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
 
 
-#找到指定的课程名称,未找到返回0
+# 找到指定的课程名称,未找到返回0
 def enterStudy(browser):
     studys = browser.find_elements_by_css_selector("button[class='btn bg-primary']")
     for s in studys:
-        if studyName in s.find_element_by_xpath("./..").find_element_by_xpath("./..").find_element_by_xpath("./..").find_element_by_xpath("./h3").text:
+        if studyName in s.find_element_by_xpath("./..").find_element_by_xpath("./..").find_element_by_xpath(
+                "./..").find_element_by_xpath("./h3").text:
             s.click()
             return 1
     return 0
 
-#1.找到办公室管理的进入学习按钮
-def enterTest(browser,xkurl):
+
+# 1.找到办公室管理的进入学习按钮
+def enterTest(browser, xkurl):
     enterStudy(browser)  # 进入学习的按钮会新开一个tab
     time.sleep(1)
     windowstabs = browser.window_handles
-    browser.switch_to.window(windowstabs[1])
-    browser.find_elements_by_css_selector('img[class="pull-right"]')  # find一下,保证新页面加载完成
-    browser.get(xkurl)  # 先考形1
+    if len(windowstabs) > 1:  # 如果没找到课程,至少别报错
+        browser.switch_to.window(windowstabs[1])
+        browser.find_elements_by_css_selector('img[class="pull-right"]')  # find一下,保证新页面加载完成
+        browser.get(xkurl)  # 先考形1
+    else:
+        return 0
 
-#2.立即考试.判断一下,防止多次考试
+
+# 2.立即考试.判断一下,防止多次考试
 def readyToTest(browser):
     readyTest = browser.find_element_by_xpath('//button[@type="submit"]')
     if '再次' not in readyTest.text:
@@ -313,7 +319,8 @@ def readyToTest(browser):
             return 1
     return 0
 
-#论坛形式试卷进入方法
+
+# 论坛形式试卷进入方法
 def readyToTestForum(browser):
     readyTest = browser.find_element_by_xpath('//button[starts-with(@id,"single_")]')
     readyTest.click()
@@ -327,12 +334,13 @@ def wait3AndCloseTab(browser):
     browser.switch_to.window(browser.window_handles[0])
     time.sleep(1.5)
 
+area = ''
 
-xingkao1='http://hubei.ouchn.cn/mod/forum/view.php?id=470242'#注意这一地址是forum,非正常试卷
-xingkao2='http://hubei.ouchn.cn/mod/quiz/view.php?id=470243'
-xingkao3='http://hubei.ouchn.cn/mod/quiz/view.php?id=470244'
-xingkao4='http://hubei.ouchn.cn/mod/quiz/view.php?id=470245'
-xingkao5='http://hubei.ouchn.cn/mod/quiz/view.php?id=470246'
+xingkao1='http://'+area+'.ouchn.cn/mod/forum/view.php?id=470242'#注意这一地址是forum,非正常试卷
+xingkao2='http://'+area+'.ouchn.cn/mod/quiz/view.php?id=470243'
+xingkao3='http://'+area+'.ouchn.cn/mod/quiz/view.php?id=470244'
+xingkao4='http://'+area+'.ouchn.cn/mod/quiz/view.php?id=470245'
+xingkao5='http://'+area+'.ouchn.cn/mod/quiz/view.php?id=470246'
 
 
 
@@ -344,7 +352,7 @@ browser = webdriver.Chrome(chrome_options=option)
 browser.get('http://student.ouchn.cn/')
 browser.implicitly_wait(8)  #wait
 
-file=open('bangongguanli_key.txt')
+file = open(studyName + '.txt')
 keys=[]
 for line in file.readlines():
     keys.append(line.strip())
@@ -352,6 +360,19 @@ for line in file.readlines():
 for key in keys:
     username=key.split("\t")[0]
     password=key.split("\t")[1]
+
+    if "42101" in username[2:9]:
+        area = 'wuhan'
+    elif "44101" in username[2:9]:
+        area = 'guangzhou'
+    elif "42001" in username[2:9]:
+        area = 'hubei'
+
+    xingkao1 = 'http://' + area + '.ouchn.cn/mod/forum/view.php?id=523184'  # 注意这一地址是forum,非正常试卷
+    xingkao2 = 'http://' + area + '.ouchn.cn/mod/quiz/view.php?id=470243'
+    xingkao3 = 'http://' + area + '.ouchn.cn/mod/quiz/view.php?id=470244'
+    xingkao4 = 'http://' + area + '.ouchn.cn/mod/quiz/view.php?id=470245'
+    xingkao5 = 'http://' + area + '.ouchn.cn/mod/quiz/view.php?id=470246'
 
     #login
     browser.find_element_by_id("username").send_keys(username)
@@ -387,5 +408,5 @@ for key in keys:
 
     #5个形考走完提交之后直接换账号
     browser.get("http://passport.ouchn.cn/Account/Logout?logoutId=student.ouchn.cn")
-    time.sleep(2)
+    time.sleep(6)
 
