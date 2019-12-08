@@ -25,18 +25,19 @@ class Employee:
         print("该员工每个月生产 " + str(self.proficiency) + " 个商品,老板付薪2k")
 
 
-print("1942001414309"[2:9])
+print("1942001414309"[-3:])
 
 o={"1":"111"}
 for i in o.items():
     print(i[0],i[1])
+list = [1,2,3,4,5]
+print(list[1:])
 
 
-
-
-x = "h"
-
-print("1xn".encode("utf-8"))
+#
+# x = "h"
+#
+# print("1xn".encode("utf-8"))
 
 
 #递归函数得到老板手上的钱

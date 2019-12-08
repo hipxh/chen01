@@ -1,16 +1,10 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 import time
-from threading import Thread
-
-import bs4
 from selenium import webdriver
 import os
 
-from selenium.webdriver.common.keys import Keys
-from browsermobproxy import Server
-import requests
-import uuid
+
 
 studyName = os.path.basename(__file__).split('.')[0]
 
@@ -22,11 +16,14 @@ def getAnswerElement(elements, neirong, i):
             return ele
 
 
-def getAnswerElementEquals(elements, neirong, i, meidaotiyouduoshaogexuanxiang):
+def getAnswerElementEquals(elements, neirong, key,i, meidaotiyouduoshaogexuanxiang):
+    may = None
     for ele in elements:  # or "a. " + neirong == ele.text or "b. " + neirong == ele.text or "c. " + neirong == ele.text or "d. " + neirong == ele.text or "e. " + neirong == ele.text
-        if neirong == ele.text or "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "D. " + neirong == ele.text or "E. " + neirong == ele.text:
-            return ele
-
+        if neirong == ele.text or "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "a. " + neirong == ele.text or "b. " + neirong == ele.text or "c. " + neirong == ele.text:
+            may = ele
+            if ele.find_element_by_xpath("./../../../../div[@class='qtext']").text[-3:] in key.strip():
+                return ele
+    return may
 
 # 单选和多选在一页
 def getAnswerElementEqualsdanxuanduoxuaninOnePage(elements, neirong, i, meidaotiyouduoshaogexuanxiang,
@@ -112,7 +109,7 @@ def danxuanAutoAnswerFix(answer, reg):
         result[i.strip().split(reg)[0].strip()] = i.strip().split(reg)[1].strip()
     return result
 
-
+#111
 def duoxuanAutoAnswerFix(answer, reg, reg2):
     # map={}
     # split = answer.split("\n")
@@ -189,7 +186,7 @@ def writeAnswer1(browser):
 题目：Smile a lot and be         friendly as possible to everyone you meet.	答案：as'''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        anEle = getAnswerElementEquals(elements1, value, dxindex, 3)  # 找到指定的那个label选项
+        anEle = getAnswerElementEquals(elements1, value,key, dxindex, 3)  # 找到指定的那个label选项
         if anEle is not None:
             try:
                 anEle.find_element_by_xpath("./../input[last()]").click()
@@ -200,22 +197,37 @@ def writeAnswer1(browser):
 
     listAnswer2 = []
     dxindex = 0
-    if "翻译：从以下A" in browser.page_source:
-        dxAnswer = '''子问题 1：C; 子问题 2：A; 子问题 3：A; 子问题 4：B; 子问题 5：A'''
-    if "听力理解：请听下面的对话" in browser.page_source:
-        dxAnswer = '''子问题 1：meet; 子问题 2：call; 子问题 3：number; 子问题 4：really; 子问题 5：forward'''
-    if "阅读理解：阅读下面的短文，根据文章内容从A、B、C三个选项中选出一个最佳选项" in browser.page_source:
-        dxAnswer = '''子问题 1：A; 子问题 2：A; 子问题 3：B; 子问题 4：C; 子问题 5：B'''
-    if "阅读理解：阅读下面的短文，根据文章内容进行判断，正确写“T”错误写“F”" in browser.page_source:
-        dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：T; 子问题 4：F; 子问题 5：F'''
 
-    for an in dxAnswer.split("; "):
-        listAnswer2.append(an[-1])
-    print(listAnswer2)
-    print(len(browser.find_elements_by_class_name("custom-select")))
-    for sel in browser.find_elements_by_class_name("custom-select"):
-        sel.send_keys(listAnswer2[dxindex])
-        dxindex += 1
+
+    if "请听下面的对话" in browser.page_source:
+        dxAnswer = '''子问题 1：meet; 子问题 2：call; 子问题 3：number; 子问题 4：really; 子问题 5：forward'''
+        if len(browser.find_elements_by_class_name("custom-select")) > 0:
+            for an in dxAnswer.split("; "):
+                listAnswer2.append(an.split("：")[-1])
+            for sel in browser.find_elements_by_class_name("custom-select"):
+                sel.send_keys(listAnswer2[dxindex])
+                dxindex += 1
+        else:
+            for an in dxAnswer.split("; "):
+                listAnswer2.append(an.split("：")[-1])
+            for sel in browser.find_elements_by_xpath('//input[@type="text"]'):
+                sel.send_keys(listAnswer2[dxindex])
+                dxindex += 1
+    else:
+        if "中文翻译" in browser.page_source:
+            dxAnswer = '''子问题 1：C; 子问题 2：A; 子问题 3：A; 子问题 4：B; 子问题 5：A'''
+        elif "最佳选项" in browser.page_source:
+            dxAnswer = '''子问题 1：A; 子问题 2：A; 子问题 3：B; 子问题 4：C; 子问题 5：B'''
+        elif "根据文章内容进行判断" in browser.page_source:
+            dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：T; 子问题 4：F; 子问题 5：F'''
+
+        for an in dxAnswer.split("; "):
+            listAnswer2.append(an[-1])
+        print(listAnswer2)
+        print(len(browser.find_elements_by_class_name("custom-select")))
+        for sel in browser.find_elements_by_class_name("custom-select"):
+            sel.send_keys(listAnswer2[dxindex])
+            dxindex += 1
 
     # end answer-翻页的情况下用的结束答题
     if canTakeWrongNum > 3:
@@ -256,7 +268,7 @@ def writeAnswer2(browser):
 题目：With his work completed, the manager stepped back to his seat, feeling pleased ______ he was a man of action.  	答案：that'''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        anEle = getAnswerElementEquals(elements1, value,key,  dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
             try:
                 anEle.find_element_by_xpath(
@@ -269,22 +281,29 @@ def writeAnswer2(browser):
 
     listAnswer2 = []
     dxindex = 0
-    if "听录音" in browser.page_source:
+    if "听录音222" in browser.page_source:
         dxAnswer = '''子问题 1：part-time; 子问题 2：special; 子问题 3：need; 子问题 4：look after; 子问题 5：cool'''
-        for an in dxAnswer.split("; "):
-            listAnswer2.append(an.split("：")[-1])
-        for sel in browser.find_elements_by_xpath('//input[@type="text"]'):
-            sel.send_keys(listAnswer2[dxindex])
-            dxindex += 1
+        if len(browser.find_elements_by_class_name("custom-select")) > 0:
+            for an in dxAnswer.split("; "):
+                listAnswer2.append(an.split("：")[-1])
+            for sel in browser.find_elements_by_class_name("custom-select"):
+                sel.send_keys(listAnswer2[dxindex])
+                dxindex += 1
+        else:
+            for an in dxAnswer.split("; "):
+                listAnswer2.append(an.split("：")[-1])
+            for sel in browser.find_elements_by_xpath('//input[@type="text"]'):
+                sel.send_keys(listAnswer2[dxindex])
+                dxindex += 1
 
     else:
-        if "翻译：从以下A、B、C" in browser.page_source:
+        if "中文翻译" in browser.page_source:
             dxAnswer = '''子问题 1：A; 子问题 2：C; 子问题 3：C; 子问题 4：B; 子问题 5：A'''
-        if "完形填空：阅读下面的短文，根据文章内容从A、B、" in browser.page_source:
+        elif "补充完整" in browser.page_source:
             dxAnswer = '''子问题 1：B; 子问题 2：A; 子问题 3：C; 子问题 4：C; 子问题 5：B'''
-        if "阅读理解：阅读下面的短文，根据文章内容从A、B、C" in browser.page_source:
+        elif "最佳选项" in browser.page_source:
             dxAnswer = '''子问题 1：B; 子问题 2：C; 子问题 3：C; 子问题 4：B; 子问题 5：A'''
-        if "阅读理解：阅读下面的短文，根据文章内容进行判断，正确为“T”，错误为“F”" in browser.page_source:
+        elif "根据文章内容进行判断" in browser.page_source:
             dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：T; 子问题 4：F; 子问题 5：T'''
 
         for an in dxAnswer.split("; "):
@@ -318,7 +337,7 @@ def writeAnswer3(browser):
 
     # 5单
     dxAnswer = '''题目：       your plan and don't stop until it is finished.	答案：Follow
-题目：______ has not yet been decided. 	答案：When to hold the meeting
+题目：______ has not yet been decided. 	答案：When to hold the meeting
 题目：—                     — I'm not sure what I'll do. I hope to watch TV and enjoy myself.	答案：What are your plans for summer vacation?
 题目：—                      — Nothing much.	答案：What's up?
 题目：—                       — I'm afraid not. But I'll be free this afternoon. 	答案：Can you spare me a few minutes now?
@@ -333,7 +352,7 @@ def writeAnswer3(browser):
 题目：Your goal is to publish a book and have _____ manuscript sent out to publishers by November 2016.	答案：the'''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        anEle = getAnswerElementEquals(elements1, value,key,  dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.2)
@@ -341,7 +360,7 @@ def writeAnswer3(browser):
 
     listAnswer2 = []
     dxindex = 0
-    if "听录音" in browser.page_source:
+    if "听录音222" in browser.page_source:
 
         if len(browser.find_elements_by_class_name("custom-select")) > 0:
             dxAnswer = '''子问题 1：2; 子问题 2：1; 子问题 3：0; 子问题 4：3; 子问题 5：4'''
@@ -358,13 +377,13 @@ def writeAnswer3(browser):
                 sel.send_keys(listAnswer2[dxindex])
                 dxindex += 1
     else:
-        if "阅读理解：阅读下面的短文，根据文章内容进行判断，正确写“T”错误写“F”" in browser.page_source:
+        if "根据文章内容进行判断" in browser.page_source:
             dxAnswer = '''子问题 1：F; 子问题 2：F; 子问题 3：T; 子问题 4：F; 子问题 5：T'''
-        if "听力理解：请听下面的对话，根据对话内容进行判断，正确写“T”错误写“F”" in browser.page_source:
+        elif "听力理解" in browser.page_source:
             dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：T; 子问题 4：F; 子问题 5：F'''
-        if "阅读理解：阅读下面的短文，根据文章内容从A、B、C三个选项中选出一个最佳选项" in browser.page_source:
+        elif "最佳选项" in browser.page_source:
             dxAnswer = '''子问题 1：B; 子问题 2：C; 子问题 3：C; 子问题 4：A; 子问题 5：B'''
-        if "翻译：从以下A、B、C三个选项中选出与英文最适合的中文翻译" in browser.page_source:
+        elif "中文翻译" in browser.page_source:
             dxAnswer = '''子问题 1：C; 子问题 2：A; 子问题 3：B; 子问题 4：C; 子问题 5：A'''
 
         for an in dxAnswer.split("; "):
@@ -413,7 +432,7 @@ def writeAnswer4(browser):
 题目：We have to       at the hotel before 6 pm.	答案：check in'''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        anEle = getAnswerElementEquals(elements1, value,key,  dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.2)
@@ -421,11 +440,11 @@ def writeAnswer4(browser):
 
     listAnswer2 = []
     dxindex = 0
-    if "听力理解：请听下面的对话，根据对话内容进行判断，正确写“T”错误写“F”" in browser.page_source:
+    if "听力理解" in browser.page_source:
         dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：F; 子问题 4：T; 子问题 5：T'''
-    if "阅读理解：阅读下面的短文，根据文章内容从A、B、C三个选项中选出一个最佳选项" in browser.page_source:
+    elif "最佳选项" in browser.page_source:
         dxAnswer = '''子问题 1：C; 子问题 2：B; 子问题 3：B; 子问题 4：B; 子问题 5：A'''
-    if "阅读理解：阅读下面的短文，根据文章内容进行判断，正确写“T”错误写“F”" in browser.page_source:
+    elif "根据文章内容进行判断" in browser.page_source:
         dxAnswer = '''子问题 1：T; 子问题 2：T; 子问题 3：T; 子问题 4：F; 子问题 5：F'''
 
     for an in dxAnswer.split("; "):
@@ -473,7 +492,7 @@ def writeAnswer5(browser):
 题目：They were successful ______ a communication satellite.	答案：in launching'''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        anEle = getAnswerElementEquals(elements1, value,key,  dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.2)
@@ -482,7 +501,7 @@ def writeAnswer5(browser):
     listAnswer2 = []
     dxindex = 0
 
-    if "听录音" in browser.page_source:
+    if "听录音222" in browser.page_source:
         dxAnswer = '''子问题 1：mail; 子问题 2：letter; 子问题 3：August; 子问题 4：visa; 子问题 5：wonderful'''
         for an in dxAnswer.split("; "):
             listAnswer2.append(an.split("：")[-1])
@@ -490,11 +509,11 @@ def writeAnswer5(browser):
             sel.send_keys(listAnswer2[dxindex])
             dxindex += 1
     else:
-        if "完型填空：阅读下面的短文，根据文章内容从A、B、C三个选项中选出一个最佳选项将其补充完整" in browser.page_source:
+        if "最佳选项将其补充完整" in browser.page_source:
             dxAnswer = '''子问题 1：A; 子问题 2：B; 子问题 3：A; 子问题 4：C; 子问题 5：B'''
-        elif "听力理解：请听下面的对话，根据对话内容从A、B、C三个选项中选出一个最佳选项" in browser.page_source:
+        elif "听力理解" in browser.page_source:
             dxAnswer = '''子问题 1：B; 子问题 2：C; 子问题 3：A; 子问题 4：C; 子问题 5：B'''
-        elif "阅读理解：阅读下面的短文，根据文章内容进行判断，正确写“T”错误写“F”" in browser.page_source:
+        elif "根据文章内容进行判断" in browser.page_source:
             dxAnswer = '''子问题 1：T; 子问题 2：F; 子问题 3：T; 子问题 4：F; 子问题 5：F'''
 
         for an in dxAnswer.split("; "):
@@ -543,7 +562,7 @@ def writeAnswer6(browser):
 题目：When will the General Manager be         ?	答案：available'''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        anEle = getAnswerElementEquals(elements1, value,key,  dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.2)
@@ -559,13 +578,13 @@ def writeAnswer6(browser):
             sel.send_keys(listAnswer2[dxindex])
             dxindex += 1
     else:
-        if "完型填空：阅读下面的短文，根据文章内容从A、B、C三个选项中选出一个最佳选项将其补充完整" in browser.page_source:
+        if "最佳选项将其补充完整" in browser.page_source:
             dxAnswer = '''子问题 1：B; 子问题 2：A; 子问题 3：C; 子问题 4：A; 子问题 5：C'''
-        if "翻译：从以下A、B、C三个选项中选出与英文最适合的中文翻译" in browser.page_source:
+        elif "中文翻译" in browser.page_source:
             dxAnswer = '''子问题 1：B; 子问题 2：A; 子问题 3：C; 子问题 4：C; 子问题 5：B'''
-        if "阅读理解：阅读下面的短文，根据文章内容从A、B、C三个选项中选出一个最佳选项" in browser.page_source:
+        elif "阅读理解" in browser.page_source and "最佳选项" in browser.page_source:
             dxAnswer = '''子问题 1：C; 子问题 2：B; 子问题 3：A; 子问题 4：C; 子问题 5：B'''
-        if "阅读理解：阅读下面的短文，根据文章内容进行判断，正确写“T”错误写“F”" in browser.page_source:
+        elif "根据文章内容进行判断" in browser.page_source:
             dxAnswer = '''子问题 1：F; 子问题 2：F; 子问题 3：T; 子问题 4：T; 子问题 5：F'''
 
         for an in dxAnswer.split("; "):
@@ -615,7 +634,7 @@ def writeAnswer7(browser):
 题目：The secretary has a lot of things to take up in the office since she ______ away for quite a few days.	答案：has been'''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        anEle = getAnswerElementEquals(elements1, value,key,  dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.2)
@@ -624,11 +643,11 @@ def writeAnswer7(browser):
     listAnswer2 = []
     dxindex = 0
 
-    if "完型填空：阅读下面的短文，根据文章内容从A、B、C三个选项中选出一个最佳选项将其补充完整" in browser.page_source:
+    if "最佳选项将其补充完整" in browser.page_source:
         dxAnswer = '''子问题 1：C; 子问题 2：A; 子问题 3：B; 子问题 4：A; 子问题 5：C'''
-    if "听力理解：请听下面的对话，根据对话内容从A、B、C三个选项中选出一个最佳选项" in browser.page_source:
+    elif "听力理解" in browser.page_source:
         dxAnswer = '''子问题 1：C; 子问题 2：B; 子问题 3：C; 子问题 4：A; 子问题 5：A'''
-    if "阅读理解：阅读下面的短文，根据文章内容进行判断，正确写“T”错误写“F”" in browser.page_source:
+    elif "根据文章内容进行判断" in browser.page_source:
         dxAnswer = '''子问题 1：F; 子问题 2：T; 子问题 3：F; 子问题 4：F; 子问题 5：T'''
 
     for an in dxAnswer.split("; "):
@@ -679,7 +698,7 @@ def writeAnswer8(browser):
 
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        anEle = getAnswerElementEquals(elements1, value,key,  dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.2)
@@ -687,7 +706,7 @@ def writeAnswer8(browser):
 
     listAnswer2 = []
     dxindex = 0
-    if "听录音" in browser.page_source:
+    if "听录音222" in browser.page_source:
         dxAnswer = '''子问题 1：traffic accident; 子问题 2：too fast; 子问题 3：driving; 子问题 4：coming from; 子问题 5：check on'''
         for an in dxAnswer.split("; "):
             listAnswer2.append(an.split("：")[-1])
@@ -695,11 +714,11 @@ def writeAnswer8(browser):
             sel.send_keys(listAnswer2[dxindex])
             dxindex += 1
     else:
-        if "翻译：从以下A、B、C三个选项中选出与英文最适合的中文翻译" in browser.page_source:
+        if "中文翻译" in browser.page_source:
             dxAnswer = '''子问题 1：A; 子问题 2：A; 子问题 3：C; 子问题 4：B; 子问题 5：B'''
-        if "听力理解：请听下面的对话，根据对话内容从A、B、C三个选项中选出一个最佳选项" in browser.page_source:
+        elif "听力理解" in browser.page_source:
             dxAnswer = '''子问题 1：B; 子问题 2：C; 子问题 3：A; 子问题 4：B; 子问题 5：B'''
-        if "阅读理解：阅读下面的短文，根据文章内容从A、B、C三个选项中选出一个最佳选项" in browser.page_source:
+        elif "阅读理解" in browser.page_source and "最佳选项" in browser.page_source:
             dxAnswer = '''子问题 1：B; 子问题 2：C; 子问题 3：B; 子问题 4：A; 子问题 5：C'''
 
         for an in dxAnswer.split("; "):
@@ -754,6 +773,7 @@ def readyToTest(browser):
     if '再次' not in readyTest.get_attribute("value"):
         if '现在' in readyTest.get_attribute("value") or '继续' in readyTest.get_attribute("value"):
             readyTest.click()
+            time.sleep(2)
             return 1
     return 0
 
@@ -764,118 +784,6 @@ def readyToTestForum(browser):
     readyTest.click()
     return 1
 
-
-def fill2SaveAnswer(_contentList):
-    need = {}
-    answers = []
-    attempt = ''
-    sesskey = ''
-    contentType = ''
-    for i in _contentList:
-        o = {}
-        o['Content-Disposition: form-data; name=\"' + i["name"] + '\"'] = i["value"]#.encode("utf-8")
-        answers.append(o)
-        if 'attempt' in i['name']:
-            attempt = i["value"]
-        if 'sesskey' in i['name']:
-            sesskey = i["value"]
-
-    need['answers'] = answers
-    need['attempt'] = attempt
-    need['sesskey'] = sesskey
-    return need
-
-
-def trans2text(answers,randomType):
-    randomType = '--'+randomType
-    finalStr=''
-    for i in answers:
-        for o in i.items():
-            finalStr+=randomType
-            finalStr+="\n"
-            finalStr+=o[0]
-            finalStr+="\n"
-            finalStr+=o[1]
-            finalStr+="\n"
-    finalStr+=randomType
-    finalStr+='--'
-    return finalStr
-
-def saveTest2GetAnswer(browser, proxy):
-    proxy.new_har("guokai", options={'captureHeaders': True, 'captureContent': True})  # 准备抓请求
-    time.sleep(66)
-    browser.find_element_by_xpath('//input[@name="next"]').click()
-    time.sleep(2)
-
-    result = proxy.har
-    randomType=''
-    for entry in result['log']['entries']:
-        _url = entry['request']['url']
-        print(_url)
-        if "/processattempt" in _url:
-            _request = entry['request']
-            for head in _request['headers']:
-                if 'Content-Type' in str(head):
-                    for o in head.items():
-                        for j in o:
-                            if "bound" in j:
-                                randomType = j.split('=')[1]
-
-    print(randomType)
-
-
-
-
-
-
-
-
-
-    for entry in result['log']['entries']:
-        _url = entry['request']['url']
-        print(_url)
-        if "/autosave" in _url:
-            _request = entry['request']
-            _contentList = _request['postData']['params']  # 此时的请求参数相当于list,全部为正确答案
-            _headers={'Referer': 'http://hubei.ouchn.cn/mod/quiz/attempt.php',
-'Cache-Control': 'max-age=0',
-'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-'Accept-Language': 'zh-Hans-CN,zh-Hans;q=0.5',
-'Upgrade-Insecure-Requests': '1',
-'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18363',
-'Accept-Encoding': 'gzip, deflate',
-'Content-Length': '3592',
-'Host': 'hubei.ouchn.cn',
-'Connection': 'Keep-Alive'
-}
-
-            _headers['Cookie'] = _request['headers'][-1]['value']
-
-            # randomType = '----WebKitFormBoundaryrUjxjyen'+str(uuid.uuid1()).split("-")[0]
-            _headers['Content-Type'] = 'multipart/form-data; boundary='+randomType
-            need = fill2SaveAnswer(_contentList)
-            _headers2 = {'Referer': 'http://hubei.ouchn.cn/mod/quiz/summary.php?attempt='+need['attempt'],
-'Cache-Control': 'max-age=0',
-'Origin': 'http: // hubei.ouchn.cn',
-'Accept-Encoding': 'gzip, deflate',
-'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7',
-'Upgrade-Insecure-Requests': '1',
-'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18363',
-'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
-'Content-Length': '3592',
-'Host': 'hubei.ouchn.cn',
-'Connection': 'Keep-Alive'}
-            file_write_obj = open("tempAns.txt", 'w')
-            file_write_obj.write(trans2text(need['answers'],randomType))
-            file_write_obj.close()
-            files = {'file': open('tempAns.txt', 'rb')}
-            r = requests.post('http://hubei.ouchn.cn/mod/quiz/processattempt.php',files=files, headers=_headers)
-            print(r)
-            time.sleep(2)
-            _headers2['Cookie'] = _request['headers'][-1]['value']
-            _headers2['Content-Type'] = 'application/x-www-form-urlencoded'
-            r2 = requests.post('http://hubei.ouchn.cn/mod/quiz/processattempt.php',data='attempt=' + need['attempt'] + '&finishattempt=1&timeup=0&slots=&sesskey=' + need['sesskey'], headers=_headers2)
-            print(r, r2)
 
 
 # 等待三秒,让我们看到卷子已经答题提交完成,然后关tab,切到第一个tab,再进学习
@@ -895,13 +803,9 @@ xingkao6 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=439937'
 xingkao7 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=439943'
 xingkao8 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=439949'
 
-dict = {'port': 39999}
-server = Server(r'/Users/hanxu/Downloads/browsermob-proxy-2.1.4/bin/browsermob-proxy', options=dict)
-server.start()
-proxy = server.create_proxy()
+
 
 option = webdriver.ChromeOptions()
-option.add_argument('--proxy-server={0}'.format(proxy.proxy))
 option.add_argument('disable-infobars')
 browser = webdriver.Chrome(chrome_options=option)
 # browser.maximize_window()  #max_window
@@ -926,10 +830,8 @@ for key in keys:
 
     if enterTest(browser, xingkao1) != 0:
         if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-            browser.find_elements_by_xpath('//input[@type="radio"]')[0].click()
-            # time.sleep(1)
-            # browser.find_elements_by_xpath('//input[@type="radio"]')[1].click()
-            saveTest2GetAnswer(browser, proxy)
+            writeAnswer1(browser)
+            # saveTest2GetAnswer(browser, proxy)
         wait3AndCloseTab(browser)
 
         enterTest(browser, xingkao2)

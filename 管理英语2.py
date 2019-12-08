@@ -19,10 +19,14 @@ def getAnswerElement(elements, neirong, i):
             return ele
 
 
-def getAnswerElementEquals(elements, neirong, i, meidaotiyouduoshaogexuanxiang):
-    for ele in elements:#or "a. " + neirong == ele.text or "b. " + neirong == ele.text or "c. " + neirong == ele.text or "d. " + neirong == ele.text or "e. " + neirong == ele.text
-        if neirong == ele.text or "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "D. " + neirong == ele.text or "E. " + neirong == ele.text:
-            return ele
+def getAnswerElementEquals(elements, neirong, key,i, meidaotiyouduoshaogexuanxiang):
+    may = None
+    for ele in elements:  # or "a. " + neirong == ele.text or "b. " + neirong == ele.text or "c. " + neirong == ele.text or "d. " + neirong == ele.text or "e. " + neirong == ele.text
+        if neirong == ele.text or "A. " + neirong == ele.text or "B. " + neirong == ele.text or "C. " + neirong == ele.text or "a. " + neirong == ele.text or "b. " + neirong == ele.text or "c. " + neirong == ele.text:
+            may = ele
+            if ele.find_element_by_xpath("./../../../../div[@class='qtext']").text[-3:] in key.strip():
+                return ele
+    return may
 
 #单选和多选在一页
 def getAnswerElementEqualsdanxuanduoxuaninOnePage(elements, neirong, i, meidaotiyouduoshaogexuanxiang,danxuanLabelLength):
@@ -176,7 +180,7 @@ def writeAnswer1(browser):
 
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        anEle = getAnswerElementEquals(elements1, value, dxindex, 3)  # 找到指定的那个label选项
+        anEle = getAnswerElementEquals(elements1, value,key,  dxindex, 3)  # 找到指定的那个label选项
         if anEle is not None:
             try:
                 anEle.find_element_by_xpath("./../input[last()]").click()
@@ -238,7 +242,7 @@ def writeAnswer2(browser):
 题目：The candidate should dress in a manner that is appropriate to the position ________ he is applying.	答案： for which'''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        anEle = getAnswerElementEquals(elements1, value,key,  dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
             try:
                 anEle.find_element_by_xpath("./../input[last()]").click()#find_element_by_xpath("./../input[last()]").
@@ -299,7 +303,7 @@ def writeAnswer3(browser):
 题目：American young people would rather ______ advice from strangers. 	答案：get'''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        anEle = getAnswerElementEquals(elements1, value,key,  dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.2)
@@ -328,7 +332,7 @@ def writeAnswer3(browser):
         题目：Participants have _____the Productivity Analysis Worksheet 	答案：completed  '''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        anEle = getAnswerElementEquals(elements1, value,key,  dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.2)
@@ -365,7 +369,7 @@ def writeAnswer4(browser):
 题目：Let’s ______ our plan.	答案：start '''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        anEle = getAnswerElementEquals(elements1, value,key,  dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.2)
@@ -423,7 +427,7 @@ def writeAnswer5(browser):
 题目：The Jiahe Community Service Center is about to ______ service for residents	答案：provide'''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        anEle = getAnswerElementEquals(elements1, value,key,  dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.2)
@@ -467,7 +471,7 @@ def writeAnswer6(browser):
 
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        anEle = getAnswerElementEquals(elements1, value,key,  dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.2)
@@ -519,7 +523,7 @@ def writeAnswer7(browser):
 题目：I don’t know         . I just arrived here two minutes ago	答案：what’s going on'''
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        anEle = getAnswerElementEquals(elements1, value,key,  dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.2)
@@ -575,7 +579,7 @@ def writeAnswer8(browser):
 
     mapdxanswer = danxuanAutoAnswerFix(dxAnswer, "答案：")
     for key, value in mapdxanswer.items():
-        anEle = getAnswerElementEquals(elements1, value, dxindex, 4)  # 找到指定的那个label选项
+        anEle = getAnswerElementEquals(elements1, value,key,  dxindex, 4)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
             time.sleep(0.2)
