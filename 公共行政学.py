@@ -62,22 +62,22 @@ def writeAnswer3(browser):
     frameId = line.split(":2_answer_id_ifr")[0][-15:].split("id=\"")[1]
     browser.switch_to.frame(frameId+":2_answer_id_ifr")
     browser.find_element_by_id("tinymce").send_keys(
-        "管理层次也称组织层次，是描述组织纵向结构特征的一个概念，指公共组织内部划分管理层级的数额。如果以构成组织纵向结构的各级管理组织来定义，管理层次就是指从组织最高一层管理组织到最低一级管理组织的各个组织等级。每个组织等级就是一个管理层次。一个企业的管理层次的多少表明其组织结构的纵向复杂程度。"
+        "管理层次是指公共组织内部划分管理层级的数额。"
     )
     browser.switch_to.default_content()
     browser.switch_to.frame(frameId+":3_answer_id_ifr")
     browser.find_element_by_id("tinymce").send_keys(
-        "行政规章是指特定的行政机关根据法律和法规，按照法定程序制定的具有普遍约束力的规范性文件的总称。行政规章简称规章。"
+        "行政规章是指特定的行政机关根据法律和法规，按照法定程序制定的具有普遍约束力的规范性文件的总称。"
     )
     browser.switch_to.default_content()
     browser.switch_to.frame(frameId+":4_answer_id_ifr")
     browser.find_element_by_id("tinymce").send_keys(
-        "行政决策是指行政机关为履行行政职能，就面临的需要解决的公共问题，从实际出发，为实现特定的行政管理目标，实现公共利益，制定和选择行动方案的活动。"
+        "行政决策参与是指行政领导者个人或集体在行政决策时，专家学者、社会团体、公众等对决策提出意见或建议的活动。"
     )
     browser.switch_to.default_content()
     browser.switch_to.frame(frameId+":5_answer_id_ifr")
     browser.find_element_by_id("tinymce").send_keys(
-        "行政效率是公共行政活动的起点,也是落脚点.政府管理国家和社会的各个方面的公共事务,都必须讲投入产出和成本效益,都必须讲效率.行政效率在公共行政活动一开始,就作为重要的因素来指导公共行政活动.高效率就是低成本,高产出,是实现公共利益的重要方面。"
+        "行政效率是指公共组织和行政工作人员从事公共行政管理工作所投入的各种资源与所取得的成果与效益之间的比例关系。"
     )
     browser.switch_to.default_content()
 
@@ -167,26 +167,45 @@ def writeAnswer3(browser):
     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
     time.sleep(0.1)
 
-    browser.switch_to.frame(frameId+":24_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "我国政府的经济职能主要包括四个方面：①经济调节，政府要按照市场经济规律履行好经济调节的职能，对经济运行实施宏观调控。②市场监管，政府要加大力度整顿和规范市场经济秩序。假冒伪劣商品、文化市场混乱、工程质量低劣等问题比较突出。这些都表明政府的市场监管力度不够，政府市场监管的职能还不到位。③社会管理政府要进一步加强社会管理职能。在现代社会中，随着民主政治的发展和公民素质的提高，政府社会管理职能要与充分发挥公民自我管理和社区自治有机结合起来。良好的社会管理不仅是构建和谐社会的基本要求，也是促进经济增长、社会全面发展的重要手段。④公共服务政府要提供更多的公共服务。提供公共产品，如基础教育、公共卫生、公共文化、社会保障、科学技术、体育休闲、基础设施、环境保护、发布公共信息等。"
-    )
-    browser.switch_to.default_content()
-    browser.switch_to.frame(frameId+":25_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "行政执法是行政机关及行政人员依法实施行政决策，以实现预期行政目标和社会目标的活动的总和。理解行政执行的含义，应把握的要点是：1、行政执行的主体是行政机关及行政人员；2、行政执行是一种具有目标导向的活动；3、行政执行是一种实施性质很强的活动，是务实性的、付诸于实际的行动，它需要通过一定的具体步骤或实际行动来落实政策；4、行政执行是一种行政法律行为；5、行政执行活动还具有强制性。"
-    )
-    browser.switch_to.default_content()
-    browser.switch_to.frame(frameId+":27_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "（1）行政体征必须体现政治和政治体制的要求，是实现政治统治目标，加强政府合法性功能的体制性的和强制性的工具。（2）国家意志和公共利益必须通过行政系统贯彻才能实现。执政党只有经过政府的贯彻执行其政策，才能实现其政策目标。（3）行政体制是以各级各类行政组织有效地管理社会公共事务为价值的。政府公平、高效地处理社会公共事务，满足广大公众的要求，就扩大了政治统治基础。那种认为公共行政是纯事务性的管理是不符合实际的。"
-    )
-    browser.switch_to.default_content()
-    browser.switch_to.frame(frameId+":28_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "1）.行政监督机关依法行使职权,不受其他部门,社会团体和个人干涉的原则.这一原则有三点基本含义:(1)依法监督;(2)自主行使监督权;(3)监督机关依法行使职权不受其他部门,社会团体和个人的干涉。2）.实事求是,重证据,重调查研究的原则.贯彻实施这一项原则,对于搞好各项监督工作,具有十分重要的作用.这一原则的基本内容有三点:(1)坚持实事求是;(2)重证据;(3)重调查研究。3）.在适用法律和行政纪律上人人平等的原则.在适用法律和行政纪律上人人平等的原则,是指行政监督机关在查处违法违纪案件等工作中,在适用法律和行政纪律上,对任何监督对象都要一律平等,不允许任何人有超越法律,法规和行政纪律的特权。4）.教育与惩处相结合的原则.这一原则是行政监督机关在查处违法违纪案件等工作中必须遵循的一项基本原则.行政监督机关是维护法律的专门机构,通过严肃惩处违法违纪者,可以给监督对象以正确的导向,让他们认识到法律是必须遵守的,违反了就要受到惩处,从而增强遵纪守法的自觉性,并遏制和防范腐败行为的发生.通过惩处,教育那些违反违法违纪的人员认识错误,改正错误,做好工作,将功补过;同时,通过案件的解剖,分析产生错误的客观环境和主观原因,总结教训,来对广大的监督对象进行法制和纪律教育,促使他们增强法制观念,纪律观念和遵纪守法的自觉性,为搞好廉政,勤政建设提供思想保证.5）.监督检查与改进工作相结合的原则.这一原则要求行政监督机关必须把履行职责同要达到的目的统一起来.行政监督机关通过监督检查,在发现,揭露存在的缺点和错误,对违法违纪者给予应得的惩罚的同时,要通过发现问题,执行法律,去分析产生错误的客观环境和主观原因,研究纠正错误,改进工作的对策和措施,以改善公共行政管理。6,监督工作依靠群众的原则.这一原则体现了党的群众路线的精神和要求,是做好新时期行政监督工作的基本保证。"
-    )
-    browser.switch_to.default_content()
+    try:
+        browser.switch_to.frame(frameId+":24_answer_id_ifr")
+        browser.find_element_by_id("tinymce").send_keys(
+            "（1）直接生产和提供公共物品，弥补市场不足的职能；（2）规范和稳定市场秩序，确保自由竞争的职能；（3）对经济进行宏观调控的职能，确保国民经济平衡发展的职能；（4）改善收入分配；（5）管理国有资产的职能。"
+        )
+        browser.switch_to.default_content()
+        browser.switch_to.frame(frameId + ":25_answer_id_ifr")
+        browser.find_element_by_id("tinymce").send_keys(
+            "（1）行政执行的主体是行政机关及行政人员。（2）行政执行是一种具有目标导向的活动。（3）行政执行是一种实施性质很强的活动，是务实性的、付诸于实际的行动，它需要通过一定的具体步骤或实际行动来落实政策。（4）行政执行是一种行政法律行为。（5）行政执行活动还具有强制性。"
+        )
+        browser.switch_to.default_content()
+        browser.switch_to.frame(frameId + ":27_answer_id_ifr")
+        browser.find_element_by_id("tinymce").send_keys(
+            "（1）经济体制决定并制约行政体制，行政体制也影响和制约经济发展；（2）政治体制决定行政体制，行政体制是政治体制的重要组成部分；（3）行政体制的核心问题是行政权的划分和公共组织设置，以及对政府系统的各级各类政府部门职权的配置；（4）科学技术推动行政体制的变革；（5）文化对行政体制的重要价值作用。"
+        )
+        browser.switch_to.default_content()
+        browser.switch_to.frame(frameId + ":28_answer_id_ifr")
+        browser.find_element_by_id("tinymce").send_keys(
+            "（1）行政监督机关依法行使职权，不受其他部门、社会团体和个人干涉的原则；（2）实事求是，重证据、重调查研究的原则；（3）在适用法律和行政纪律上人人平等的原则；（4）教育与惩处相结合的原则；（5）监督检查与改进工作相结合的原则；（6）监督工作依靠群众的原则。"
+        )
+        browser.switch_to.default_content()
+    except:
+        browser.find_element_by_id(frameId+":24_answer_id").send_keys(
+            "（1）直接生产和提供公共物品，弥补市场不足的职能；（2）规范和稳定市场秩序，确保自由竞争的职能；（3）对经济进行宏观调控的职能，确保国民经济平衡发展的职能；（4）改善收入分配；（5）管理国有资产的职能。"
+        )
+
+        browser.find_element_by_id(frameId+":25_answer_id").send_keys(
+            "（1）行政执行的主体是行政机关及行政人员。（2）行政执行是一种具有目标导向的活动。（3）行政执行是一种实施性质很强的活动，是务实性的、付诸于实际的行动，它需要通过一定的具体步骤或实际行动来落实政策。（4）行政执行是一种行政法律行为。（5）行政执行活动还具有强制性。"
+        )
+
+        browser.find_element_by_id(frameId+":27_answer_id").send_keys(
+            "（1）经济体制决定并制约行政体制，行政体制也影响和制约经济发展；（2）政治体制决定行政体制，行政体制是政治体制的重要组成部分；（3）行政体制的核心问题是行政权的划分和公共组织设置，以及对政府系统的各级各类政府部门职权的配置；（4）科学技术推动行政体制的变革；（5）文化对行政体制的重要价值作用。"
+        )
+
+        browser.find_element_by_id(frameId+":28_answer_id").send_keys(
+            "（1）行政监督机关依法行使职权，不受其他部门、社会团体和个人干涉的原则；（2）实事求是，重证据、重调查研究的原则；（3）在适用法律和行政纪律上人人平等的原则；（4）教育与惩处相结合的原则；（5）监督检查与改进工作相结合的原则；（6）监督工作依靠群众的原则。"
+        )
+        browser.switch_to.default_content()
+
     # end answer
     browser.find_element_by_xpath('//input[@name="next"]').click()
     time.sleep(0.1)
@@ -350,6 +369,7 @@ def readyToTest(browser):
 
 #论坛形式试卷进入方法
 def readyToTestForum(browser):
+    time.sleep(2)
     readyTest = browser.find_element_by_xpath('//button[starts-with(@id,"single_")]')
     readyTest.click()
     return 1
@@ -392,10 +412,10 @@ for key in keys:
     browser.find_element_by_css_selector('button[value="login"]').click()
     #enter study...此处要注意,不同账号进来看到的开放大学指南的位置不同,要动态抓元素...2019年11月13日09:10:54发现不用抓元素,直接根据URL进入国开开放指南页面,并且形考1-5的URL也是指定的,所以不用抓元素
 
-    # enterTest(browser,xingkao1)
-    # if readyToTestForum(browser)==1:#除非没考过,否则就关闭tab,重进学习页面,考下一个形考
-    #     writeAnswer1(browser)
-    # wait3AndCloseTab(browser)
+    enterTest(browser,xingkao1)
+    if readyToTestForum(browser)==1:#除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+        writeAnswer1(browser)
+    wait3AndCloseTab(browser)
 
     # enterTest(browser,xingkao2)
     # if readyToTest(browser)==1:#除非没考过,否则就关闭tab,重进学习页面,考下一个形考
@@ -410,4 +430,4 @@ for key in keys:
 
     #5个形考走完提交之后直接换账号
     browser.get("http://passport.ouchn.cn/Account/Logout?logoutId=student.ouchn.cn")
-    time.sleep(2)
+    time.sleep(6)

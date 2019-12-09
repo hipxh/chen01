@@ -25,7 +25,7 @@ class Employee:
         print("该员工每个月生产 " + str(self.proficiency) + " 个商品,老板付薪2k")
 
 
-print("1942001414309"[-3:])
+print("一二三四"[:3])
 
 o={"1":"111"}
 for i in o.items():
