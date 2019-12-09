@@ -34,6 +34,25 @@ list = [1,2,3,4,5]
 print(list[1:])
 
 
+print('Whatis your working experience')
+print('Whatis your working experience')
+
+
+
+
+
+
+
+xingkao1 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=437530'
+xingkao2 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=437536'
+xingkao3 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=437544'
+xingkao4 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=437550'
+xingkao5 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=437555'
+xingkao6 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=437562'
+xingkao7 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=437568'
+xingkao8 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=437578'
+
+
 #
 # x = "h"
 #
