@@ -23,8 +23,9 @@ def getAnswerElementEquals(elements,neirong):
 
 #start to answer.
 def writeAnswer1(browser):
-    browser.find_element_by_id("id_subject").send_keys("简单生活 快乐工作")
     time.sleep(2)
+    browser.find_element_by_id("id_subject").send_keys("简单生活 快乐工作")
+    time.sleep(6)
     browser.switch_to.frame("id_message_ifr")
     browser.find_element_by_id("tinymce").send_keys("生活回归简单，心就简单，周末爬山、郊游、走亲访友与自然一体，乐山乐水！制定目标，规划方向，努力向前，永不言败！爱工作，爱自己，爱家！快乐工作，迎接每一个美好的明天。仰望星空，足踏实地，以德服人。")
     browser.switch_to.default_content()

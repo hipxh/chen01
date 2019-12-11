@@ -25,16 +25,16 @@ class Employee:
         print("该员工每个月生产 " + str(self.proficiency) + " 个商品,老板付薪2k")
 
 
-print("一二三四"[:3])
+print("一二三四"[1:])
 
 o={"1":"111"}
 for i in o.items():
     print(i[0],i[1])
 list = [1,2,3,4,5]
-print(list[1:])
+print(list[-1:1])
 
 
-print('Whatis your working experience')
+print('Whatis your working experience'.split(" ",1))
 print('Whatis your working experience')
 
 

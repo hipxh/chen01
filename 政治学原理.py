@@ -550,13 +550,8 @@ def wait3AndCloseTab(browser):
 
 
 xingkao1 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=466597'
-xingkao2 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=439913'
-xingkao3 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=439919'
-xingkao4 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=439925'
-xingkao5 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=439931'
-xingkao6 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=439937'
-xingkao7 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=439943'
-xingkao8 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=439949'
+xingkao2 = 'http://hubei.ouchn.cn/mod/forum/view.php?id=466594'
+
 
 
 
@@ -573,6 +568,18 @@ keys = []
 for line in file.readlines():
     keys.append(line.strip())
 
+
+def writeAnswer2(browser):
+    time.sleep(2)
+    browser.find_element_by_id("id_subject").send_keys("此次国务院常务会议确定")
+    time.sleep(6)
+    browser.switch_to.frame("id_message_ifr")
+    browser.find_element_by_id("tinymce").send_keys(
+        "仇高擎表示，目前在中小企业贷款领域，银行还在很大程度上依赖担保公司的担保。为调动商业银行的积极性，国务院常务会议提出了三条支持信用担保公司发展的措施。即鼓励地方政府通过资本注入、风险补偿等多种方式增加对信用担保公司的支持；设立多层次中小企业贷款担保基金和担保机构，提高对中小企业贷款比重；对符合条件的中小企业信用担保机构免征营业税。仇高擎表示，目前担保公司实力较弱，并且分散，缺少比较强的担保公司，国务院的措施正是支持担保公司做强。如果担保公司资本金有限，所能担保的额度也有限，能支持的企业也有限，因此国务院此次强调要鼓励地方政府来对担保公司注资。国务院常务会议强调，要积极扩大住房、汽车和农村消费信贷市场。哈继铭认为，这是明确要求银行扩大消费贷款的发放。目前，中国的贷款主要发放给了企业，个人消费贷款仅占贷款总额的12%左右。为了扩大城市居民的消费需求，要求银行扩大住房、汽车贷款。此前“家电下乡”等扩大农村消费市场的措施正在采取，通过发放农村消费贷款可以有效扩大农村的消费能力。仇高擎表示，原来商业银行在核销不良贷款时，需要经过财政部门的批准，程序很慢，而且标准也很严格，不少需要核销的不良贷款不能及时核销。新政策可能会放松核销的标准和程序。此外，仇高擎还认为，对于商业银行对中小企业、三农以及灾区贷款，可能会在财税上给予商业银行一些优惠，从而保证商业银行的盈利。哈继铭也表示，对于商业银行对某些特定企业的贷款，可以给予财税优惠。在调动银行积极性的同时，此次国务院常务会议强调，要形成银行、证券、保险等多方面扩大融资、分散风险的合力。")
+    browser.switch_to.default_content()
+    browser.find_element_by_id("id_submitbutton").click()
+
+
 for key in keys:
     username = key.split("\t")[0]
     password = key.split("\t")[1]
@@ -583,10 +590,18 @@ for key in keys:
     browser.find_element_by_css_selector('button[value="login"]').click()
     # enter study...此处要注意,不同账号进来看到的开放大学指南的位置不同,要动态抓元素...2019年11月13日09:10:54发现不用抓元素,直接根据URL进入国开开放指南页面,并且形考1-5的URL也是指定的,所以不用抓元素
 
+
+
+
     if enterTest(browser, xingkao1) != 0:
         if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
             writeAnswer1(browser)
             # saveTest2GetAnswer(browser, proxy)
+        wait3AndCloseTab(browser)
+
+        enterTest(browser, xingkao2)
+        if readyToTestForum(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer2(browser)
         wait3AndCloseTab(browser)
 
     # 5个形考走完提交之后直接换账号
