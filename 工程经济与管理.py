@@ -1089,7 +1089,7 @@ def enterStudy(browser):
 # 1.找到办公室管理的进入学习按钮
 def enterTest(browser, xkurl):
     enterStudy(browser)  # 进入学习的按钮会新开一个tab
-    time.sleep(1)
+    time.sleep(3)
     windowstabs = browser.window_handles
     if len(windowstabs) > 1:  # 如果没找到课程,至少别报错
         browser.switch_to.window(windowstabs[1])
@@ -1101,16 +1101,19 @@ def enterTest(browser, xkurl):
 
 # 2.立即考试.判断一下,防止多次考试
 def readyToTest(browser):
+    time.sleep(2)
     readyTest = browser.find_element_by_xpath('//button[@type="submit"]')
     if '再次' not in readyTest.text:
         if '现在' in readyTest.text or '继续' in readyTest.text:
             readyTest.click()
+            time.sleep(2)
             return 1
     return 0
 
 
 # 论坛形式试卷进入方法
 def readyToTestForum(browser):
+    time.sleep(3)
     readyTest = browser.find_element_by_xpath('//button[starts-with(@id,"single_")]')
     readyTest.click()
     return 1
