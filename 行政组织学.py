@@ -122,7 +122,7 @@ def panduanAutoAnswerFix(answer, reg):
         result.append(i.strip()[-1])
     return result
 
-def duoxuanAutoAnswerFix(answer, reg, reg2):
+def duoxuanAutoAnswerFix(answer, reg, reg2,reg3):
     # map={}
     # split = answer.split("\n")
     # for i in split:
@@ -134,7 +134,7 @@ def duoxuanAutoAnswerFix(answer, reg, reg2):
     for i in split:
         if len(i)<6 or "窗体" in i:
             continue
-        listList.append(i.split(reg)[-1].split(reg2)[0].split("、"))
+        listList.append(i.split(reg)[-1].split(reg2)[0].split(reg3))
     return listList
 
 
@@ -167,10 +167,16 @@ def pdUtil5(list, elements1p, ratios, titleIndex, danxuantiLength, panduanIndex)
             break
     if a == 1:  # 如果把错题都走了一遍仍然为1,则该判断题是对的
         ratios[danxuantiLength * 4 + panduanIndex * 2].click()
-    time.sleep(0.1)
+    time.sleep(0.3)
 
 
 # start to answer.
+def getJudgeAnswers(pdAnswer,reg):
+    ans=[]
+    for pd  in pdAnswer.split("\n"):
+        ans.append(pd.split(reg)[0][-1])
+    return ans
+
 def writeAnswer1(browser):
     canTakeWrongNum = 0
     #单多选在同一页混的时候,标记下单选题的数量
@@ -184,15 +190,14 @@ def writeAnswer1(browser):
     time.sleep(4)  # 保证富文本框加载完毕
 
     # 20判断
-    dxAnswer = '''在霍桑试验的基础上,梅奥于1933年出版了《工业文明中的人的问题》一书,系统地阐述了与古典管理理论截然不同的一些观点（对）。
+    pdAnswer = '''在霍桑试验的基础上,梅奥于1933年出版了《工业文明中的人的问题》一书,系统地阐述了与古典管理理论截然不同的一些观点（对）。
 阿吉里斯在《个性与组织》一书中提出了“不成熟—成熟理论”（对）。
 斯蒂格利茨由于在决策理论研究方面的贡献而荣获1978年诺贝尔经济学奖（错）。
 马斯洛在其代表性著作《人类动机的理论》和《激励与个人》中,提出了著名的公平理论（错）。
 美国学者巴纳德在1938年出版的《经理人员的职能》这本书中,系统地提出了动态平衡组织理论（对）。
 社会系统组织理论的创始者为美国著名的社会学家罗森茨韦克（对）。
 邓肯将组织环境分为内部环境和外部环境（对）。
-.卡斯特和罗森茨韦克将影响一切组织的一般环境特征划分为文化特征、技术特征、教育特征、政治特
-征、法制特征、自然资源特征、人口特征、社会特征、经济特征等几个方面（对）。
+.卡斯特和罗森茨韦克将影响一切组织的一般环境特征划分为文化特征、技术特征、教育特征、政治特征、法制特征、自然资源特征、人口特征、社会特征、经济特征等几个方面（对）。
 组织界限以内与组织的个体决策行为直接相关的自然和社会因素被称为组织的内部环境（对）。
 组织界限之外与组织内个体决策直接相关的自然和社会因素被称为组织的外部环境（对）。
 组织”一词,源自希腊文,1873年,哲学家斯宾塞用“组织”来指涉“已经组合的系统或社会”（对）。
@@ -205,13 +210,13 @@ def writeAnswer1(browser):
 1911年,泰勒发表了《科学管理原理》一书,掀起了一场科学管理的革命（对）。
 行政管理学派的代表人物法约尔,被誉为“管理理论之父”（对）。
 德国著名的社会学家韦伯在《高级管理人员的职能》一书中,提出了理想型官僚组织理论（错）。'''
-    pdAnswer = panduanAutoAnswerFix(dxAnswer, "）。")
+    pdAnswer = getJudgeAnswers(pdAnswer,"）。")
     dxindex = 0
     for pd in pdAnswer:
         anEle = getAnswerElementEquals(elements1, pd, dxindex, 2)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
-            time.sleep(0.1)
+            time.sleep(0.3)
         dxindex += 1
 
     mulAnswer = '''美国行为科学家赫茨伯格在其《工作的推力》和《工作与人性》等著作中,提出影响人的积极性的因素主要有（保健因素、激励因素）。
@@ -237,29 +242,29 @@ def writeAnswer1(browser):
 美国著名社会学家、交换学派的代表布劳及史考特，根据组织目标和受益者的关系，把组织划分为（全选）。
 窗体底端
  窗体顶端
-从系统论的角度来看，任何一种社会组织大体都发挥三种功能（“转换”功能、“调节”功能 、 “聚合”功能）。
+从系统论的角度来看，任何一种社会组织大体都发挥三种功能（“转换”功能、“聚合”功能）。
 窗体底端
 窗体顶端
 窗体顶端
-组织是一个纵横交错的权责体系，构成组织权责体系的三大要素为（职权、职责、职位）。
+组织是一个纵横交错的权责体系，构成组织权责体系的三大要素为（职权、职责）。
 世界银行在其1997年的《世界发展报告》中指出，以下几项基础性的任务处于每个政府使命的核心地位，这些使命包括（保持非扭曲的政策环境、保护环境、投资于基本的社会服务与基础设施）。
 古典组织理论的主要代表人物有（韦伯、法约尔、泰勒）。
 韦伯对行政组织理论的建构是从权力分析开始的，认为存在着下列纯粹形态的合法权力，它们是（超凡的权力、传统的权力、理性--法律的权力）。'''
     dxindex = 0
     howManyLabelBefore=40#前面有二十道判断,所以前面共40个label
-    listmulAnswer = duoxuanAutoAnswerFix(mulAnswer, "（", "）")
+    listmulAnswer = duoxuanAutoAnswerFix(mulAnswer, "（", "）","、")
     for value in listmulAnswer:
         for v in value:
             if "全选"==v.strip():
                 #把当前题的所有label都选上
                 for i in range(4):
                     elements1[dxindex*4+howManyLabelBefore+i].find_element_by_xpath("./../input[last()]").click()
-                    time.sleep(0.1)
+                    time.sleep(0.3)
             else:
                 anEle = getAnswerElementEqualsBefore(elements1, v.strip(), dxindex, 4,howManyLabelBefore)  # 找到指定的那个label选项
                 if anEle is not None:
                     anEle.find_element_by_xpath("./../input[last()]").click()
-                    time.sleep(0.1)
+                    time.sleep(0.3)
         dxindex += 1
 
 
@@ -268,7 +273,7 @@ def writeAnswer1(browser):
     if canTakeWrongNum > 3:
         return
     browser.find_element_by_xpath('//input[@type="submit"]').click()
-    time.sleep(0.1)
+    time.sleep(0.3)
     # save and submit
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
@@ -282,231 +287,94 @@ def writeAnswer2(browser):
     elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
     elements1 = browser.find_elements_by_xpath('//label')
     dxindex = 0
-    time.sleep(4)#保证富文本框加载完毕
+    time.sleep(4)  # 保证富文本框加载完毕
 
-
-    # 20单
-    dxAnswer = '''01．正确答案是：水泥
-02．正确答案是：硅酸盐水泥
-03．正确答案是：早期快后期慢
-04．正确答案是：0OC
-05．正确答案是：以上都是
-06．正确答案是：水泥在水化过程中放出的热量
-07．正确答案是：氢氧化钙和水化铝酸钙
-08．正确答案是：大体积混凝土工程
-09．正确答案是：铝酸盐水泥
-10．正确答案是：扩大其强度等级范围，以利于合理选用
-11．正确答案是：线膨胀系数
-12．正确答案是：品种和强度等级
-13．正确答案是：气干状态
-14．正确答案是：和易性
-15．正确答案是：混凝土拌合物的稀稠程度及充满模板的能力
-16．正确答案是：坍落度是保水性的指标
-17．正确答案是：每立方米混凝土中砂的质量和砂石的总质量之比
-18．正确答案是：水泥石与粗骨料的结合面先发生破坏
-19．正确答案是：早强剂
-20．正确答案是：水灰比、砂率、单位用水量'''
-    listdxanswer = danxuanAutoAnswerFix(dxAnswer, "：")
-    dxindex = 0
-    for an in listdxanswer:
-        anEle = getAnswerElementEquals(elements1, an, dxindex, 4)  # 找到指定的那个label选项
-        if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
-            time.sleep(0.1)
-        dxindex += 1
-
-    # 10判断
-    panduan_length=10
-    danxuanti_length=20
-    duoxuanti_length=0
-    dxAnswer = '''判断题01．对”。
-判断题02．错”。
-判断题03．“错”。
-判断题04．对”。
-判断题05．错”。
-判断题06．对”。
-判断题07．错”。
-判断题08．错”。
-判断题09．错”。
-判断题10．“对”。'''
-
-    pdAnswer = panduanAutoAnswerFix(dxAnswer, "”。")
+    # 20判断
+    pdAnswer = '''我国地方各级政府是各级国家权力机关的执行机关（对）。
+省级政府每届任期4年（错）。
+中国当前的城市，在行政级别上分为4个层次（对）。
+市级政府对上一级国家行政机关负责并报告工作，并接受国务院的统一领导（对）。
+民族自治地方分为自治区、自治县和民族乡三级（错）。
+在影响组织的各种因素中，信息的因素是最为重要的（对）。
+人的行为首先是在一一定的刺激下产生内在的愿望与冲动，即产生需要（对）。
+赫茨伯格的双因素包括保健因素和激励因素（对）。
+期望理论中的激励力量取决于目标价值和期望概率的综合作用（对）。
+决策是领导者的最基本职责（对）。
+组织结构垂直分化的结果与表现形式为组织结构的层级化（对）。
+领导者通过及时调整各种关系，使各项工作、各个部门、各种人员之间能够和谐地配合，顺利完成组织任务，达成组织目标，这是领导者在履行其监督职能（错）。
+行政组织结构横向分化的结果与表现形式为组织结构的分部化（对）。
+领导机关或管理人员能够直接有效地管理和控制下属人员或单位的数目称之为管理级别（错）。
+在单位和人数不变的情况下，管理层次和管理幅度的关系为正比例关系（错）。
+在一个组织结构体系中，为完成定的任务或使命，设置不同的上下层级机关或部门，使其在各自职权范围内独立自主处理事务，不受上级机关干涉的组织结构体系为分权制（对）。
+在一一个组织结构体系中，上级机关 或单位完全掌握组织的决策权和控制权，下级或派出机关处理事务须完全秉承上级或中枢机关的意志行事的组织结构体系为集权制（对）。
+国务院是由全国人大组织产生（错）。
+国务院是最高国家权力机关（错）。
+秦朝的郡县制奠定了以中央集权为特征的行政建制（对）。'''
+    pdAnswer = getJudgeAnswers(pdAnswer,"）。")
     dxindex = 0
     for pd in pdAnswer:
-        anEle = getAnswerElementEqualsPanDuan(elements1, pd, dxindex, 2)  # 找到指定的那个label选项
+        anEle = getAnswerElementEquals(elements1, pd, dxindex, 2)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
-            time.sleep(0.1)
+            time.sleep(0.3)
         dxindex += 1
 
-    # 6个富文本
-    line = browser.page_source
-    frameId = line.split(":31_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId + ":31_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "细度是指水泥颗粒总体的粗细程度。水泥颗粒越细，与水发生反应的表面积越大，因而水化反应速度较快，而且较完全，早期强度也越高，但在空气中硬化收缩性较大，成本也较高。如水泥颗粒过粗则不利于水泥活性的发挥。一般认为水泥颗粒小于40μm（0.04mm）时，才具有较高的活性，大于100μm（0.1mm）活性就很小了。硅酸盐水泥和普通硅酸盐水泥细度用比表面积表示。比表面积是水泥单位质量的总表面积")
-    browser.switch_to.default_content()
+    mulAnswer = '''21.社会组织的结构与其他生物的和机械的系统的结构都具有如下共同的特点（全选）。
+22.组织结构的构成要素可划分为___两大类（组织的“显结构”；组织的“潜结构”）。
+23.组织结构的“潜结构”的构成要素包括（全选）。
+24.组织结构分化的方式和途径为（全选）。
+25.促进组织活动一体化的手段和途径主要有（全选）。
+26.组织设计中应注意组织设计的程序问题（归纳设计；演绎设计；）。
+27.国务院是最高国家行政机关，它（由国家最高权力机关产生；在国家行政系统中处于最高地位）。
+28.我国省级政府包括（全选）。
+29.乡级政府行使的职权有（行政管理权；行政执行权；行政保护权）。
+30.我国特别行政区享有（独立的司法权和终审权；1；立法权；独立的地方财政权）。 
+31组织管理心理主要由组成（个体心理；组织心理；群体心理）。
+32.人的行为机制主要包括（全选）。
+33.下列因素中属于赫茨伯格双因素理论中的激励因素的是（工作富有成就；工作本身的重要性）。
+34.推行目标激励理论的主要困难是（目标的公平合理；目标量化；目标难度的确定）。
+35.群体发展大致经历的阶段有（全选）。
+36.群体意识主要包括（群体归属意识；群体促进意识；群体认同意识）。
+37.行政组织领导的特点是（全选）。
+38.权力性影响力主要源于（全选）。
+39.非权力性影响力主要源于（全选）。
+40.勒温将领导者的作风分为___等类型（专制；民主V；放任）。'''
+    dxindex = 0
+    howManyLabelBefore=40#前面有二十道判断,所以前面共40个label
+    listmulAnswer = duoxuanAutoAnswerFix(mulAnswer, "（", "）","；")
+    for value in listmulAnswer:
+        for v in value:
+            if "全选"==v.strip():
+                #把当前题的所有label都选上
+                for i in range(4):
+                    elements1[dxindex*4+howManyLabelBefore+i].find_element_by_xpath("./../input[last()]").click()
+                    time.sleep(0.3)
+            else:
+                anEle = getAnswerElementEqualsBefore(elements1, v.strip(), dxindex, 4,howManyLabelBefore)  # 找到指定的那个label选项
+                if anEle is not None:
+                    anEle.find_element_by_xpath("./../input[last()]").click()
+                    time.sleep(0.3)
+        dxindex += 1
 
-    line = browser.page_source
-    frameId = line.split(":32_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId + ":32_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "水泥的初凝时间是指从水泥加水拌合起至水泥浆开始失去可塑性所需的时间的时间，这个时间对施工影响较大，为了保证有足够的时间在初凝之前完成混凝土的搅拌、运输和浇捣及砂浆的粉刷、砌筑等施工工序，初凝时间不宜过短，为此，国家标准规定硅酸盐水泥的初凝时间不早于45分。短于这个时间很容易导致混凝土还来不及施工就已经失去了塑性。")
-    browser.switch_to.default_content()
 
-    line = browser.page_source
-    frameId = line.split(":33_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId + ":33_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "砂、石有专门的试验方法，通过不同孔径的筛子进行筛分细算。不同孔径筛子上的筛余量有一定的范围。如果其各个筛的筛余量在标准规定的范围内，那么就称其为连续级配。连续级配对混凝土和易性（尤其是流动性），对强度也有帮助。")
-    browser.switch_to.default_content()
-
-    line = browser.page_source
-    frameId = line.split(":34_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId + ":34_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "1、严格控制水灰比，保证足够的水泥用量；2、合理选择水泥品种；3、选用较好砂、石骨料，并尽量采用合理砂率；4、掺引气剂、减水剂等外加剂；5、掺入高效活性矿物掺料；6、施工中搅拌均匀、振捣密实、加强养护、增加混凝土密实度、提高混凝土质量。")
-    browser.switch_to.default_content()
-
-    line = browser.page_source
-    frameId = line.split(":35_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId + ":35_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "质量吸水率:《建筑材料》形成性考核册答案 w. m, x10 m 29002500/2500 x0 、frac{29002500}{2500}xI0 2500×1006169 2.密度:《建筑材料》形成性考核册答案 p= fn/J  50/18.5- 2m7 3.体积密度:《建筑材料》形成性考核册答案 R po Vo m/y0  -24-x21vI05-0、times5-3 2119 4.孔隙率:《建筑材料》形成性考核册答案 PD-×100 2.7-1.71 2.7x1OB363%")
-    browser.switch_to.default_content()
-
-    line = browser.page_source
-    frameId = line.split(":36_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId + ":36_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "施工每立方混凝土各种材料用量：水泥C = 286Kg砂子S = 286×2.28（1 + 0.03）=672Kg石子G = 286×4.47（1 + 0.01）=1291Kg水W = 286×0.64 - 286×2.28×0.03 - 286×4.47×0.01 = 151Kg施工配合比：（286 / 286）：（672 / 286）：（1291 / 286）：（151 / 286）=1: 2.35:4.51: 0.53")
-    browser.switch_to.default_content()
 
     # end answer
     if canTakeWrongNum > 3:
         return
     browser.find_element_by_xpath('//input[@type="submit"]').click()
-    time.sleep(0.1)
+    time.sleep(0.3)
     # save and submit
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
 def writeAnswer3(browser):
-    canTakeWrongNum = 0
-    #单多选在同一页混的时候,标记下单选题的数量
-    danxuanLength=9
-
-    # 试卷题目固定布局
-    ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
-    elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
-    elements1 = browser.find_elements_by_xpath('//label')
-    dxindex = 0
-    time.sleep(4)  # 保证富文本框加载完毕
-
-    # 20单
-    dxAnswer = '''01．正确答案是：砌筑砂浆
-02．正确答案是：沉入度
-03．正确答案是：3
-04．正确答案是：中层砂浆
-05．正确答案是：水泥砂浆
-06．正确答案是：泛霜
-07．正确答案是：蒸压灰砂砖
-08．正确答案是：陶瓷锦砖
-09．正确答案是：玻璃在冲击作用下易破碎，是典型的塑性材料
-10．正确答案是：平板玻璃
-11．正确答案是：黏土
-12．正确答案是：颈缩阶段
-13．正确答案是：伸长率
-14．正确答案是：沸腾钢
-15．正确答案是：冷弯性能
-16 . 正确答案是：疲劳破坏
-17．正确答案是：若含硅量超过1%时，会增大钢材的可焊性
-18．正确答案是：强度提高，伸长率降低
-19.  正确答案是：强度提高，塑性和冲击韧性下降
-20．正确答案是：增大'''
-    listdxanswer = danxuanAutoAnswerFix(dxAnswer, "：")
-    dxindex = 0
-    for an in listdxanswer:
-        anEle = getAnswerElementEquals(elements1, an, dxindex, 4)  # 找到指定的那个label选项
-        if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
-            time.sleep(0.1)
-        dxindex += 1
-
-    # 10判断
-    panduan_length=10
-    danxuanti_length=20
-    duoxuanti_length=0
-    dxAnswer = '''判断题01．对”。
-判断题02．“对”。
-判断题03．错”。
-判断题04．“对”。
-判断题05．错”。
-判断题06．错”。
-判断题07．对”。
-判断题08．错”。
-判断题09．对”。
-判断题10．错”。'''
-
-    pdAnswer = panduanAutoAnswerFix(dxAnswer, "”。")
-    dxindex = 0
-    for pd in pdAnswer:
-        anEle = getAnswerElementEqualsPanDuan(elements1, pd, dxindex, 2)  # 找到指定的那个label选项
-        if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
-            time.sleep(0.1)
-        dxindex += 1
-
-    # 6个富文本
-    line = browser.page_source
-    frameId = line.split(":31_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId + ":31_answer_id_ifr")
+    time.sleep(2)
+    browser.find_element_by_id("id_subject").send_keys("广场舞引发的矛盾")
+    time.sleep(6)
+    browser.switch_to.frame("id_message_ifr")
     browser.find_element_by_id("tinymce").send_keys(
-        "根据建筑力学分类共分为压力、拉力、扭力、剪力和弯曲五种。再针对各种建筑材料来判断，其中砂浆所承受的力绝大多数是压力，砂浆承受压力的大小也就成为了评判砂浆级别的标准。抗压强度技术指标直接体现了砂浆的受力特点")
+        "在公共利益面前，“小团体”的自由必须受到约束。城市管理应该改变相关法律法规缺失、执行者缺位的现状，加强对群众性娱乐活动的管理和引导，帮助参与者提高文明素质和公德意识，为公众创造安宁和谐的城市生活环境。目前我国大多数城市对居民区附近的广场舞活动，没有针对性的管理措施。而且，即使少数地区出台了管理办法，也面临着执行难困境。噪声处罚需要专业人员到现场监测并出具证据，管理广场舞执法成本高，落实难。同时，对广场舞的管理还面临管理者缺位问题，小区物业往往左右为难，城管人员又无此权限。广场舞噪声扰民问题，实际上是一个是否尊重他人权益及公共利益的问题。长期的噪音干扰，无疑侵犯了一些小区居民的休息权。这看似是个不大的问题，但如果居民的合法权益长期被忽视、被侵犯，最后的后果就可能很严重。武汉发生了“泼粪”事件，无独有偶，前不久北京也发生了一起由广场舞噪音引发的严重事件。北京市昌平检察院以涉嫌非法持有枪支罪批捕一名男子，该男子因广场舞噪音过大与邻居发生争执，并拿出私藏猎枪朝天鸣枪，随后又将三条藏獒放出来冲进跳舞人群，所幸未造成人员伤亡。这起事件具有犯罪的恶性，与武汉广场舞纠纷的性质不可同日而语，但两者的诱因却都是广场舞噪音，须引起有关部门和广大居民的重视。应当认识到，一部分居民每天欢乐的几个小时，不应同时成为其他人的煎熬时间。发生在居民区的生活噪音污染，关系到居民生活的质量，关系到邻里关系的和谐，绝不是小问题。广场舞伴随城市发展而来，是文化现象，也是社会现象。广场舞曾经是精神文明建设的一个成果，是社会和谐的反映，但随着城市人口密度不断加大，以及公众对居住环境要求的提高，广场舞噪声已开始对居民生活和社区秩序造成较大影响。在公共利益面前，“小团体”的自由必须受到约束。城市管理应该改变相关法律法规缺失、执行者缺位的现状，加强对群众性娱乐活动的管理和引导，帮助参与者提高文明素质和公德意识，为公众创造安宁和谐的城市生活环境。")
     browser.switch_to.default_content()
-
-    line = browser.page_source
-    frameId = line.split(":32_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId + ":32_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "地下水泥砂浆，地上除有水房间外用混合砂浆，有水房间用水泥砂浆")
-    browser.switch_to.default_content()
-
-    line = browser.page_source
-    frameId = line.split(":33_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId + ":33_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "最主要是因为釉面砖吸水率较高(国家规定其吸水率小于21%)，容易吸入大量水分，严重的甚至在贴完瓷砖后不久，能够将水泥的脏水从背面吸进来，进入釉面。陶体吸水膨胀后，吸湿膨胀小的表层釉面处于张压力状态下，长期冻融，会出现剥落掉皮现象，还有就是很可能受到温度的影响而脱落，所以釉面砖不能用于室外。")
-    browser.switch_to.default_content()
-
-    line = browser.page_source
-    frameId = line.split(":34_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId + ":34_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "钢材的屈服点（屈服强度）与抗拉强度的比值，称为屈强比。屈强比越大，结构零件的可靠性越大，一般碳素钢屈强比为0.6-0.65，低合金结构钢为0.65-0.75合金结构钢为0.84-0.86。 机器零件的屈强比高，节约材料，减轻重量。")
-    browser.switch_to.default_content()
-
-    line = browser.page_source
-    frameId = line.split(":35_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId + ":35_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "1、钢材耐腐蚀性差。 2、钢材耐热但不耐火。")
-    browser.switch_to.default_content()
-
-    line = browser.page_source
-    frameId = line.split(":36_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId + ":36_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "【解】1.计算砂浆的配制强度：查表3－40,取值σ＝1.88MPa. ƒm,o＝ƒ2+0.645σ ＝7.5+0.645×1.88＝8.7MPa 2.计算单位水泥用量： Qc=217Kg(公式打不上去,此题实测强度fce=36MPa) 3.计算单位石灰膏用量： QD ＝QA－Qc ＝350－217＝133kg 4.计算单位砂的用量: Qs＝1× ×（1+w′） ＝1×1450×（1+2％）＝1479kg 5.得到砂浆初步配合比： 采用质量比表示为：水泥∶石灰膏∶砂 Qc：QD：Qs＝217∶133∶1479＝1∶0.61∶6.11")
-    browser.switch_to.default_content()
-
-    # end answer
-    if canTakeWrongNum > 3:
-        return
-    browser.find_element_by_xpath('//input[@type="submit"]').click()
-    time.sleep(0.1)
-    # save and submit
-    browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
-    browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
+    browser.find_element_by_id("id_submitbutton").click()
 def writeAnswer4(browser):
     canTakeWrongNum = 0
     #单多选在同一页混的时候,标记下单选题的数量
@@ -519,111 +387,173 @@ def writeAnswer4(browser):
     dxindex = 0
     time.sleep(4)  # 保证富文本框加载完毕
 
-    # 20单
-    dxAnswer = '''01．正确答案是：聚酯树脂
-02．正确答案是：合成树脂
-03．正确答案是：63~188kJ/m3
-04．正确答案是：塑料和玻璃纤维
-05．正确答案是：溶剂
-06．正确答案是：结构胶粘剂、非结构胶粘剂、次结构胶粘剂
-07．正确答案是：石油沥青
-08．正确答案是：油分
-09．正确答案是：石油沥青在外力作用下产生变形而不破坏，除去外力后仍保持变形后的形状不变的性质
-10．正确答案是：沥青牌号越高，黏性越小，塑性越好
-11．正确答案是：建筑石油沥青的软化点过高夏季易流淌，过低冬季易硬脆甚至开裂
-12．正确答案是：石油产品系统的轻质油
-13．正确答案是：虽然橡胶的品种不同，掺入的方法也有所不同，但各种橡胶沥青的性能几乎一样
-14．正确答案是：老化
-15．正确答案是：丁苯橡胶
-16．正确答案是：温度稳定性
-17．正确答案是：纤维饱和点
-18．正确答案是：纤维板
-19．正确答案是：木材
-20．正确答案是：方孔筛'''
-    listdxanswer = danxuanAutoAnswerFix(dxAnswer, "：")
-    dxindex = 0
-    for an in listdxanswer:
-        anEle = getAnswerElementEquals(elements1, an, dxindex, 4)  # 找到指定的那个label选项
-        if anEle is not None:
-            anEle.find_element_by_xpath("./../input[last()]").click()
-            time.sleep(0.1)
-        dxindex += 1
-
-    # 10判断
-    panduan_length=10
-    danxuanti_length=20
-    duoxuanti_length=0
-    dxAnswer = '''判断题01．“对”。
-判断题02．“错”。
-判断题03．“对”。
-判断题04．“错”。
-判断题05“  对”。
-判断题06．“对”。
-判断题07．对”。
-判断题08．对”。
-判断题09．对”。
-判断题10．“错”。'''
-
-    pdAnswer = panduanAutoAnswerFix(dxAnswer, "”。")
+    # 20判断
+    pdAnswer = '''行政组织决策的目的是为了实现社会的共同利益（对）。
+行政组织决策是以行政权力为后盾（对）。
+风险型决策的决策后果无法预测（错）。
+确定目标是行政组织进行决策的起点（错）。
+中枢系统是行政组织决策的中心（对）。
+美国政治学家伊斯顿被认为是决策理论研究的开创者（错）。
+在决策理论研究领域，杜鲁门提出了团体决策模型（对）。
+现代观点认为，冲突既具有建设性又具有破坏性（对）。
+组织中最佳的冲突状态是没有冲突（错）。
+解决冲突的基本策略中具有“治本”性的是正视策略（对）。
+合作意向都很高，宁可牺牲自身利益而使对方达到目的的冲突处理模式为协作型（错）。
+通过组织明文规定的原则、渠道进行的信息传递和交流，是一-种正式沟通（对）。
+信息的发讯者和受讯者以协商、会谈、讨论的方式进行信息的交流与意见反馈，直到双方共同了解为止，这种沟通形式为双向沟通（对）。
+组织系统中处于相同层次的人、群体、职能部门之间进行的信息传递和交流为平行沟通（对）。
+在组织管理中，书面沟通方式要优于口头沟通（错）。
+作报告、发指示、下命令等属于单向沟通（对）。
+20世纪90年代初陈国权开始研究组织学习和学习型组织，并提出了组织学习系统理论(OLST)（对）。
+行政组织学习是一一种全员学习（错）。
+知识的主要构成要素包括经验、事实、判断以及经验法则（对）。
+行政组织学习不是组织内部成员个人学习的简单相加，而是一个社会过程（对）。'''
+    pdAnswer = getJudgeAnswers(pdAnswer,"）。")
     dxindex = 0
     for pd in pdAnswer:
-        anEle = getAnswerElementEqualsPanDuan(elements1, pd, dxindex, 2)  # 找到指定的那个label选项
+        anEle = getAnswerElementEquals(elements1, pd, dxindex, 2)  # 找到指定的那个label选项
         if anEle is not None:
             anEle.find_element_by_xpath("./../input[last()]").click()
-            time.sleep(0.1)
+            time.sleep(0.3)
         dxindex += 1
 
-    # 6个富文本
-    line = browser.page_source
-    frameId = line.split(":31_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId + ":31_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "1. 确定要粘接的材料，玻璃粘玻璃， 金属粘玻璃，塑料粘塑料等等2. 确定粘接工艺，是加热固化，UV灯照，还是湿气固化。等等3.确定所需胶粘剂的作用，是用于灌封，密封还是粘接，对粘接强度要求高不高。")
-    browser.switch_to.default_content()
+    mulAnswer = '''根据决策所具有的条件的可靠程度的不同，决策可分为（不确定型决策；风险型决策；确定型决策）。
+正确的决策目标应该具备的条件是（ 定量化；要明确责任；有一定的时间限制）。
+西蒙的决策过程包括（全选）。 
+冲突的特性有（客观性；主观性；程度性）。 
+符合现代冲突观点的是（冲突本身没有好坏之分；有些冲突对组织具有破坏性；有些冲突对组织具有建设性）。
+根据冲突发生的方向，可将冲突分为（横向冲突；直线/职能冲突；纵向冲突）。 
+回避策略中，解决冲突的方法包括（限制；忽视；分离）。  
+减少冲突的策略主要有（全选）。 
+从组织沟通的-般模式和组成要素来看，组织沟通具有以下几个特点（全选）。
+以组织结构及其运行程序为依据和标准，组织信息沟通的形式和类型可划分为以下几种（上行沟通；下 行沟通；平行沟通）。 
+根据沟通是否需要第三者中介传递，我们可将沟通划分为以下两种类型（间接沟通；直接沟通）。
+信息传递的过程中，会形成和出现不同的沟通结构形式，这便是沟通的网络，-般来讲，组织沟通网络可分为两大类（非正式沟通网络；正式沟通网络）。
+戴维斯在《管理沟通与小道消息》一文中指出，口头传播方式的非正式信息交流渠道或形式主要有（全选）。
+在组织沟通中，由信息传递的媒介形式引起的障碍主要有（语言障碍；沟通方式不当引起的障碍）。
+组织沟通中存在的客观性障碍主要有（信息过量引起的障碍；空间距离所引起的障碍；组织机构引起的障碍）。 
+组织学习的内容包括三个方面的改变，分别是（组织体系的改变；组织成员认知的改变；行为的改变）。
+行政组织学习的类型可分为（三环学习；双环学；单环学习）。 
+行政组织学习的途径包括（全选）。
+行政组织学习途径之一的试验，可分为（示范性试验；持续性试验）。
+行政组织学习过程中领导人应该作为（教师；公仆；设计师）。'''
+    dxindex = 0
+    howManyLabelBefore=40#前面有二十道判断,所以前面共40个label
+    listmulAnswer = duoxuanAutoAnswerFix(mulAnswer, "（", "）","；")
+    for value in listmulAnswer:
+        for v in value:
+            if "全选"==v.strip():
+                #把当前题的所有label都选上
+                for i in range(4):
+                    elements1[dxindex*4+howManyLabelBefore+i].find_element_by_xpath("./../input[last()]").click()
+                    time.sleep(0.3)
+            else:
+                anEle = getAnswerElementEqualsBefore(elements1, v.strip(), dxindex, 4,howManyLabelBefore)  # 找到指定的那个label选项
+                if anEle is not None:
+                    anEle.find_element_by_xpath("./../input[last()]").click()
+                    time.sleep(0.3)
+        dxindex += 1
 
-    line = browser.page_source
-    frameId = line.split(":32_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId + ":32_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "塑料的优点加工特性好2、质轻3、比强度大4、导热系数小5、化学稳定性好6、电绝缘性好7、性能设计性好8、富有装饰性9、有利于建筑工业化塑料的缺点：1、易老化2、易燃3、耐热性差4、刚度小")
-    browser.switch_to.default_content()
 
-    line = browser.page_source
-    frameId = line.split(":33_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId + ":33_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "主要分为四种：饱和分、芳香分、胶质和沥青质。饱和分和芳香分是液体的，起到溶剂作用，胶质是胶体状的，沥青质是固体，相当于溶质，起到一定的支架作用")
-    browser.switch_to.default_content()
-
-    line = browser.page_source
-    frameId = line.split(":34_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId + ":34_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "这要看矿物填充物的成分了。")
-    browser.switch_to.default_content()
-
-    line = browser.page_source
-    frameId = line.split(":35_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId + ":35_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "木材的腐朽主要是木材里面有木腐菌、白蚁等生物，他们以木材内部的木质素为食，所以木材会逐渐腐朽，对于木材防腐的措施， 有很多，根据木材的使用环境不同而不同，最常见的是对木材进行防腐处理，处理的方法有喷涂防腐药剂，喷涂油漆，而防腐药剂有很多种，有油性的，也有水溶性的，均能有效防止木材的腐朽，目前室外使用的防腐木主要是通过真空加压防腐处理的方法，通过高压，把水溶性防腐药剂打入木材内部，是木腐菌不能在木材内部生存。之外，也有一种炭化木，他的防腐处理方法跟之前的不同，他是通过对木材进行高温热处理，破坏木材内部物质结构，使木腐菌等生存依赖的物质通过高温脱水，变成以外一种物质，不能够为木腐菌食用，这样达到木材防腐的效果。")
-    browser.switch_to.default_content()
-
-    line = browser.page_source
-    frameId = line.split(":36_answer_id_ifr")[0][-15:].split("id=\"")[1]
-    browser.switch_to.frame(frameId + ":36_answer_id_ifr")
-    browser.find_element_by_id("tinymce").send_keys(
-        "1 湿润坍落度筒及其他用具，并把筒房子不吸水的刚性水平底上，然后用脚踩住两个踏板，使坍落度筒在装料时保持位置固定。2 把取得的混凝土试样用小铲分三层均匀的装入桶内，捣实后每层高度为筒高1/3左右，每层用捣棒沿螺旋方向在截面上由外向中心均匀插捣25次，插捣筒边混凝土时，捣棒可以稍稍倾斜，插捣底层时，捣棒应贯穿整个深度。插捣第二层和顶层时，捣棒应插透本层至下一层表面。装顶层混凝土时应高出筒口。插捣过程中，如混凝土坍落到低于筒口，则应随时添加。顶层插捣完后，刮出躲雨的混凝土，并用抹刀抹平。3 清除筒边地板上的混凝土后，垂直平稳的提起坍落度筒。坍落度筒的提高过程应在5~10秒内完成，从开始装料到提起坍落度筒的过程中，应不间断的进行，并应在150S内完成。4 提起筒后，两侧筒高与坍落后混凝土试体最高点之间的高度差，即为混凝土拌合物的坍落度值。 ")
-    browser.switch_to.default_content()
 
     # end answer
     if canTakeWrongNum > 3:
         return
     browser.find_element_by_xpath('//input[@type="submit"]').click()
-    time.sleep(0.1)
+    time.sleep(0.3)
     # save and submit
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
+def writeAnswer5(browser):
+    canTakeWrongNum = 0
+    #单多选在同一页混的时候,标记下单选题的数量
+    danxuanLength=9
+
+    # 试卷题目固定布局
+    ratios = browser.find_elements_by_xpath('//input[@type="radio"]')
+    elements1p = browser.find_elements_by_xpath('//div[@class="qtext"]')
+    elements1 = browser.find_elements_by_xpath('//label')
+    dxindex = 0
+    time.sleep(4)  # 保证富文本框加载完毕
+
+    # 20判断
+    pdAnswer = '''根据行政组织文化产生的时间，行政组织文化可以分为传统行政组织文化和当代行政组织文化（对）。
+行政组织文化具有多种功能，它能把组织成员个人目标与组织目标有机结合起来，引导组织成员的行为，我们把这种功能称为控制功能（错）。
+行政组织文化相比于正式的组织规章制度的控制作用，它具有软约束性的特性（对）。
+行政组织文化是一-种群体文化，是一一种无形的管理方式（对）。
+行政组织绩效就是指的行政组织活动的成果（错）。
+经济性指标一般指行政组织投入到管理中的资源，其关心的是行政组织的投入（对）。
+效果通常是指公共服务符合政策目标的程度，其关心的是手段（对）。
+效率就是指投入与产出之间的比例，力求以最少的投入获得最大的产出，其关心的是手段问题（对）。
+组织变革不是一一个持续循环与发展的过程，因为要考虑到组织的稳定（错）。
+组织发展起源于20世纪50年代初的调查反馈方法和实验室培训运动。它的先驱是法国心理学家烈文（对）。
+1957年麦格雷戈应邀到联合碳化公司与公司人事部门联合成立顾问小组，把实验室训练的术系统地在公司使用。这个小组后被称之为“T训练小组”（错）。
+作为一套极有系统的组织发展方案，格道式发展模式的目的在于使组织达到一一种最佳状态。此模式创立者为布菜克和默顿（对）。
+系统变革模式认为，组织是一个系统，是由技术、结构、人员和任务四个因素构成，任何一一个因素的变化都会牵动和引起系统的变化。系统变革模式的创始人为利维特（对）。
+美国心理学家埃德加●薛恩在其《组织心理学》一书中提出了系统变革模式（错）。
+罗宾●斯特克兹认为，组织变革的方式取决于组织成员的技术能力和人际关系能力的组合，提出了渐进式变革模式（错）。
+管理学大师德鲁克在《后资本主义社会》一书中指出:“世界 上没有贫穷的国家，只有无知的国家”（对）。
+知识经济与传统经济相比，知识成为组织根本的生产要素（对）。
+组织理论家卡斯特和罗森茨韦克认为，未来的组织将更趋向于动态和灵活（对）。
+战略管理的核心是问题管理（错）。
+随着信息技术的发展，将信息科技运用于行政组织的管理，建立“节约型政府”已经成为各国的一个普遍趋势（错）。'''
+    pdAnswer = getJudgeAnswers(pdAnswer,"）。")
+    dxindex = 0
+    for pd in pdAnswer:
+        anEle = getAnswerElementEquals(elements1, pd, dxindex, 2)  # 找到指定的那个label选项
+        if anEle is not None:
+            anEle.find_element_by_xpath("./../input[last()]").click()
+            time.sleep(0.3)
+        dxindex += 1
+
+    mulAnswer = '''根据其在行政组织中所占有的地位，行政组织文化可以分为（ 主文化；亚文化）。
+我国行政组织文化正在向方向迈进（全选）。
+行政组织绩效的外延，除了内部的管理绩效，主要还包括（经济绩效；社会绩效；政治绩效）。
+一个有效的绩效管理系统必须具备以下构成要件（全选）。
+绩效指标包括的要素有（考评标度；考评标志；考评要素）。 
+在选择绩效评估指标时应遵循的原则是（全选）。
+组织变革并非凭空产生，它是有原因的。组织变革的动因是多种多样的，我们可以把组织变革的动因分为两大类:（内部环境因素；外部环境因素）。 
+对组织管理和变革发生影响的外部环境包括（般环境因素；特殊工作环境）。 
+美国斯坦福大学管理心理学教授利维特认为，组织是一个系统，是由相互影响、相互作用的因素构成的动态系统，这些因素有（全选）。
+哈佛大学教授格雷纳967年在《组织变革模式》一书中，提出了一一种按权力来划分的组织变革模式。他认为，一般组织的权力分配情况可分成三种（分权；独权；授权）。
+罗宾●斯特克兹于972年提出情境变革模式。他认为，组织变革的方式取决于组织成员的技术能力和人际关系能力的组合。根据这种不同组合，他提出了以下几种不同的变革型态（全选）。
+组织变革要取得预期的成效，必须遵循科学的、合理的变革步骤或程序。美国学者凯利认为，组织变革需经过以下步骤或程序（诊断；执行；评估）。 
+心理学家勒温(K. Lewin)从人的心理机制的变革角度，认为人的心理和行为的变革大致要经历以下几个阶段:（“ 改变；“解冻；“再冻结”）。
+根据现代心理学和行为科学的研究，组织变革阻力产生的原因为（全选）。
+以资料为基础的组织发展技术包括（职位期望技术；调查反馈法）。
+组织中的工作和绩效，都要通过人的行为来完成。以行为为中心的组织发展技术主要有以下几种（全选）。
+工作再设计就是通过对工作进行重新调整和再设计，使工作更有趣并富有挑战性，以此增强员工的工作满意度，激发员工的工作热情，提高组织工作的效率。工作再设计的途径和方案为:（工作扩大化；工作轮换；工作丰富化）。 
+由于团队建设的内容和要求不同，故可以通过不同的方式来实现。比较常用的团队建设的方式或模式有（全选）。
+组织诊断是组织变革的重要步骤和必要环节。组织诊断一般着眼于以下几个层面的问题（全选）。
+知识管理的主要活动包括（全选）。'''
+    dxindex = 0
+    howManyLabelBefore=40#前面有二十道判断,所以前面共40个label
+    listmulAnswer = duoxuanAutoAnswerFix(mulAnswer, "（", "）","；")
+    for value in listmulAnswer:
+        for v in value:
+            if "全选"==v.strip():
+                #把当前题的所有label都选上
+                for i in range(4):
+                    elements1[dxindex*4+howManyLabelBefore+i].find_element_by_xpath("./../input[last()]").click()
+                    time.sleep(0.3)
+            else:
+                anEle = getAnswerElementEqualsBefore(elements1, v.strip(), dxindex, 4,howManyLabelBefore)  # 找到指定的那个label选项
+                if anEle is not None:
+                    anEle.find_element_by_xpath("./../input[last()]").click()
+                    time.sleep(0.3)
+        dxindex += 1
+
+
+
+    # end answer
+    if canTakeWrongNum > 3:
+        return
+    browser.find_element_by_xpath('//input[@type="submit"]').click()
+    time.sleep(0.3)
+    # save and submit
+    browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
+    browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
+
 
 
 
@@ -658,11 +588,11 @@ def writeAnswer6(browser):
         if (judgeQueTitle(elements1p, key)):
             rightAnswer = getAnswerElementEqualsFinal(elements1, value, 1, 16, 20)
             rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-            time.sleep(0.1)
+            time.sleep(0.3)
     # if (judgeQueTitle(elements1p, "生产需要甲材料，年需要量为100千克，如果自制，单位变动成本20")):
     #     rightAnswer = getAnswerElementEquals4(elements1, "保本点升高，利润减少", 1)
     #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-    #     time.sleep(0.1)
+    #     time.sleep(0.3)
 
     mulAnswer = '''固定资产更新改造项目，涉及（固定资产; 开办费; 无形资产 ）投资。
 年金需要同时满足以下哪三个条件（连续性; 等额性; 同方向性 ）。
@@ -683,15 +613,15 @@ def writeAnswer6(browser):
             for v in value:
                 rightAnswer = getAnswerElementEqualsFinal(elements1, v, 2, 16, 20)
                 rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-                time.sleep(0.1)
+                time.sleep(0.3)
 
     # if (judgeQueTitle(elements1p, "从保本图得知（")):
     #     rightAnswer = getAnswerElementEquals4(elements1, "在其他因素不变的情况，保本点越低，盈利面积越大",2)
     #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
+    #     time.sleep(0.3)
     #     rightAnswer = getAnswerElementEquals4(elements1, "实际销售量超过保本点销售量部分即是安全边际",2)
     #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
+    #     time.sleep(0.3)
 
     pdAnswer = '''非折线指标又称为动态评价指标，包括净现值、获利指数和内含报酬率。（错）
 净现值是指项目投产后各年报酬的现值合计与投资现值合计之间的差额。（错）
@@ -710,7 +640,7 @@ def writeAnswer6(browser):
 
     # end answer
     browser.find_element_by_xpath('//input[@type="submit"]').click()
-    time.sleep(0.1)
+    time.sleep(0.3)
     # save and submit
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
@@ -738,11 +668,11 @@ def writeAnswer7(browser):
         if (judgeQueTitle(elements1p, key)):
             rightAnswer = getAnswerElementEqualsFinal(elements1, value, 1, 16, 12)
             rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-            time.sleep(0.1)
+            time.sleep(0.3)
     # if (judgeQueTitle(elements1p, "生产需要甲材料，年需要量为100千克，如果自制，单位变动成本20")):
     #     rightAnswer = getAnswerElementEquals4(elements1, "保本点升高，利润减少", 1)
     #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-    #     time.sleep(0.1)
+    #     time.sleep(0.3)
 
     mulAnswer = '''按编制预算的时间特征不同，编制预算的方法可以分为（滚动预算; 定期预算）。
 财务预算主要包括（ 预计利润表; 预计资产负债表; 现金收支预算 ）。
@@ -761,15 +691,15 @@ def writeAnswer7(browser):
             for v in value:
                 rightAnswer = getAnswerElementEqualsFinal(elements1, v.strip(), 2, 16, 12)
                 rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-                time.sleep(0.1)
+                time.sleep(0.3)
 
     # if (judgeQueTitle(elements1p, "从保本图得知（")):
     #     rightAnswer = getAnswerElementEquals4(elements1, "在其他因素不变的情况，保本点越低，盈利面积越大",2)
     #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
+    #     time.sleep(0.3)
     #     rightAnswer = getAnswerElementEquals4(elements1, "实际销售量超过保本点销售量部分即是安全边际",2)
     #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
+    #     time.sleep(0.3)
 
     pdAnswer = '''弹性预算方法的优点是不受现有费用项目限制，能够调动各方面降低费用的积极性和有助于企业未来发展。（错）
 滚动预算方法是以基期成本费用水平为基础，结合预算期业务量水平及有关降低成本的措施，通过调整有关原有费用项目而编制预算的方法。（错）
@@ -784,7 +714,7 @@ def writeAnswer7(browser):
 
     # end answer
     browser.find_element_by_xpath('//input[@type="submit"]').click()
-    time.sleep(0.1)
+    time.sleep(0.3)
     # save and submit
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
@@ -808,11 +738,11 @@ def writeAnswer8(browser):
         if (judgeQueTitle(elements1p, key)):
             rightAnswer = getAnswerElementEqualsFinal(elements1, value, 1, 8, 4)
             rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-            time.sleep(0.1)
+            time.sleep(0.3)
     # if (judgeQueTitle(elements1p, "生产需要甲材料，年需要量为100千克，如果自制，单位变动成本20")):
     #     rightAnswer = getAnswerElementEquals4(elements1, "保本点升高，利润减少", 1)
     #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-    #     time.sleep(0.1)
+    #     time.sleep(0.3)
 
     mulAnswer = '''下列影响再订货点的因素是（ 安全存量; 订货提前期; 存货日均耗用量）。
     三差异分析法，是指将固定制造费用的成本差异分解为（耗费差异; 能力差异; 能量差异）来进行分析的。
@@ -825,15 +755,15 @@ def writeAnswer8(browser):
             for v in value:
                 rightAnswer = getAnswerElementEqualsFinal(elements1, v.strip(), 2, 8, 4)
                 rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-                time.sleep(0.1)
+                time.sleep(0.3)
 
     # if (judgeQueTitle(elements1p, "从保本图得知（")):
     #     rightAnswer = getAnswerElementEquals4(elements1, "在其他因素不变的情况，保本点越低，盈利面积越大",2)
     #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
+    #     time.sleep(0.3)
     #     rightAnswer = getAnswerElementEquals4(elements1, "实际销售量超过保本点销售量部分即是安全边际",2)
     #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
+    #     time.sleep(0.3)
 
     pdAnswer = '''从实质上看，直接工资的工资率差异属于价格差异。（对）
     全面成本控制原则就是要求进行全过程控制。（错）
@@ -844,7 +774,7 @@ def writeAnswer8(browser):
 
     # end answer
     browser.find_element_by_xpath('//input[@type="submit"]').click()
-    time.sleep(0.1)
+    time.sleep(0.3)
     # save and submit
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
@@ -868,11 +798,11 @@ def writeAnswer9(browser):
         if (judgeQueTitle(elements1p, key)):
             rightAnswer = getAnswerElementEqualsFinal(elements1, value, 1, 8, 4)
             rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-            time.sleep(0.1)
+            time.sleep(0.3)
     # if (judgeQueTitle(elements1p, "生产需要甲材料，年需要量为100千克，如果自制，单位变动成本20")):
     #     rightAnswer = getAnswerElementEquals4(elements1, "保本点升高，利润减少", 1)
     #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-    #     time.sleep(0.1)
+    #     time.sleep(0.3)
 
     mulAnswer = '''内部转移价格的作用（有利于分清各个责任中心的经济责任; 有利于正确评价各责任中心的经营业绩; 有利于进行正确的经营决策 ）。
 投资中心的考核指标包括（ 投资报酬率; 剩余收益）。
@@ -885,15 +815,15 @@ def writeAnswer9(browser):
             for v in value:
                 rightAnswer = getAnswerElementEqualsFinal(elements1, v.strip(), 2, 8, 4)
                 rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-                time.sleep(0.1)
+                time.sleep(0.3)
 
     # if (judgeQueTitle(elements1p, "从保本图得知（")):
     #     rightAnswer = getAnswerElementEquals4(elements1, "在其他因素不变的情况，保本点越低，盈利面积越大",2)
     #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
+    #     time.sleep(0.3)
     #     rightAnswer = getAnswerElementEquals4(elements1, "实际销售量超过保本点销售量部分即是安全边际",2)
     #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
+    #     time.sleep(0.3)
 
     pdAnswer = '''利润或投资中心之间相互提供产品或劳务，最好以市场价格作为内部转移价格。（对）
 剩余收益指标的优点是可以使投资中心的业绩评价与企业目标协调一致。（对）
@@ -905,7 +835,7 @@ def writeAnswer9(browser):
 
     # end answer
     browser.find_element_by_xpath('//input[@type="submit"]').click()
-    time.sleep(0.1)
+    time.sleep(0.3)
     # save and submit
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
@@ -927,11 +857,11 @@ def writeAnswer10(browser):
         if (judgeQueTitle(elements1p, key)):
             rightAnswer = getAnswerElementEqualsFinal(elements1, value, 1, 4, 5)
             rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-            time.sleep(0.1)
+            time.sleep(0.3)
     # if (judgeQueTitle(elements1p, "生产需要甲材料，年需要量为100千克，如果自制，单位变动成本20")):
     #     rightAnswer = getAnswerElementEquals4(elements1, "保本点升高，利润减少", 1)
     #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input").click()
-    #     time.sleep(0.1)
+    #     time.sleep(0.3)
 
     mulAnswer = '''EVA在技术方法上对经济利润的改进处是（对会计报表进行调整 ; 引进了资本资产定价模型 ; 矫正了传统财务指标的信息失真 ）。
 平衡计分卡的四个视角是（财务视角 ; 内部业务流程视角; 学习与成长视角; 客户视角 ）。
@@ -943,15 +873,15 @@ def writeAnswer10(browser):
             for v in value:
                 rightAnswer = getAnswerElementEqualsFinal(elements1, v.strip(), 2, 4, 5)
                 rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-                time.sleep(0.1)
+                time.sleep(0.3)
 
     # if (judgeQueTitle(elements1p, "从保本图得知（")):
     #     rightAnswer = getAnswerElementEquals4(elements1, "在其他因素不变的情况，保本点越低，盈利面积越大",2)
     #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
+    #     time.sleep(0.3)
     #     rightAnswer = getAnswerElementEquals4(elements1, "实际销售量超过保本点销售量部分即是安全边际",2)
     #     rightAnswer.find_element_by_xpath("./..").find_element_by_xpath("./input[last()]").click()
-    #     time.sleep(0.1)
+    #     time.sleep(0.3)
 
     pdAnswer = '''在作业成本法下，成本动因是导致成本发生的诱因，是成本分配的依据。（对）
 经济增加值与会计利润的主要区别在于会计利润扣除债务利息，而经济增加值扣除了股权资本费用，而不不扣除债务利息。（错）'''
@@ -959,7 +889,7 @@ def writeAnswer10(browser):
 
     # end answer
     browser.find_element_by_xpath('//input[@type="submit"]').click()
-    time.sleep(0.1)
+    time.sleep(0.3)
     # save and submit
     browser.find_elements_by_xpath('//button[@type="submit"]')[1].click()
     browser.find_element_by_xpath('//input[@class="btn btn-primary m-r-1"]').click()
@@ -979,7 +909,7 @@ def enterStudy(browser):
 # 1.找到办公室管理的进入学习按钮
 def enterTest(browser, xkurl):
     enterStudy(browser)  # 进入学习的按钮会新开一个tab
-    time.sleep(1)
+    time.sleep(2)
     windowstabs = browser.window_handles
     if len(windowstabs) > 1:  # 如果没找到课程,至少别报错
         browser.switch_to.window(windowstabs[1])
@@ -991,10 +921,12 @@ def enterTest(browser, xkurl):
 
 # 2.立即考试.判断一下,防止多次考试
 def readyToTest(browser):
+    time.sleep(2)
     readyTest = browser.find_element_by_xpath('//button[@type="submit"]')
     if '再次' not in readyTest.text:
         if '现在' in readyTest.text or '继续' in readyTest.text:
             readyTest.click()
+            time.sleep(2)
             return 1
     return 0
 
@@ -1054,7 +986,7 @@ for key in keys:
         wait3AndCloseTab(browser)
 
         enterTest(browser, xingkao3)
-        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+        if readyToTestForum(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
             writeAnswer3(browser)
         wait3AndCloseTab(browser)
 
@@ -1062,6 +994,11 @@ for key in keys:
         if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
             writeAnswer4(browser)
         wait3AndCloseTab(browser)
+
+        enterTest(browser, xingkao5)
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+            writeAnswer5(browser)
+        wait3AndCloseTab(browser)
     # 5个形考走完提交之后直接换账号
     browser.get("http://passport.ouchn.cn/Account/Logout?logoutId=student.ouchn.cn")
-    time.sleep(2)
+    time.sleep(6)
