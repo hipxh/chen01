@@ -3,10 +3,11 @@
 import time
 from threading import Thread
 
-import timeunit
 import bs4
 from selenium import webdriver
 import os
+
+from chooseClass import chooseClassPage
 
 studyName = os.path.basename(__file__).split('.')[0]
 
@@ -971,10 +972,12 @@ def writeAnswer10(browser):
 
 # 找到指定的课程名称,未找到返回0
 def enterStudy(browser):
-    studys = browser.find_elements_by_css_selector("button[class='btn bg-primary']")
+    page_chooseClass = chooseClassPage(browser)
+    studys = page_chooseClass.btns_enter_answer
     for s in studys:
-        if studyName in s.find_element_by_xpath("./..").find_element_by_xpath("./..").find_element_by_xpath(
-                "./..").find_element_by_xpath("./h3").text:
+        kemu_name = s.find_element_by_xpath("./..").find_element_by_xpath("./..").find_element_by_xpath(
+            "./..").find_element_by_xpath("./h3").text
+        if studyName in kemu_name:
             s.click()
             return 1
     return 0
@@ -982,6 +985,7 @@ def enterStudy(browser):
 
 # 1.找到办公室管理的进入学习按钮
 def enterTest(browser, xkurl):
+    time.sleep(3)
     enterStudy(browser)  # 进入学习的按钮会新开一个tab
     time.sleep(1)
     windowstabs = browser.window_handles
@@ -1018,11 +1022,11 @@ def wait3AndCloseTab(browser):
     time.sleep(1.5)
 
 
-xingkao1 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=457956'
-xingkao2 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=457958'
-xingkao3 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=457962'
-xingkao4 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=457965'
-xingkao5 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=457968'
+xingkao1 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=543921'
+xingkao2 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=543923'
+xingkao3 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=543927'
+xingkao4 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=543930'
+xingkao5 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=543933'
 
 option = webdriver.ChromeOptions()
 option.add_argument('disable-infobars')
@@ -1048,7 +1052,7 @@ for key in keys:
     # enter study...此处要注意,不同账号进来看到的开放大学指南的位置不同,要动态抓元素...2019年11月13日09:10:54发现不用抓元素,直接根据URL进入国开开放指南页面,并且形考1-5的URL也是指定的,所以不用抓元素
 
     if enterTest(browser, xingkao1) != 0:
-        if readyToTestForum(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
+        if readyToTest(browser) == 1:  # 除非没考过,否则就关闭tab,重进学习页面,考下一个形考
             writeAnswer1(browser)
         wait3AndCloseTab(browser)
 
