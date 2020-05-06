@@ -528,11 +528,6 @@ def wait3AndCloseTab(browser):
 
 area = ''
 
-xingkao1 = 'http://' + area + '.ouchn.cn/mod/forum/view.php?id=470242'  # 注意这一地址是forum,非正常试卷
-xingkao2 = 'http://' + area + '.ouchn.cn/mod/quiz/view.php?id=470243'
-xingkao3 = 'http://' + area + '.ouchn.cn/mod/quiz/view.php?id=470244'
-xingkao4 = 'http://' + area + '.ouchn.cn/mod/quiz/view.php?id=470245'
-xingkao5 = 'http://' + area + '.ouchn.cn/mod/quiz/view.php?id=470246'
 
 option = webdriver.ChromeOptions()
 option.add_argument('disable-infobars')
