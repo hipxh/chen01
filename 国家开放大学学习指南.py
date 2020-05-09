@@ -6,6 +6,7 @@ from threading import Thread
 import timeunit
 import os
 from selenium import webdriver
+from chooseClass import chooseClassPage
 
 studyName=os.path.basename(__file__).split('.')[0]
 
@@ -288,7 +289,8 @@ def writeAnswer5(browser):
 
 # 找到指定的课程名称,未找到返回0
 def enterStudy(browser):
-    studys = browser.find_elements_by_css_selector("button[class='btn bg-primary']")
+    page_chooseClass = chooseClassPage(browser)
+    studys = page_chooseClass.btns_enter_answer
     for s in studys:
         if studyName in s.find_element_by_xpath("./..").find_element_by_xpath("./..").find_element_by_xpath(
                 "./..").find_element_by_xpath("./h3").text:
