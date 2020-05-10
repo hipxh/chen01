@@ -6,11 +6,6 @@ import os
 
 
 
-studyName = os.path.basename(__file__).split('.')[0]
-
-
-
-
 # 找到指定的课程名称,未找到返回0
 def enterStudy(browser):
     studys = browser.find_elements_by_css_selector("button[class='btn bg-primary']")
@@ -66,14 +61,29 @@ def wait3AndCloseTab(browser):
     time.sleep(1.5)
 
 
-xingkao1 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=437530'
-xingkao2 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=437536'
-xingkao3 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=437544'
-xingkao4 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=437550'
-xingkao5 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=437555'
-xingkao6 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=437562'
-xingkao7 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=437568'
-xingkao8 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=437573'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -84,6 +94,23 @@ browser = webdriver.Chrome(chrome_options=option)
 
 browser.get('http://student.ouchn.cn/')
 browser.implicitly_wait(15)  # wait
+
+
+#取到科目名
+studyName = os.path.basename(__file__).split('.')[0]
+
+
+
+
+
+
+xingkao1 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=437530'
+xingkao2 = 'http://hubei.ouchn.cn/mod/quiz/view.php?id=437536'
+
+
+
+
+
 
 file = open(studyName + '.txt')
 keys = []
