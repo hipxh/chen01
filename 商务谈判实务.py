@@ -279,7 +279,7 @@ if __name__ == '__main__':
     for k, v in acounts.items():
         acount_i += 1
         print(time.strftime('%Y-%m-%d %H:%M:%S',
-                            time.localtime(time.time())) + "####### 程序即将处理第[" + str(acount_i) + "]个账号: " + k)
+                            time.localtime(time.time())) + "####### 程序即将处理第[" + acount_i + "]个账号: " + k)
         # 一个账号只用登录一次便可完成该科目所有形考
         student_name = ""
         # 登录,能拿到tokenId
@@ -312,11 +312,6 @@ if __name__ == '__main__':
                                     time.localtime(time.time())) + "####### " + student_name + " 已登录")
                 break
             print("重定向请求出错,正在进行第" + str(retry_num) + "次尝试...")
-        if retry_num > 2:
-            print(time.strftime('%Y-%m-%d %H:%M:%S',
-                                time.localtime(time.time())) + "####### 第[" + str(acount_i) + "]个账号: " + k + "多次重定向出错,跳过该账号.")
-            time.sleep(60*5)
-            continue
         result_history = chongdingxiang_result.history
         # 一个账号考完所有形考
         for info in infos:
