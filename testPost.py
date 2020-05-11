@@ -241,6 +241,9 @@ if __name__ == '__main__':
     result1 = requests.get(url=login_url, cookies=result1.cookies)
     html1 = BeautifulSoup(result1.text, "html.parser")
     find_all = html1.find_all('form', limit=1)
+    sessKey_post_data = html1.find_all('input')[-1]
+    value_ = sessKey_post_data['value']
+    quote = urllib.parse.quote(value_)
     get_MoodleSession_url = find_all[0]['action']
     get_MoodleSession_url_final = (get_MoodleSession_url + "").split("Time=")[0] + "Time=" + strftime + \
                                   (get_MoodleSession_url + "").split("Time=")[1][14:]
@@ -251,7 +254,7 @@ if __name__ == '__main__':
         retry_num+=1
         # 此处重定向是重头戏,python会自动调用最后个那个重定向后的接口
         chongdingxiang_result = requests.post(url=get_MoodleSession_url,
-                                              data='CourseClass=',
+                                              data='CourseClass=' + quote,
                                               headers=headers)
         time.sleep(3)
         sesskey = getmidstring(chongdingxiang_result.text, "sesskey\":\"", "\",\"themerev")

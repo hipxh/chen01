@@ -202,7 +202,7 @@ def getImportantInfo(course_name):
         if ".txt" in filename and course_name in filename and len(filename) > len(course_name + ".txt"):
             tiku_files.append(filename)
     for tiku_name in tiku_files:
-        file = open(tiku_name)
+        file = open(tiku_name, "r", encoding='UTF-8')
         info = important_info("", "", "", "")
         single_flag = False
         multi_flag = False
@@ -291,18 +291,21 @@ if __name__ == '__main__':
         result1 = requests.get(url=login_url, cookies=result1.cookies)
         html1 = BeautifulSoup(result1.text, "html.parser")
         find_all = html1.find_all('form', limit=1)
+        sessKey_post_data = html1.find_all('input')[-1]
+        value_ = sessKey_post_data['value']
+        quote = urllib.parse.quote(value_)
         get_MoodleSession_url = find_all[0]['action']
         # 取当前年月日时分秒14位字符串
-        strftime = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        get_MoodleSession_url_final = (get_MoodleSession_url + "").split("Time=")[0] + "Time=" + strftime + \
-                                      (get_MoodleSession_url + "").split("Time=")[1][14:]
+        # strftime = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
+        # get_MoodleSession_url_final = (get_MoodleSession_url + "").split("Time=")[0] + "Time=" + strftime + \
+        #                               (get_MoodleSession_url + "").split("Time=")[1][14:]
         # 此处经常签名错误,故做报错重试机制
         retry_num = 0
         while (retry_num < 3):
             retry_num += 1
             # 此处重定向是重头戏,python会自动调用最后个那个重定向后的接口
-            chongdingxiang_result = requests.post(url=get_MoodleSession_url_final,
-                                                  data='CourseClass=%5B%7B%22OrganizationCode%22%3A%224200201%22%2C%22CourseClassCode%22%3A%224200201_AUTO200%22%2C%22CourseClassName%22%3A%22%E8%8D%86%E5%B7%9E%E7%94%B5%E5%A4%A7%E6%A0%A1%E6%9C%AC%E9%83%A8_2020%E5%B9%B4%E6%98%A5%E5%AD%A3%E4%B8%80%E9%94%AE%E5%88%86%E7%8F%AD%22%7D%5D',
+            chongdingxiang_result = requests.post(url=get_MoodleSession_url,
+                                                  data='CourseClass='+quote,# 2020年5月11日21:36:41此处是陈骁用fiddle告知必须正确传参才能保证不会签名错误.吸取教训,不该偷懒
                                                   headers=headers)
             time.sleep(3)
             sesskey = getmidstring(chongdingxiang_result.text, "sesskey\":\"", "\",\"themerev")
