@@ -545,6 +545,14 @@ M.util.help_popups.setup(Y);
 </html>'''
     html = BeautifulSoup(source, "html.parser")
     q_texts = html.find_all('div', class_='qtext')
+    shitis  = ""
+    for q in q_texts:
+        print(q.text+"###################################################")
+        shitis+=(q.text+"###################################################\r")
+    data = open('test3.txt', 'w+')
+    print(shitis, file=data)
+    data.close()
+    # file.write(shitis)
     pass
 
 def parseShiTi(shijuan_html, attempt, sesskey, info):
